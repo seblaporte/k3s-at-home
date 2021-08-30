@@ -21,7 +21,7 @@ spec:
       namespace: cert-manager
   values:
     image:
-      name: traefik:2.5
+      name: traefik
     deployment:
       kind: Deployment
       replicas: 1

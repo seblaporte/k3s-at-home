@@ -32,6 +32,7 @@ spec:
         ingressClassName: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          cert-manager.io/issuer: "letsencrypt-production"
         hosts:
           - host: "home-assistant.${SECRET_DOMAIN}"
             paths:
@@ -40,6 +41,7 @@ spec:
         tls:
           - hosts:
               - "home-assistant.${SECRET_DOMAIN}"
+            secretName: home-assistant-tls-secret
     persistence:
       data:
         enabled: true

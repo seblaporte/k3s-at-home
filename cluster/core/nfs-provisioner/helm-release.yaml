@@ -1,0 +1,22 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: nfs-provisioner
+  namespace: nfs-provisioner
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: nfs-subdir-external-provisioner/nfs-subdir-external-provisioner
+      version: 4.0.13
+      sourceRef:
+        kind: HelmRepository
+        name: nfs-subdir-external-provisioner-charts
+        namespace: flux-system
+  values:
+    nfs:
+      server: 192.168.1.10
+      path: /volume1/k3s
+    storageClass:
+      defaultClass: true

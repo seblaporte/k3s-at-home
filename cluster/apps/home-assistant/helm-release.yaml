@@ -46,6 +46,7 @@ spec:
       data:
         enabled: true
         storageClass: "nfs-client"
+        accessMode: "ReadWriteOnce"
         mountPath: /config
         size: "10Gi"
     resources:

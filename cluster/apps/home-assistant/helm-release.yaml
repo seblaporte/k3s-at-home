@@ -26,8 +26,6 @@ spec:
       gracePeriodSeconds: 30
       messagePath: /dev/termination-log
       messagePolicy: File
-    podSecurityContext:
-      privileged: true
     ingress:
       main:
         enabled: true

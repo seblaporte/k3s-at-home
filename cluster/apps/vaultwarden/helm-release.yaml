@@ -51,6 +51,7 @@ spec:
         tls:
           - hosts:
               - "bitwarden.${SECRET_DOMAIN}"
+            secretName: bitwarden-tls-secret
     persistence:
       config:
         enabled: true

@@ -21,3 +21,8 @@ spec:
       path: /volume1/k3s
     storageClass:
       defaultClass: true
+    tolerations:
+      - effect: NoExecute
+        operator: Exists
+      - effect: NoSchedule
+        operator: Exists

@@ -22,3 +22,9 @@ spec:
           protocol: layer2
           addresses:
             - "${METALLB_LB_RANGE}"
+    speaker:
+      tolerations:
+        - effect: NoExecute
+          operator: Exists
+        - effect: NoSchedule
+          operator: Exists

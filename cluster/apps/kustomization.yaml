@@ -5,4 +5,4 @@ resources:
   - networking
   - system-upgrade
   - home-assistant
-  - bitwarden
+  - vaultwarden

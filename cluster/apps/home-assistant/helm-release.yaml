@@ -6,10 +6,6 @@ metadata:
   namespace: home-assistant
 spec:
   interval: 5m
-  rollback:
-    enable: true
-    retry: true
-    maxRetries: 3
   chart:
     spec:
       # renovate: registryUrl=https://k8s-at-home.com/charts/

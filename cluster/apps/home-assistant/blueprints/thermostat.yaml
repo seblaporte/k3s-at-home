@@ -99,59 +99,72 @@ action:
     choose:
       - conditions:
           - condition: template
-            value_template: '{{ puissance == 0 }}'
-        # Eteins le chauffage pour toute la periode
+            value_template: '{{ puissance == 0 and chauffage_2_exists == False }}'
         sequence:
+          # Eteins le chauffage pour toute la periode
           - service: switch.turn_on
             target:
               entity_id: !input entity_chauffage
       - conditions:
           - condition: template
-            value_template: '{{ puissance > 99}}'
-        # Allume le chauffage pour toute la periode
+            value_template: '{{ (puissance > 0 and puissance < 100) and chauffage_2_exists == False }}'
         sequence:
+          # Allume le chauffage
           - service: switch.turn_off
             target:
               entity_id: !input entity_chauffage
-    default:
-      # Allume le chauffage
-      - service: switch.turn_off
-        target:
-          entity_id: !input entity_chauffage
-      # pendant la duree calculee
-      - delay: '{{ temps_chauffe }}'
-      # puis eteins le reste de la periode
-      - service: switch.turn_on
-        target:
-          entity_id: !input entity_chauffage
-  - alias: Commande du chauffage 2 (si configure)
-    condition: "{{ chauffage_2_exists == True }}"
-    choose:
-      - conditions:
-          - condition: template
-            value_template: '{{ puissance == 0 }}'
-        # Eteins le chauffage 2 pour toute la periode
-        sequence:
+          # pendant la duree calculee
+          - delay: '{{ temps_chauffe }}'
+          # puis eteins le reste de la periode
           - service: switch.turn_on
             target:
-              entity_id: !input entity_chauffage_2
+              entity_id: !input entity_chauffage
       - conditions:
           - condition: template
-            value_template: '{{ puissance > 99}}'
-        # Allume le chauffage 2 pour toute la periode
+            value_template: '{{ puissance > 99 and chauffage_2_exists == False}}'
         sequence:
+          # Allume le chauffage pour toute la periode
           - service: switch.turn_off
             target:
-              entity_id: !input entity_chauffage_2
-    default:
-      # Allume le chauffage 2
-      - service: switch.turn_off
-        target:
-          entity_id: !input entity_chauffage_2
-      # pendant la duree calculee
-      - delay: '{{ temps_chauffe }}'
-      # puis eteins le reste de la periode
-      - service: switch.turn_on
-        target:
-          entity_id: !input entity_chauffage_2
+              entity_id: !input entity_chauffage
+      # Fonctionnement avec 2 chauffages
+      - conditions:
+          - condition: template
+            value_template: '{{ puissance == 0 and chauffage_2_exists == True }}'
+        sequence:
+          # Eteins les chauffages pour toute la periode
+          - service: switch.turn_on
+            target:
+              entity_id:
+                - !input entity_chauffage
+                - !input entity_chauffage_2
+      - conditions:
+          - condition: template
+            value_template: '{{ (puissance > 0 and puissance < 100) and chauffage_2_exists == True }}'
+        sequence:
+          # Allume les chauffages
+          - service: switch.turn_off
+            target:
+              entity_id:
+                - !input entity_chauffage
+                - !input entity_chauffage_2
+          # pendant la duree calculee
+          - delay: '{{ temps_chauffe }}'
+          # puis les eteins le reste de la periode
+          - service: switch.turn_on
+            target:
+              entity_id:
+                - !input entity_chauffage
+                - !input entity_chauffage_2
+      - conditions:
+          - condition: template
+            value_template: '{{ puissance > 99 and chauffage_2_exists == True}}'
+        sequence:
+          # Allume les chauffages pour toute la periode
+          - service: switch.turn_off
+            target:
+              entity_id:
+                - !input entity_chauffage
+                - !input entity_chauffage_2
+    default: []
 mode: restart

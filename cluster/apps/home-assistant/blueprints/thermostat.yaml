@@ -125,7 +125,7 @@ action:
         target:
           entity_id: !input entity_chauffage
   - alias: Commande du chauffage 2 (si configure)
-    condition: "{{ chauffage_2_exists }}"
+    condition: "{{ chauffage_2_exists == True }}"
     choose:
       - conditions:
           - condition: template

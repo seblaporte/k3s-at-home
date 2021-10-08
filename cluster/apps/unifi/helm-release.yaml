@@ -33,10 +33,6 @@ spec:
       limits:
         memory: 1024Mi
         cpu: 1000m
-    mongodb:
-      enabled: true
-      persistence:
-        storageClass: "nfs-client"
     service:
       main:
         type: LoadBalancer

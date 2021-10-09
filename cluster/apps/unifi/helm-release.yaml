@@ -26,13 +26,13 @@ spec:
         accessMode: "ReadWriteOnce"
         mountPath: /unifi
         size: "5Gi"
-    resources:
-      requests:
-        memory: 1024Mi
-        cpu: 500m
-      limits:
-        memory: 1024Mi
-        cpu: 1000m
+    #resources:
+    #  requests:
+    #    memory: 1024Mi
+    #    cpu: 500m
+    #  limits:
+    #    memory: 1024Mi
+    #    cpu: 1000m
     livenessProbe:
       enabled: true
       initialDelaySeconds: 30

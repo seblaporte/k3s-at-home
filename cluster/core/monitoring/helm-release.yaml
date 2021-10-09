@@ -26,6 +26,14 @@ spec:
       enabled: false
     prometheus:
       prometheusSpec:
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: "nfs-client"
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 50Gi
         podMonitorSelector:
           matchLabels:
             app.kubernetes.io/part-of: flux

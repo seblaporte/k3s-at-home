@@ -41,3 +41,18 @@ spec:
       sidecar:
         dashboards:
           searchNamespace: ALL
+      ingress:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+        hosts:
+          - host: "grafana.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - "grafana.${SECRET_DOMAIN}"
+            secretName: grafana-tls-secret

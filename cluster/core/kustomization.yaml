@@ -8,3 +8,4 @@ resources:
   - nfs-provisioner
   - monitoring
   - monitoring-config
+  - log-management

@@ -15,4 +15,11 @@ spec:
         name: grafana-charts
         namespace: flux-system
       interval: 1m
-  values: []
+  values:
+    loki:
+      persistence:
+        enabled: true
+        accessModes:
+        - ReadWriteOnce
+        size: 10Gi
+        storageClassName: "nfs-client"

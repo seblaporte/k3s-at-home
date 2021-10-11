@@ -42,6 +42,8 @@ spec:
       sidecar:
         dashboards:
           searchNamespace: ALL
+      adminUser: ${SECRET_GRAFANA_ADMIN_USERNAME}
+      adminPassword: ${SECRET_GRAFANA_ADMIN_PASSWORD}
       ingress:
         enabled: true
         ingressClassName: "traefik"

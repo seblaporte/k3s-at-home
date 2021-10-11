@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: grafana/loki-stack
-      version: 2.1.2
+      version: 2.5.0
       sourceRef:
         kind: HelmRepository
         name: grafana-charts

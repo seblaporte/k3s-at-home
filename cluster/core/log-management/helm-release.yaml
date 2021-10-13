@@ -37,8 +37,8 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - "grafana-logs.${SECRET_DOMAIN}"
+          - "logs.${SECRET_DOMAIN}"
         tls:
-          - secretName: grafana-logs-tls-secret
+          - secretName: logs-tls-secret
             hosts:
-              - "grafana-logs.${SECRET_DOMAIN}"
+              - "logs.${SECRET_DOMAIN}"

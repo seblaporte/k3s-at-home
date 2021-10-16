@@ -2,6 +2,8 @@
 
 This repository is dedicated to my personal [k3s](https://k3s.io/) cluster deployed with [k3sup](https://github.com/alexellis/k3sup) backed by [Flux](https://toolkit.fluxcd.io/), [SOPS](https://toolkit.fluxcd.io/guides/mozilla-sops/) and maintained by [Renovate](https://github.com/renovatebot/renovate).
 
+![k3s-cluster](doc/k3s-cluster.jpeg)
+
 ## :package:&nbsp; Components
 
 - [flannel](https://github.com/flannel-io/flannel) - default CNI provided by k3s
@@ -11,18 +13,16 @@ This repository is dedicated to my personal [k3s](https://k3s.io/) cluster deplo
 - [cert-manager](https://cert-manager.io/) - SSL certificates - with Cloudflare DNS challenge
 - [traefik](https://traefik.io) - ingress controller
 - [system-upgrade-controller](https://github.com/rancher/system-upgrade-controller) - upgrade k3s
+- [nfs-subdir-external-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner) - external cluster storage
+- [Prometheus](https://github.com/prometheus/prometheus) - cluster monitoring
+- [Loki](https://github.com/grafana/loki) - log management
+- [Grafana]() - visualization for cluster monitoring and log management
 
 ## :memo:&nbsp; Prerequisites
 
 ### :computer:&nbsp; Nodes
 
-Already provisioned Bare metal or VMs with any modern operating system like Ubuntu, Debian or CentOS.
-
-If coming from a fresh install of Linux make sure you do the following steps.
-
-- Copy over your SSH keys to all the hosts
-
-- Enable packet forwarding on the hosts and increase max_user_watches
+- Enable packet forwarding on the hosts and increase `max_user_watches`
 
 ```sh
 cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
@@ -33,15 +33,15 @@ EOF
 sysctl --system
 ```
 
-- Configure DNS on your nodes to use an upstream provider (e.g. `1.1.1.1`, `9.9.9.9`), or your router's IP if you have DNS configured there and it's not pointing to a local Ad-blocker DNS. Ad-blockers should only be used on devices with a web browser.
+- Configure DNS on nodes to use an upstream provider (e.g. `1.1.1.1`, `9.9.9.9`), or router's IP (Ad-blockers should only be used on devices with a web browser) and set a static IP with `/etc/dhcpcd.conf` file.
 
-- Set a static IP on the nodes OS itself and **NOT** by using DHCP. Using DHCP to assign IPs injects a search domain into your nodes `/etc/resolv.conf` and this could potentially break DNS in containers.
+- Disable **swap** with `sudo dphys-swapfile swapoff && sudo dphys-swapfile uninstall && sudo update-rc.d dphys-swapfile remove && sudo rm -f /etc/init.d/dphys-swapfile && sudo service dphys-swapfile stop && sudo systemctl disable dphys-swapfile.service`
 
-- Disable swap
+- Install [log2ram](https://github.com/azlux/log2ram) and configure `/etc/log2ram.conf` with `SIZE=100M`. Add rule `size 60M` to `/etc/logrotate.d/log2ram`.
 
 ### :wrench:&nbsp; Tools
 
-:round_pushpin: You should install the below CLI tools on your workstation. Make sure you pull in the latest versions.
+:round_pushpin: CLI tools required on workstation.
 
 | Tool                                                               | Purpose                                                             |
 |--------------------------------------------------------------------|---------------------------------------------------------------------|
@@ -60,10 +60,9 @@ sysctl --system
 
 ### :warning:&nbsp; pre-commit
 
-It is advisable to install [pre-commit](https://pre-commit.com/) and the pre-commit hooks that come with this repository.
-[sops-pre-commit](https://github.com/k8s-at-home/sops-pre-commit) will check to make sure you are not by accident commiting your secrets un-encrypted.
+[sops-pre-commit](https://github.com/k8s-at-home/sops-pre-commit) will check to make sure we are not by accident commiting secrets un-encrypted.
 
-After pre-commit is installed on your machine run:
+After pre-commit is installed :
 
 ```sh
 pre-commit install-hooks
@@ -76,38 +75,40 @@ The Git repository contains the following directories under `cluster` and are or
 - **base** directory is the entrypoint to Flux
 - **crds** directory contains custom resource definitions (CRDs) that need to exist globally in your cluster before anything else exists
 - **core** directory (depends on **crds**) are important infrastructure applications (grouped by namespace) that should never be pruned by Flux
-- **apps** directory (depends on **core**) is where your common applications (grouped by namespace) could be placed, Flux will prune resources here if they are not tracked by Git anymore
+- **apps** directory (depends on **core**) is where applications (grouped by namespace) are placed. Flux will prune resources here if they are not tracked by Git anymore.
 
 ```
 cluster
 ├── apps
 │   ├── default
+│   ├── home-assistant
+│   ├── mosquitto
 │   ├── networking
-│   └── system-upgrade
+│   ├── system-upgrade
+│   ├── unifi
+│   └── vaultwarden
 ├── base
 │   └── flux-system
 ├── core
 │   ├── cert-manager
+│   ├── log-management
 │   ├── metallb-system
+│   ├── monitoring
+│   ├── monitoring-config
 │   ├── namespaces
+│   ├── nfs-provisioner
 │   └── system-upgrade
 └── crds
     └── cert-manager
 ```
 
-## :rocket:&nbsp; Lets go!
-
-Very first step will be to create a new repository by clicking the **Use this template** button on this page.
-
-:round_pushpin: In these instructions you will be exporting several environment variables to your current shell env. Make sure you stay with in your current shell to not lose any exported variables.
-
-:round_pushpin: **All of the below commands** are run on your **local** workstation, **not** on any of your cluster nodes. 
+## :rocket:&nbsp; Deployment
 
 ### :closed_lock_with_key:&nbsp; Setting up GnuPG keys
 
-:round_pushpin: Here we will create a personal and a Flux GPG key. Using SOPS with GnuPG allows us to encrypt and decrypt secrets.
+:round_pushpin: SOPS with GnuPG permits to encrypt and decrypt secrets.
 
-1. Create a Personal GPG Key, password protected, and export the fingerprint. It's **strongly encouraged** to back up this key somewhere safe so you don't lose it.
+1. Creation of a Personal GPG Key, password protected, and export of the fingerprint.
 
 ```sh
 export GPG_TTY=$(tty)
@@ -131,7 +132,7 @@ gpg --list-secret-keys "${PERSONAL_KEY_NAME}"
 export PERSONAL_KEY_FP=772154FFF783DE317KLCA0EC77149AC618D75581
 ```
 
-2. Create a Flux GPG Key and export the fingerprint
+2. Creation of a Flux GPG Key and export of the fingerprint
 
 ```sh
 export GPG_TTY=$(tty)
@@ -156,46 +157,44 @@ gpg --list-secret-keys "${FLUX_KEY_NAME}"
 export FLUX_KEY_FP=AB675CE4CC64251G3S9AE1DAA88ARRTY2C009E2D
 ```
 
-### :sailboat:&nbsp; Installing k3s with k3sup
+### :sailboat:&nbsp; Installing k3s
 
-:round_pushpin: Here we will be install [k3s](https://k3s.io/) with [k3sup](https://github.com/alexellis/k3sup). After completion, k3sup will drop a `kubeconfig` in your present working directory for use with interacting with your cluster with `kubectl`.
+1. Installation of the master node
 
-1. Ensure you are able to SSH into you nodes with using your private ssh key. This is how k3sup is able to connect to your remote node.
-
-2. Install the master node
-
-_We will be installing metallb instead of servicelb, traefik and metrics-server will be installed with Flux._
+_Servicelb is replaced by metallb, traefik and metrics-server will be installed with Flux._
 
 ```sh
-k3sup install \
-    --host=169.254.1.1 \
-    --user=k8s-at-home \
-    --k3s-version=v1.21.4+k3s1 \
-    --k3s-extra-args="--disable servicelb --disable traefik --disable metrics-server"
+curl -sfL https://get.k3s.io | \
+INSTALL_K3S_VERSION=v1.21.4+k3s1 sh -s - server \
+--node-taint CriticalAddonsOnly=true:NoExecute \
+--disable servicelb \
+--disable traefik \
+--disable metrics-server \
+--tls-san <master-ip> \
+--datastore-endpoint="postgres://<user>:<password>@<ip>:<port>/<db>?sslmode=disable"
 ```
 
-3. Join worker nodes (optional)
+2. Join worker nodes
 
 ```sh
-k3sup join \
-    --host=169.254.1.2 \
-    --server-host=169.254.1.1 \
-    --k3s-version=v1.21.4+k3s1 \
-    --user=k8s-at-home
+curl -sfL https://get.k3s.io | \
+INSTALL_K3S_VERSION=v1.21.4+k3s1 \
+K3S_TOKEN=<token>  \
+K3S_URL=https://<master-ip>:6443 sh -
 ```
 
-4. Verify the nodes are online
+3. Check nodes are online
    
 ```sh
-kubectl --kubeconfig=./kubeconfig get nodes
-# NAME           STATUS   ROLES                       AGE     VERSION
-# k8s-master-a   Ready    control-plane,master      4d20h   v1.21.4+k3s1
-# k8s-worker-a   Ready    worker                    4d20h   v1.21.4+k3s1
+kubectl get nodes
+# NAME         STATUS   ROLES                  AGE   VERSION
+# k3s-master   Ready    control-plane,master   46d   v1.21.4+k3s1
+# k3s-node-3   Ready    <none>                 46d   v1.21.4+k3s1
+# k3s-node-2   Ready    <none>                 46d   v1.21.4+k3s1
+# k3s-node-1   Ready    <none>                 46d   v1.21.4+k3s1
 ```
 
 ### :small_blue_diamond:&nbsp; GitOps with Flux
-
-:round_pushpin: Here we will be installing [flux](https://toolkit.fluxcd.io/) after some quick bootstrap steps.
 
 1. Verify Flux can be installed
 
@@ -210,7 +209,7 @@ flux --kubeconfig=./kubeconfig check --pre
 2. Pre-create the `flux-system` namespace
 
 ```sh
-kubectl --kubeconfig=./kubeconfig create namespace flux-system --dry-run=client -o yaml | kubectl --kubeconfig=./kubeconfig apply -f -
+kubectl create namespace flux-system --dry-run=client -o yaml | kubectl apply -f -
 ```
 
 3. Add the Flux GPG key in-order for Flux to decrypt SOPS secrets
@@ -262,7 +261,7 @@ git push
 
 10. Install Flux
 
-:round_pushpin: Due to race conditions with the Flux CRDs you will have to run the below command twice. There should be no errors on this second run.
+:round_pushpin: Due to race conditions with the Flux CRDs this command needs to be run twice. There should be no errors on this second run.
 
 ```sh
 kubectl apply --kustomize=./cluster/base/flux-system
@@ -277,8 +276,6 @@ kubectl apply --kustomize=./cluster/base/flux-system
 # unable to recognize "./cluster/base/flux-system": no matches for kind "HelmRepository" in version "source.toolkit.fluxcd.io/v1beta1"
 ```
 
-:tada: **Congratulations** you have a Kubernetes cluster managed by Flux, your Git repository is driving the state of your cluster.
-
 ## :mega:&nbsp; Post installation
 
 ### Verify Flux
@@ -292,16 +289,10 @@ kubectl get pods -n flux-system
 # source-controller-7d6875bcb4-zqw9f         1/1     Running   0          1h
 ```
 
-### direnv
-
-This is a great tool to export environment variables depending on what your present working directory is, head over to their [installation guide](https://direnv.net/docs/installation.html) and don't forget to hook it into your shell!
-
-When this is done you no longer have to use `--kubeconfig=./kubeconfig` in your `kubectl`, `flux` or `helm` commands.
-
 ### VSCode SOPS extension
 
 [VSCode SOPS](https://marketplace.visualstudio.com/items?itemName=signageos.signageos-vscode-sops) is a neat little plugin for those using VSCode.
-It will automatically decrypt you SOPS secrets when you click on the file in the editor and encrypt them when you save  and exit the file.
+It will automatically decrypt SOPS secrets when the file is open in the editor and encrypt them when save and exit the file.
 
 ### :point_right:&nbsp; Debugging
 
@@ -359,15 +350,11 @@ flux get sources helm -A
 
 ### :robot:&nbsp; Automation
 
-- [Renovate](https://www.whitesourcesoftware.com/free-developer-tools/renovate) is a very useful tool that when configured will start to create PRs in your Github repository when Docker images, Helm charts or anything else that can be tracked has a newer version. The configuration for renovate is located [here](./.github/renovate.json5).
+- [Renovate](https://www.whitesourcesoftware.com/free-developer-tools/renovate) is a very useful tool that create PRs in this Github repository when Docker images, Helm charts or anything else that can be tracked has a newer version. The configuration for renovate is located [here](./.github/renovate.json5).
 
-- [system-upgrade-controller](https://github.com/rancher/system-upgrade-controller) will watch for new k3s releases and upgrade your nodes when new releases are found.
+- [system-upgrade-controller](https://github.com/rancher/system-upgrade-controller)  watch for new k3s releases and upgrade your nodes when new releases are found.
 
-There's also a couple Github workflows included in this repository that will help automate some processes.
+A couple of Github workflows included in this repository help automate some processes.
 
 - [Flux upgrade schedule](./.github/workflows/flux-schedule.yaml) - workflow to upgrade Flux.
 - [Renovate schedule](./.github/workflows/renovate-schedule.yaml) - workflow to annotate `HelmRelease`'s which allows [Renovate](https://www.whitesourcesoftware.com/free-developer-tools/renovate) to track Helm chart versions.
-
-## :handshake:&nbsp; Thanks
-
-Big shout out to all the authors and contributors to the projects that we are using in this repository.

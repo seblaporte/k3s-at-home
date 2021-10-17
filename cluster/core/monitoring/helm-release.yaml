@@ -61,7 +61,7 @@ spec:
         resources:
           requests:
             cpu: 500m
-            memory: 512Mi
+            memory: 1024Mi
         storageSpec:
           volumeClaimTemplate:
             spec:
@@ -86,8 +86,8 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - "grafana.${SECRET_DOMAIN}"
+          - "monitoring.${SECRET_DOMAIN}"
         tls:
-          - secretName: grafana-tls-secret
+          - secretName: monitoring-tls-secret
             hosts:
-              - "grafana.${SECRET_DOMAIN}"
+              - "monitoring.${SECRET_DOMAIN}"

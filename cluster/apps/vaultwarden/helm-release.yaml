@@ -24,7 +24,7 @@ spec:
     env:
       DATA_FOLDER: "config"
       DATABASE_URL: "${SECRET_BITWARDEN_DATABASE_URL}"
-      ADMIN_TOKEN: "${SECRET_ADMIN_TOKEN}"
+      ADMIN_TOKEN: "${SECRET_BITWARDEN_ADMIN_TOKEN}"
       SIGNUPS_ALLOWED: false
       INVITATIONS_ALLOWED: true
     ingress:

@@ -23,7 +23,7 @@ spec:
         storageClass: "nfs-client"
         accessMode: "ReadWriteOnce"
         mountPath: /opt/adguardhome/conf
-        size: "50Mo"
+        size: "50Mi"
       data:
         enabled: true
         storageClass: "nfs-client"

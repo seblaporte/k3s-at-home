@@ -17,6 +17,22 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+        hosts:
+          - host: "adguard-home.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - "adguard-home.${SECRET_DOMAIN}"
+            secretName: adguard-home-tls-secret
     persistence:
       config:
         enabled: true

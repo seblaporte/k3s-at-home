@@ -24,6 +24,12 @@ spec:
         - ReadWriteOnce
         size: 10Gi
         storageClassName: "nfs-client"
+      extraArgs:
+        log.level: error
+    promtail:
+      enabled: true
+      config:
+        logLevel: error
     grafana:
       enabled: true
       adminUser: ${SECRET_GRAFANA_ADMIN_USERNAME}

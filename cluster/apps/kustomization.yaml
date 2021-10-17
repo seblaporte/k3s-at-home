@@ -8,3 +8,4 @@ resources:
   - vaultwarden
   - unifi
   - mosquitto
+  - adguard-home

@@ -23,9 +23,8 @@ spec:
     service:
       main:
         type: LoadBalancer
-        spec:
-          loadBalancerIP: "${SVC_MOSQUITTO_ADDR}"
-          externalTrafficPolicy: Local
+        loadBalancerIP: "${SVC_MOSQUITTO_ADDR}"
+        externalTrafficPolicy: Local
         ports:
           http:
             enabled: false

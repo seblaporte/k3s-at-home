@@ -17,29 +17,12 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
-    ingress:
-      main:
-        enabled: true
-        ingressClassName: "traefik"
-        annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
-        hosts:
-          - host: "adguard-home.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-        tls:
-          - hosts:
-              - "adguard-home.${SECRET_DOMAIN}"
-            secretName: adguard-home-tls-secret
     service:
       main:
         primary: true
         type: LoadBalancer
-        spec:
-          loadBalancerIP: "${SVC_ADGUARD_ADDR}"
-          externalTrafficPolicy: Local
+        loadBalancerIP: "${SVC_ADGUARD_ADDR}"
+        externalTrafficPolicy: Local
         annotations:
           metallb.universe.tf/allow-shared-ip: "adguard-home"
         ports:
@@ -51,9 +34,8 @@ spec:
       dns-tcp:
         enabled: true
         type: LoadBalancer
-        spec:
-          loadBalancerIP: "${SVC_ADGUARD_ADDR}"
-          externalTrafficPolicy: Local
+        loadBalancerIP: "${SVC_ADGUARD_ADDR}"
+        externalTrafficPolicy: Local
         annotations:
           metallb.universe.tf/allow-shared-ip: "adguard-home"
         ports:
@@ -65,9 +47,8 @@ spec:
       dns-udp:
         enabled: true
         type: LoadBalancer
-        spec:
-          loadBalancerIP: "${SVC_ADGUARD_ADDR}"
-          externalTrafficPolicy: Local
+        loadBalancerIP: "${SVC_ADGUARD_ADDR}"
+        externalTrafficPolicy: Local
         annotations:
           metallb.universe.tf/allow-shared-ip: "adguard-home"
         ports:

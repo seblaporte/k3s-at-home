@@ -51,9 +51,8 @@ spec:
     service:
       main:
         type: LoadBalancer
-        spec:
-          loadBalancerIP: "${SVC_UNIFI_ADDR}"
-          externalTrafficPolicy: Local
+        loadBalancerIP: "${SVC_UNIFI_ADDR}"
+        externalTrafficPolicy: Local
         annotations:
           metallb.universe.tf/allow-shared-ip: "unifi-controller"
         ports:
@@ -66,9 +65,8 @@ spec:
       udp:
         enabled: true
         type: LoadBalancer
-        spec:
-          loadBalancerIP: "${SVC_UNIFI_ADDR}"
-          externalTrafficPolicy: Local
+        loadBalancerIP: "${SVC_UNIFI_ADDR}"
+        externalTrafficPolicy: Local
         annotations:
           metallb.universe.tf/allow-shared-ip: "unifi-controller"
         ports:

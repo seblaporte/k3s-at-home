@@ -20,6 +20,8 @@ spec:
     image:
       repository: jacobalberty/unifi
       pullPolicy: IfNotPresent
+    env:
+      TZ: Europe/Paris
     persistence:
       data:
         enabled: true

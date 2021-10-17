@@ -28,6 +28,10 @@ spec:
     prometheus:
       prometheusSpec:
         storageSpec:
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
           volumeClaimTemplate:
             spec:
               storageClassName: "nfs-client"

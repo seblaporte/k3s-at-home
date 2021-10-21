@@ -39,6 +39,40 @@ sysctl --system
 
 - Install [log2ram](https://github.com/azlux/log2ram) and configure `/etc/log2ram.conf` with `SIZE=100M`. Add rule `size 60M` to `/etc/logrotate.d/log2ram`.
 
+- Disable **syslog** to reduce pressure on SD card
+
+```sh
+sudo service rsyslog stop
+sudo systemctl disable rsyslog
+```
+
+- Configure **logrotate** for all logs with `/etc/logrotate.conf`
+
+```sh
+# use daily rotation
+daily
+
+# keep 3 days worth of backlogs
+rotate 3
+
+copytruncate
+```
+
+- Disable leds all on Raspberry Pi with `/boot/config.txt`
+
+```sh
+[pi4]
+# Disable the PWR LED
+dtparam=pwr_led_trigger=none
+dtparam=pwr_led_activelow=off
+# Disable the Activity LED
+dtparam=act_led_trigger=none
+dtparam=act_led_activelow=off
+# Disable ethernet port LEDs
+dtparam=eth_led0=4
+dtparam=eth_led1=4
+```
+
 ### :wrench:&nbsp; Tools
 
 :round_pushpin: CLI tools required on workstation.

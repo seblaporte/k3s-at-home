@@ -28,8 +28,6 @@ spec:
         log.level: error
     promtail:
       enabled: true
-      config:
-        logLevel: error
     grafana:
       enabled: true
       adminUser: ${SECRET_GRAFANA_ADMIN_USERNAME}

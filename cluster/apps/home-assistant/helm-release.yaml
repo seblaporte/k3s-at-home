@@ -66,6 +66,9 @@ spec:
         enabled: true
         type: hostPath
         hostPath: /dev/serial/by-id/usb-RFXCOM_RFXtrx433_A1XPT0RY-if00-port0
+    securityContext:
+      # Privileged securityContext required by USB devices accessed directly through the host machine
+      privileged: true
     resources:
       requests:
         memory: 250Mi

@@ -26,6 +26,15 @@ spec:
       gracePeriodSeconds: 30
       messagePath: /dev/termination-log
       messagePolicy: File
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - home-automation-controller
     ingress:
       main:
         enabled: true
@@ -49,6 +58,14 @@ spec:
         accessMode: "ReadWriteOnce"
         mountPath: /config
         size: "10Gi"
+      usb-zigate:
+        enabled: true
+        type: hostPath
+        hostPath: /dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0
+      usb-rfxcom:
+        enabled: true
+        type: hostPath
+        hostPath: /dev/serial/by-id/usb-RFXCOM_RFXtrx433_A1XPT0RY-if00-port0
     resources:
       requests:
         memory: 250Mi

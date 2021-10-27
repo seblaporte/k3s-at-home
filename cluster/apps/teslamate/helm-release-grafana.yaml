@@ -1,0 +1,52 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: teslamate
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
+      chart: grafana
+      version: 6.16.13
+      sourceRef:
+        kind: HelmRepository
+        name: grafana-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    image:
+      repository: teslamate/grafana
+      tag: 1.24
+      pullPolicy: IfNotPresent
+    env:
+      DATABASE_USER: teslamate
+      DATABASE_PASS: ${SECRET_TESLAMATE_DB_PASSWORD}
+      DATABASE_NAME: teslamate
+      DATABASE_HOST: 192.168.1.10
+      DATABASE_PORT: 5439
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+        hosts:
+          - host: "teslamate-grafana.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - "teslamate-grafana.${SECRET_DOMAIN}"
+            secretName: teslamate-grafana-tls-secret
+    resources:
+      requests:
+        memory: 250Mi
+        cpu: 500m
+      limits:
+        memory: 500Mi
+        cpu: 1000m

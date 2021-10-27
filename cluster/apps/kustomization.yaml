@@ -9,3 +9,4 @@ resources:
   - unifi
   - mosquitto
   - adguard-home
+  - teslamate

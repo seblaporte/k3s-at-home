@@ -27,6 +27,7 @@ spec:
       DATABASE_USER: teslamate
       DATABASE_PASS: ${SECRET_TESLAMATE_DB_PASSWORD}
       DATABASE_NAME: teslamate
+      MQTT_HOST: ${SVC_MOSQUITTO_ADDR}
     ingress:
       main:
         enabled: true

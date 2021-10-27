@@ -6,6 +6,4 @@ resources:
   - cert-manager
   - system-upgrade
   - nfs-provisioner
-  - monitoring
-  - monitoring-config
   - log-management

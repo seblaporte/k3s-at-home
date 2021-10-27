@@ -28,21 +28,17 @@ spec:
       DATABASE_HOST: 192.168.1.10
       DATABASE_PORT: 5439
     ingress:
-      main:
-        enabled: true
-        ingressClassName: "traefik"
-        annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
-        hosts:
-          - host: "teslamate-grafana.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-        tls:
-          - hosts:
-              - "teslamate-grafana.${SECRET_DOMAIN}"
-            secretName: teslamate-grafana-tls-secret
+      enabled: true
+      ingressClassName: "traefik"
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+        cert-manager.io/cluster-issuer: "letsencrypt-production"
+      hosts:
+        - "teslamate-grafana.${SECRET_DOMAIN}"
+      tls:
+        - secretName: teslamate-grafana-tls-secret
+          hosts:
+            - "teslamate-grafana.${SECRET_DOMAIN}"
     resources:
       requests:
         memory: 250Mi

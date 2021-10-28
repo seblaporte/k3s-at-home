@@ -27,6 +27,11 @@ spec:
       DATABASE_NAME: teslamate
       DATABASE_HOST: 192.168.1.10
       DATABASE_PORT: 5439
+    grafana.ini:
+      paths:
+        plugins: /var/lib/grafana-plugins
+      analytics:
+        check_for_updates: false
     ingress:
       enabled: true
       ingressClassName: "traefik"

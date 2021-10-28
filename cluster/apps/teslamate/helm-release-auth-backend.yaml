@@ -30,7 +30,7 @@ spec:
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
         cert-manager.io/cluster-issuer: "letsencrypt-production"
       hosts:
-        - "teslamate.${SECRET_DOMAIN}"
+        - host: "teslamate.${SECRET_DOMAIN}"
       tls:
         - secretName: teslamate-tls-secret
           hosts:

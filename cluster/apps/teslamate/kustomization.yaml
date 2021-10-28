@@ -4,4 +4,5 @@ resources:
   - namespace.yaml
   - helm-release-backend.yaml
   - helm-release-grafana.yaml
+  - helm-release-auth-backend.yaml
   

@@ -1,0 +1,52 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: auth-backend
+  namespace: teslamate
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
+      chart: traefik-forward-auth
+      version: 1.0.10
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    image:
+      repository: thomseddon/traefik-forward-auth
+      tag: "2-arm"
+      pullPolicy: IfNotPresent
+    middleware:
+      enabled: true
+    ingress:
+      enabled: true
+      ingressClassName: "traefik"
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+        cert-manager.io/cluster-issuer: "letsencrypt-production"
+      hosts:
+        - "teslamate.${SECRET_DOMAIN}"
+      tls:
+        - secretName: teslamate-tls-secret
+          hosts:
+            - "teslamate.${SECRET_DOMAIN}"
+    providers:
+      google:
+        enabled: true
+        clientId: ${SECRET_GOOGLE_AUTH_CLIENT_ID}
+        clientSecret: ${SECRET_GOOGLE_AUTH_CLIENT_SECRET}
+    restrictions:
+      domain: ${SECRET_AUTH_RESTRICTION_DOMAIN}
+      whitelist: ${SECRET_AUTH_RESTRICTION_FIRST_ADDRESS}
+    resources:
+      requests:
+        memory: 32Mi
+        cpu: 50m
+      limits:
+        memory: 32Mi
+        cpu: 50m

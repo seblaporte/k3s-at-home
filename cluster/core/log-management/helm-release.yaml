@@ -30,6 +30,11 @@ spec:
       enabled: true
     grafana:
       enabled: true
+      env:
+        - GF_AUTH_ANONYMOUS_ENABLED: true
+        - GF_ANALYTICS_REPORTING_ENABLED: false
+        - GF_SECURITY_DISABLE_GRAVATAR: true
+        - GF_USERS_ALLOW_SIGN_UP: false
       adminUser: ${SECRET_GRAFANA_ADMIN_USERNAME}
       adminPassword: ${SECRET_GRAFANA_ADMIN_PASSWORD}
       sidecar:
@@ -40,6 +45,7 @@ spec:
         ingressClassName: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: networking-traefik-forward-auth@kubernetescrd
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
           - "logs.${SECRET_DOMAIN}"

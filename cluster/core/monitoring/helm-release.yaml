@@ -58,6 +58,7 @@ spec:
     prometheus:
       prometheusSpec:
         logLevel: error
+        retention: 2d
         resources:
           requests:
             cpu: 1000m

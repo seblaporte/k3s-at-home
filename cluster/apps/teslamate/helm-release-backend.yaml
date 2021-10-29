@@ -31,7 +31,21 @@ spec:
       MQTT_HOST: ${SVC_MOSQUITTO_ADDR}
     ingress:
       main:
-        enabled: false
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: teslamate-traefik-forward-auth@kubernetescrd
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+        hosts:
+          - host: "teslamate.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - "teslamate.${SECRET_DOMAIN}"
+            secretName: teslamate-tls-secret
     resources:
       requests:
         memory: 250Mi

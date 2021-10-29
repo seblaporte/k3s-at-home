@@ -23,20 +23,6 @@ spec:
       pullPolicy: IfNotPresent
     middleware:
       enabled: true
-    ingress:
-      enabled: true
-      ingressClassName: "traefik"
-      annotations:
-        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-        cert-manager.io/cluster-issuer: "letsencrypt-production"
-      hosts:
-        - host: "teslamate.${SECRET_DOMAIN}"
-          paths:
-            - "/"
-      tls:
-        - secretName: teslamate-tls-secret
-          hosts:
-            - "teslamate.${SECRET_DOMAIN}"
     providers:
       google:
         enabled: true

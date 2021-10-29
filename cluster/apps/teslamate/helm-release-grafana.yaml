@@ -37,6 +37,7 @@ spec:
       ingressClassName: "traefik"
       annotations:
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+        traefik.ingress.kubernetes.io/router.middlewares: networking-traefik-forward-auth@kubernetescrd
         cert-manager.io/cluster-issuer: "letsencrypt-production"
       hosts:
         - "teslamate-grafana.${SECRET_DOMAIN}"

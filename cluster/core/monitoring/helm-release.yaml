@@ -21,36 +21,21 @@ spec:
   upgrade:
     crds: CreateReplace
   values:
-    defaultRules:
-      create: true
-      rules:
-        alertmanager: false
-        etcd: false
-        general: true
-        k8s: true
-        kubeApiserver: false
-        kubeApiserverAvailability: false
-        kubeApiserverError: false
-        kubeApiserverSlos: false
-        kubelet: true
-        kubePrometheusGeneral: true
-        kubePrometheusNodeAlerting: false
-        kubePrometheusNodeRecording: false
-        kubernetesAbsent: false
-        kubernetesApps: true
-        kubernetesResources: true
-        kubernetesStorage: true
-        kubernetesSystem: true
-        kubeScheduler: false
-        kubeStateMetrics: false
-        network: true
-        node: true
-        prometheus: true
-        prometheusOperator: true
-        time: true
     alertmanager:
       enabled: false
     kubeEtcd:
+      enabled: false
+    kubeApiServer:
+      enabled: false
+    kubeControllerManager:
+      enabled: false
+    kubeDns:
+      enabled: false
+    coreDns:
+      enabled: false
+    kubeProxy:
+      enabled: false
+    kubeScheduler:
       enabled: false
     prometheusOperator:
       enabled: true

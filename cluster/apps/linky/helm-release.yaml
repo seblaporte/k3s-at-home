@@ -1,0 +1,49 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: influxdb
+  namespace: linky
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://helm.influxdata.com/
+      chart: influxdb
+      version: 4.10.0
+      sourceRef:
+        kind: HelmRepository
+        name: influxdata-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    image:
+      repository: influxdb
+      pullPolicy: IfNotPresent
+    persistence:
+      enabled: true
+      storageClass: "nfs-client"
+      accessMode: ReadWriteOnce
+      size: 30Gi
+    resources:
+      requests:
+        memory: 250Mi
+        cpu: 500m
+      limits:
+        memory: 512Mi
+        cpu: 1000m
+    ## InfluxDB configuration
+    ## ref: https://docs.influxdata.com/influxdb/v1.7/administration/config
+    config:
+      logging:
+        level: error
+    setDefaultUser:
+      enabled: true
+      user:
+        username: "linky"
+        password: ${SECRET_LINKY_INFLUX_DB_PASSWORD}
+    initScripts:
+      enabled: true
+      scripts:
+        init.iql: |+
+          CREATE DATABASE "linky" WITH DURATION 730d REPLICATION 1 SHARD DURATION 1d NAME "teleinfo"

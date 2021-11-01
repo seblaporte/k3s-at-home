@@ -33,6 +33,11 @@ spec:
       limits:
         memory: 512Mi
         cpu: 1000m
+    service:
+      type: LoadBalancer
+      spec:
+        loadBalancerIP: "${SVC_LINKY_INFLUXDB_ADDR}"
+        externalTrafficPolicy: Local
     ## InfluxDB configuration
     ## ref: https://docs.influxdata.com/influxdb/v1.7/administration/config
     config:

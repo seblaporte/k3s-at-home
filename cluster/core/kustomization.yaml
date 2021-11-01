@@ -7,5 +7,3 @@ resources:
   - system-upgrade
   - nfs-provisioner
   - log-management
-  - monitoring
-  - monitoring-config

@@ -1,0 +1,48 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: linky
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://grafana.github.io/helm-charts
+      chart: grafana
+      version: 6.16.13
+      sourceRef:
+        kind: HelmRepository
+        name: grafana-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+        - name: InfluxDB
+          type: prometheus
+          url: http://prometheus-prometheus-server
+          access: proxy
+          isDefault: true
+    ingress:
+      enabled: true
+      ingressClassName: "traefik"
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+        traefik.ingress.kubernetes.io/router.middlewares: networking-traefik-forward-auth@kubernetescrd
+        cert-manager.io/cluster-issuer: "letsencrypt-production"
+      hosts:
+        - "linky-grafana.${SECRET_DOMAIN}"
+      tls:
+        - secretName: linky-grafana-tls-secret
+          hosts:
+            - "linky-grafana.${SECRET_DOMAIN}"
+    resources:
+      requests:
+        memory: 250Mi
+        cpu: 500m
+      limits:
+        memory: 500Mi
+        cpu: 1000m

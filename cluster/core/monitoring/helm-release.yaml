@@ -65,6 +65,10 @@ spec:
           searchNamespace: ALL
       adminUser: ${SECRET_GRAFANA_ADMIN_USERNAME}
       adminPassword: ${SECRET_GRAFANA_ADMIN_PASSWORD}
+      grafana.ini:
+        log:
+          mode: console
+          level: error
       ingress:
         enabled: true
         ingressClassName: "traefik"

@@ -43,6 +43,10 @@ spec:
     config:
       logging:
         level: error
+      continuous_queries:
+        log-enabled: false
+      data:
+        query-log-enabled: false
     setDefaultUser:
       enabled: true
       user:

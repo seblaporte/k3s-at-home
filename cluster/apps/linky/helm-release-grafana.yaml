@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: grafana
+  name: grafana-linky
   namespace: linky
 spec:
   interval: 5m
@@ -21,10 +21,13 @@ spec:
       datasources.yaml:
         apiVersion: 1
         datasources:
-        - name: InfluxDB
-          type: prometheus
-          url: http://prometheus-prometheus-server
+        - name: Linky
+          type: influxdb
+          url: http://influxdb
           access: proxy
+          user: linky
+          password: ${SECRET_LINKY_INFLUX_DB_PASSWORD}
+          database: linky
           isDefault: true
     ingress:
       enabled: true

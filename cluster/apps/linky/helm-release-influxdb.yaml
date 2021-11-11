@@ -47,6 +47,8 @@ spec:
         log-enabled: false
       data:
         query-log-enabled: false
+      http:
+        log-enabled: false
     setDefaultUser:
       enabled: true
       user:

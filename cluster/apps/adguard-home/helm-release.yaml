@@ -5,7 +5,8 @@ metadata:
   name: adguard-home
   namespace: adguard-home
 spec:
-  interval: 5m
+  interval: 1h0m0s
+  timeout: 30m
   chart:
     spec:
       # renovate: registryUrl=https://k8s-at-home.com/charts/

@@ -10,7 +10,7 @@ spec:
     spec:
       # renovate: registryUrl=https://k8s-at-home.com/charts/
       chart: home-assistant
-      version: 11.2.1
+      version: 11.0.3
       sourceRef:
         kind: HelmRepository
         name: k8s-at-home-charts
@@ -28,7 +28,12 @@ spec:
       messagePolicy: File
     probes:
       startup:
-        enabled: false
+        enabled: true
+        spec:
+          initialDelaySeconds: 0
+          timeoutSeconds: 1
+          periodSeconds: 5
+          failureThreshold: 120
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

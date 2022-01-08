@@ -26,6 +26,14 @@ spec:
       gracePeriodSeconds: 30
       messagePath: /dev/termination-log
       messagePolicy: File
+    probes:
+      startup:
+        enabled: true
+        spec:
+          initialDelaySeconds: 0
+          timeoutSeconds: 1
+          periodSeconds: 5
+          failureThreshold: 60
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

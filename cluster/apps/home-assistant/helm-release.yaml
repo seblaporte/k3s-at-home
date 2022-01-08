@@ -28,12 +28,7 @@ spec:
       messagePolicy: File
     probes:
       startup:
-        enabled: true
-        spec:
-          initialDelaySeconds: 0
-          timeoutSeconds: 1
-          periodSeconds: 5
-          failureThreshold: 60
+        enabled: false
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

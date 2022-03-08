@@ -13,3 +13,4 @@ resources:
   - linky
   - node-red
   - heimdall
+  - esphome

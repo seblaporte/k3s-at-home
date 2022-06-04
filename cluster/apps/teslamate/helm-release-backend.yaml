@@ -17,6 +17,9 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    image:
+      repository: teslamate/teslamate
+      tag: 1.26.1
     env:
       TZ: Europe/Paris
       DATABASE_HOST: 192.168.1.10

@@ -19,7 +19,6 @@ spec:
   values:
     image:
       repository: vaultwarden/server
-      tag: 1.22.2
       pullPolicy: IfNotPresent
     env:
       DATA_FOLDER: "config"

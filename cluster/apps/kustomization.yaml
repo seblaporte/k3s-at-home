@@ -14,3 +14,4 @@ resources:
   - node-red
   - heimdall
   - esphome
+  - homebridge

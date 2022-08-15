@@ -17,6 +17,17 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    env:
+      # -- To interact with the self-signed certificate with local Tydom
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
+      # -- Set the container timezone
+      TZ: UTC
+      # -- Specify the user ID the application will run as
+      PUID: "1000"
+      # -- Specify the group ID the application will run as
+      PGID: "1000"
+      # -- Enable the Homebridge UI
+      HOMEBRIDGE_CONFIG_UI: 1
     hostNetwork: true
     ingress:
       main:

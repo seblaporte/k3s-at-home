@@ -28,7 +28,6 @@ spec:
       PGID: "1000"
       # -- Enable the Homebridge UI
       HOMEBRIDGE_CONFIG_UI: 1
-    hostNetwork: true
     ingress:
       main:
         enabled: true

@@ -40,6 +40,8 @@ spec:
             paths:
               - path: /
                 pathType: Prefix
+                service:
+                  port: 8581
         tls:
           - hosts:
               - "homebridge.${SECRET_DOMAIN}"

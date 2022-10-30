@@ -18,6 +18,9 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    image:
+      repository: adguard/adguardhome
+      tag: v0.107.16
     service:
       main:
         primary: true

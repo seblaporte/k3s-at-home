@@ -19,7 +19,6 @@ spec:
   values:
     image:
       repository: homeassistant/home-assistant
-      tag: 2022.10.5
     dnsPolicy: ClusterFirst
     hostNetwork: true
     termination:

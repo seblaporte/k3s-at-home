@@ -19,6 +19,7 @@ spec:
   values:
     image:
       repository: jacobalberty/unifi
+      tag: v7
       pullPolicy: IfNotPresent
     env:
       TZ: Europe/Paris
@@ -35,7 +36,7 @@ spec:
         cpu: 500m
       limits:
         memory: 1536Mi
-        cpu: 1000m
+        cpu: 2000m
     livenessProbe:
       enabled: true
       initialDelaySeconds: 30

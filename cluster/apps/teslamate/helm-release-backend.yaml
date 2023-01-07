@@ -19,7 +19,7 @@ spec:
   values:
     image:
       repository: teslamate/teslamate
-      tag: 1.26.1
+      tag: 1.27
     env:
       TZ: Europe/Paris
       DATABASE_HOST: 192.168.1.10

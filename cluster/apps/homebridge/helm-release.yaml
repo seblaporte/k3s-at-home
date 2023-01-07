@@ -17,6 +17,9 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    image:
+      repository: oznu/homebridge
+      tag: 2022-11-14
     env:
       # -- To interact with the self-signed certificate with local Tydom
       NODE_TLS_REJECT_UNAUTHORIZED: 0

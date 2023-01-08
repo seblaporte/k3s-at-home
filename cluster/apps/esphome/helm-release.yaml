@@ -20,6 +20,8 @@ spec:
     image:
       repository: esphome/esphome
       tag: 2022.12.3
+    env:
+      ESPHOME_DASHBOARD_USE_PING: true
     ingress:
       main:
         enabled: true

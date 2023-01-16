@@ -19,6 +19,7 @@ spec:
   values:
     image:
       repository: homeassistant/home-assistant
+      tag: "2023.1"
     dnsPolicy: ClusterFirst
     hostNetwork: true
     termination:
@@ -65,10 +66,6 @@ spec:
         accessMode: "ReadWriteOnce"
         mountPath: /config
         size: "10Gi"
-      usb-zigate:
-        enabled: true
-        type: hostPath
-        hostPath: /dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0
       usb-rfxcom:
         enabled: true
         type: hostPath

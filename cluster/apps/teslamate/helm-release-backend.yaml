@@ -28,6 +28,7 @@ spec:
       DATABASE_PASS: ${SECRET_TESLAMATE_DB_PASSWORD}
       DATABASE_NAME: teslamate
       MQTT_HOST: ${SVC_MOSQUITTO_ADDR}
+      ENCRYPTION_KEY: ${SECRET_TESLAMATE_ENCRYPTION_KEY}
     ingress:
       main:
         enabled: true

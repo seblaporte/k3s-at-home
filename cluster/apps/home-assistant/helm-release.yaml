@@ -19,7 +19,7 @@ spec:
   values:
     image:
       repository: homeassistant/home-assistant
-      tag: "2023.4"
+      tag: "2023.6"
     dnsPolicy: ClusterFirst
     hostNetwork: true
     termination:
@@ -34,15 +34,6 @@ spec:
           timeoutSeconds: 1
           periodSeconds: 5
           failureThreshold: 100
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: app
-              operator: In
-              values:
-              - home-automation-controller
     ingress:
       main:
         enabled: true
@@ -66,17 +57,10 @@ spec:
         accessMode: "ReadWriteOnce"
         mountPath: /config
         size: "10Gi"
-      usb-rfxcom:
-        enabled: true
-        type: hostPath
-        hostPath: /dev/serial/by-id/usb-RFXCOM_RFXtrx433_A1XPT0RY-if00-port0
-    securityContext:
-      # Privileged securityContext required by USB devices accessed directly through the host machine
-      privileged: true
     resources:
       requests:
-        memory: 250Mi
-        cpu: 500m
-      limits:
         memory: 500Mi
+        cpu: 1000m
+      limits:
+        memory: 1024Mi
         cpu: 1000m

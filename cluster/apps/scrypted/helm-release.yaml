@@ -28,6 +28,12 @@ spec:
           timeoutSeconds: 1
           periodSeconds: 5
           failureThreshold: 100
+    service:
+      main:
+        ports:
+          http:
+            port: 11080
+            primary: true
     ingress:
       main:
         enabled: true

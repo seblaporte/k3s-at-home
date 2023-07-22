@@ -39,12 +39,15 @@ spec:
           - hosts:
               - "esphome.${SECRET_DOMAIN}"
             secretName: esphome-tls-secret
-    nodeSelector:
-      matchExpressions:
-        - key: node-role.kubernetes.io/master
-          operator: NotIn
-          values:
-            - "true"
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: NotIn
+              values:
+              - "true"
     persistence:
       config:
         enabled: true

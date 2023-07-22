@@ -23,14 +23,19 @@ spec:
     env:
       # -- To interact with the self-signed certificate with local Tydom
       NODE_TLS_REJECT_UNAUTHORIZED: 0
-      # -- Set the container timezone
       TZ: UTC
-      # -- Specify the user ID the application will run as
       PUID: "1000"
-      # -- Specify the group ID the application will run as
       PGID: "1000"
-      # -- Enable the Homebridge UI
       HOMEBRIDGE_CONFIG_UI: 1
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: NotIn
+              values:
+              - "true"
     hostNetwork: true
     ingress:
       main:
@@ -76,7 +81,7 @@ spec:
     resources:
       requests:
         memory: 250Mi
-        cpu: 500m
+        cpu: 250m
       limits:
-        memory: 500Mi
-        cpu: 1000m
+        memory: 250Mi
+        cpu: 500m

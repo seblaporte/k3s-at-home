@@ -3950,6 +3950,15 @@ spec:
           httpGet:
             path: /healthz
             port: healthz
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: node-role.kubernetes.io/master
+                  operator: NotIn
+                  values:
+                  - "true"
         name: manager
         ports:
         - containerPort: 8080
@@ -4023,6 +4032,15 @@ spec:
           httpGet:
             path: /healthz
             port: healthz
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: node-role.kubernetes.io/master
+                  operator: NotIn
+                  values:
+                  - "true"
         name: manager
         ports:
         - containerPort: 8080
@@ -4097,6 +4115,15 @@ spec:
           httpGet:
             path: /healthz
             port: healthz
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: node-role.kubernetes.io/master
+                  operator: NotIn
+                  values:
+                  - "true"
         name: manager
         ports:
         - containerPort: 9090
@@ -4178,6 +4205,15 @@ spec:
           httpGet:
             path: /healthz
             port: healthz
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: node-role.kubernetes.io/master
+                  operator: NotIn
+                  values:
+                  - "true"
         name: manager
         ports:
         - containerPort: 9090

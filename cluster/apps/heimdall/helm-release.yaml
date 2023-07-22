@@ -34,6 +34,15 @@ spec:
           - hosts:
               - "heimdall.${SECRET_DOMAIN}"
             secretName: heimdall-tls-secret
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: NotIn
+              values:
+              - "true"
     persistence:
       config:
         enabled: true

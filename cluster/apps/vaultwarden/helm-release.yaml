@@ -27,6 +27,15 @@ spec:
       ADMIN_TOKEN: "${SECRET_BITWARDEN_ADMIN_TOKEN}"
       SIGNUPS_ALLOWED: false
       INVITATIONS_ALLOWED: true
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: NotIn
+              values:
+              - "true"
     ingress:
       main:
         enabled: true

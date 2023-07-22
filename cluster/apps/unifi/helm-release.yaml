@@ -23,6 +23,15 @@ spec:
       pullPolicy: IfNotPresent
     env:
       TZ: Europe/Paris
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: NotIn
+              values:
+              - "true"
     persistence:
       data:
         enabled: true

@@ -25,6 +25,15 @@ spec:
     deployment:
       kind: Deployment
       replicas: 1
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: NotIn
+              values:
+              - "true"
     service:
       enabled: true
       type: LoadBalancer

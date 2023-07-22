@@ -20,6 +20,15 @@ spec:
     image:
       repository: eclipse-mosquitto
       pullPolicy: IfNotPresent
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: NotIn
+              values:
+              - "true"
     service:
       main:
         type: LoadBalancer

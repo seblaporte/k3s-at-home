@@ -20,6 +20,15 @@ spec:
     image:
       repository: nodered/node-red
       pullPolicy: IfNotPresent
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: NotIn
+              values:
+              - "true"
     ingress:
       main:
         enabled: true

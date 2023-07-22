@@ -29,6 +29,15 @@ spec:
           password: ${SECRET_LINKY_INFLUX_DB_PASSWORD}
           database: linky
           isDefault: true
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: NotIn
+              values:
+              - "true"
     ingress:
       enabled: true
       ingressClassName: "traefik"

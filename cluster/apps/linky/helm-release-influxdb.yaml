@@ -26,12 +26,21 @@ spec:
       storageClass: "nfs-client"
       accessMode: ReadWriteOnce
       size: 30Gi
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: NotIn
+              values:
+              - "true"
     resources:
       requests:
-        memory: 250Mi
+        memory: 512Mi
         cpu: 500m
       limits:
-        memory: 512Mi
+        memory: 1024Mi
         cpu: 1000m
     service:
       type: LoadBalancer

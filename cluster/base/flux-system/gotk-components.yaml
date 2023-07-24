@@ -3950,15 +3950,6 @@ spec:
           httpGet:
             path: /healthz
             port: healthz
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-              - matchExpressions:
-                - key: node-role.kubernetes.io/master
-                  operator: NotIn
-                  values:
-                  - "true"
         name: manager
         ports:
         - containerPort: 8080
@@ -3973,18 +3964,25 @@ spec:
         resources:
           limits:
             cpu: 100m
-            memory: 128Mi
+            memory: 64Mi
           requests:
             cpu: 100m
-            memory: 64Mi
+            memory: 32Mi
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
         volumeMounts:
         - mountPath: /tmp
           name: temp
-      nodeSelector:
-        kubernetes.io/os: linux
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
       serviceAccountName: helm-controller
       terminationGracePeriodSeconds: 600
       volumes:
@@ -4032,15 +4030,6 @@ spec:
           httpGet:
             path: /healthz
             port: healthz
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-              - matchExpressions:
-                - key: node-role.kubernetes.io/master
-                  operator: NotIn
-                  values:
-                  - "true"
         name: manager
         ports:
         - containerPort: 8080
@@ -4054,10 +4043,10 @@ spec:
             port: healthz
         resources:
           limits:
-            cpu: 100m
+            cpu: 250m
             memory: 128Mi
           requests:
-            cpu: 100m
+            cpu: 150m
             memory: 64Mi
         securityContext:
           allowPrivilegeEscalation: false
@@ -4065,8 +4054,15 @@ spec:
         volumeMounts:
         - mountPath: /tmp
           name: temp
-      nodeSelector:
-        kubernetes.io/os: linux
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
       securityContext:
         fsGroup: 1337
       serviceAccountName: kustomize-controller
@@ -4115,15 +4111,6 @@ spec:
           httpGet:
             path: /healthz
             port: healthz
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-              - matchExpressions:
-                - key: node-role.kubernetes.io/master
-                  operator: NotIn
-                  values:
-                  - "true"
         name: manager
         ports:
         - containerPort: 9090
@@ -4152,8 +4139,15 @@ spec:
         volumeMounts:
         - mountPath: /tmp
           name: temp
-      nodeSelector:
-        kubernetes.io/os: linux
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
       serviceAccountName: notification-controller
       terminationGracePeriodSeconds: 10
       volumes:
@@ -4205,15 +4199,6 @@ spec:
           httpGet:
             path: /healthz
             port: healthz
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-              - matchExpressions:
-                - key: node-role.kubernetes.io/master
-                  operator: NotIn
-                  values:
-                  - "true"
         name: manager
         ports:
         - containerPort: 9090
@@ -4228,11 +4213,11 @@ spec:
             port: http
         resources:
           limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
             cpu: 200m
             memory: 256Mi
-          requests:
-            cpu: 100m
-            memory: 128Mi
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
@@ -4241,8 +4226,15 @@ spec:
           name: data
         - mountPath: /tmp
           name: tmp
-      nodeSelector:
-        kubernetes.io/os: linux
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
       securityContext:
         fsGroup: 1337
       serviceAccountName: source-controller

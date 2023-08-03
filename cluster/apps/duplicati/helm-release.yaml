@@ -1,0 +1,70 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: duplicati
+  namespace: duplicati
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
+      chart: duplicati
+      version: 5.4.2
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    image:
+      repository: ghcr.io/linuxserver/duplicati
+      tag: "2.0.7"
+    env:
+      ESPHOME_DASHBOARD_USE_PING: true
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: networking-traefik-forward-auth@kubernetescrd
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+        hosts:
+          - host: "duplicati.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - "duplicati.${SECRET_DOMAIN}"
+            secretName: duplicati-tls-secret
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: NotIn
+              values:
+              - "true"
+    persistence:
+      config:
+        enabled: true
+        storageClass: "nfs-client"
+        accessMode: "ReadWriteOnce"
+        mountPath: /config
+        size: "1Gi"
+      backups:
+        enabled: true
+        storageClass: "nfs-client"
+        accessMode: "ReadWriteOnce"
+        mountPath: /backups
+        size: "100Gi"
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 500m
+      limits:
+        memory: 512Mi
+        cpu: 1000m

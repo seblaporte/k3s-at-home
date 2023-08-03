@@ -16,3 +16,4 @@ resources:
   - esphome
   - homebridge
   - scrypted
+  - duplicati

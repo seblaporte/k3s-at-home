@@ -16,3 +16,4 @@ resources:
   - esphome
   - homebridge
   - scrypted
+  - tydom2mqtt

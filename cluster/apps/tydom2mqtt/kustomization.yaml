@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - namespace.yaml
+secretGenerator:
+  - name: tydom
+    literals:
+    - mac="${SECRET_TYDOM_MAC}"
+    - password="${SECRET_TYDOM_PASSWORD}"
+    - ip=192.168.1.248
+  - name: mqtt
+    literals:
+    - host=192.168.1.21
+    - port=1883

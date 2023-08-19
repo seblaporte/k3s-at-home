@@ -6,11 +6,13 @@ resources:
   - namespace.yaml
 secretGenerator:
   - name: tydom
+    namespace: tydom2mqtt
     literals:
     - mac="${SECRET_TYDOM_MAC}"
     - password="${SECRET_TYDOM_PASSWORD}"
     - ip=192.168.1.248
   - name: mqtt
+    namespace: tydom2mqtt
     literals:
     - host=192.168.1.21
     - port=1883

@@ -36,10 +36,7 @@ spec:
                   - "true"
         env:
         - name: TYDOM_MAC
-          valueFrom:
-            secretKeyRef:
-              name: tydom
-              key: mac
+          value: ${SECRET_TYDOM_MAC}
         - name: TYDOM_PASSWORD
           valueFrom:
             secretKeyRef:

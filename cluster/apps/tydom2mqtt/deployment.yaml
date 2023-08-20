@@ -38,23 +38,10 @@ spec:
         - name: TYDOM_MAC
           value: ${SECRET_TYDOM_MAC}
         - name: TYDOM_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: tydom
-              key: password
+          value: ${SECRET_TYDOM_PASSWORD}
         - name: TYDOM_IP
-          valueFrom:
-            secretKeyRef:
-              name: tydom
-              key: ip
+          value: "192.168.1.248"
         - name: MQTT_HOST
-          valueFrom:
-            secretKeyRef:
-              name: mqtt
-              key: host
+          value: ${SVC_MOSQUITTO_ADDR}
         - name: MQTT_PORT
-          valueFrom:
-            secretKeyRef:
-              name: mqtt
-              key: port
-        
+          value: "1883"

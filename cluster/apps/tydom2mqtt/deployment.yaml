@@ -39,6 +39,8 @@ spec:
           value: ${SECRET_TYDOM_MAC}
         - name: TYDOM_PASSWORD
           value: ${SECRET_TYDOM_PASSWORD}
+        - name: TYDOM_ALARM_PIN
+          value: ${SECRET_TYDOM_ALARM_PIN}
         - name: TYDOM_IP
           value: "192.168.1.248"
         - name: MQTT_HOST

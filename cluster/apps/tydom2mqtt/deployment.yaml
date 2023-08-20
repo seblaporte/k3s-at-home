@@ -1,8 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
-namespace: tydom2mqtt
 metadata:
   name: tydom2mqtt-deployment
+  namespace: tydom2mqtt
   labels:
     app: tydom2mqtt
 spec:

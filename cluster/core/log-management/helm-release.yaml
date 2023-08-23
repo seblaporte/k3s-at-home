@@ -24,12 +24,43 @@ spec:
         - ReadWriteOnce
         size: 10Gi
         storageClassName: "nfs-client"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
       extraArgs:
         log.level: error
     promtail:
       enabled: true
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
     grafana:
       enabled: true
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
+      persistence:
+        enabled: true
+        storageClassName: "nfs-client"
+        size: 1Gi
       env:
         GF_AUTH_ANONYMOUS_ENABLED: true
         GF_ANALYTICS_REPORTING_ENABLED: false

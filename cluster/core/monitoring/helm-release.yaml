@@ -44,6 +44,15 @@ spec:
       prometheusSpec:
         logLevel: error
         retention: 2d
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: node-role.kubernetes.io/master
+                  operator: NotIn
+                  values:
+                  - "true"
         resources:
           requests:
             cpu: 1000m
@@ -73,6 +82,15 @@ spec:
         enabled: true
         storageClassName: "nfs-client"
         size: 1Gi
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
       ingress:
         enabled: true
         ingressClassName: "traefik"

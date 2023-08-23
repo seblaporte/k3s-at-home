@@ -15,6 +15,15 @@ spec:
       labels:
         app: tydom2mqtt
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
       containers:
       - name: server
         image: fmartinou/tydom2mqtt:3.3.0
@@ -25,15 +34,6 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-              - matchExpressions:
-                - key: node-role.kubernetes.io/master
-                  operator: NotIn
-                  values:
-                  - "true"
         env:
         - name: TYDOM_MAC
           value: ${SECRET_TYDOM_MAC}

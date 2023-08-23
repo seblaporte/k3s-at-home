@@ -37,9 +37,28 @@ spec:
       enabled: false
     kubeScheduler:
       enabled: false
+    kube-state-metrics:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
     prometheusOperator:
       enabled: true
       logLevel: error
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
     prometheus:
       prometheusSpec:
         logLevel: error

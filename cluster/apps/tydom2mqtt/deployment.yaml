@@ -26,7 +26,7 @@ spec:
                 - "true"
       containers:
       - name: server
-        image: fmartinou/tydom2mqtt:3.3.0
+        image: fmartinou/tydom2mqtt:3.3.1
         resources:
           requests:
             memory: "64Mi"

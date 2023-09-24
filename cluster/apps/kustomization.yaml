@@ -14,5 +14,4 @@ resources:
   - node-red
   - heimdall
   - esphome
-  - scrypted
-  - tydom2mqtt
+  - influxdb-home-assistant

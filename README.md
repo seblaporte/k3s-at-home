@@ -73,6 +73,29 @@ dtparam=eth_led0=4
 dtparam=eth_led1=4
 ```
 
+### Boot NFS
+
+```sh
+# Create local directory to mount
+sudo mkdir -p /nfs/rpi-tftpboot
+# Mount NFS directory
+sudo mount -t nfs -O proto=tcp,port=2049,rw,all_squash,anonuid=1001,anongid=1001 192.168.1.10:/volume1/rpi-tftpboot /nfs/rpi-tftpboot -vvv
+# Get node UUID
+vcgencmd otp_dump | grep 28: | sed s/.*://g
+# Create directory for each node (replace b676264b with node UUID)
+sudo mkdir -p /nfs/rpi-tftpboot/b676264b
+# Copy /boot to NFS directory
+sudo cp -r /boot/* /nfs/rpi-tftpboot/b676264b/
+# Change /boot entry in /etc/fstab :
+# 192.168.1.10:/volume1/rpi-tftpboot/b676264b /boot nfs defaults,vers=3,proto=tcp 0 0
+sudo nano /etc/fstab
+
+```
+
+### Root on iSCSI target
+
+
+
 ### :wrench:&nbsp; Tools
 
 :round_pushpin: CLI tools required on workstation.

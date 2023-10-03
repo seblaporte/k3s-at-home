@@ -1,0 +1,67 @@
+@startuml network
+
+nwdiag {
+
+  internet [shape = cloud];
+  internet -- router;
+
+  network security {
+    width = full
+    address = "192.168.2.0/24"
+    router [address = "192.168.2.1"];
+    nvr-hikvision [address = "192.168.2.10"];
+    camera-garage [address = "192.168.2.100"];
+  }
+
+  network server {
+    width = full
+    address = "192.168.1.0/24";
+    router [address = "192.168.1.1"];
+    nas-synology [address = "192.168.1.10"];
+    k3s-master [address = "192.168.1.100"];
+    k3s-node-1 [address = "192.168.1.101"];
+    k3s-node-2 [address = "192.168.1.102"];
+    k3s-node-3 [address = "192.168.1.103"];
+    pi-gateway [address = "192.168.1.20"];
+  }
+
+  network iot {
+    width = full
+    address = "192.168.3.0/24"
+    router [address = "192.168.3.1"];
+    dino-lights;
+    star-light;
+    switchbot-gateway;
+    xiaomi-vacuum;
+    dreame-vacuum;
+    tasmota-radiateur-bureau;
+  }
+
+  network multimedia {
+    width = full
+    address = "192.168.4.0/24"
+    router [address = "192.168.4.1"];
+    chromecast-hifi;
+    nest-mini-salon;
+    nest-mini-garage;
+    nest-palier;
+    nest-bureau;
+    nest-hub-chambre;
+    chromecast-tv-chambre;
+    chromecast-tv-salon;
+  }
+
+  network home {
+    width = full
+    address = "192.168.5.0/24"
+    router [address = "192.168.5.1"];
+  }
+
+  network guest {
+    width = full
+    address = "192.168.6.0/24"
+    router [address = "192.168.6.1"];
+  }
+}
+
+@enduml

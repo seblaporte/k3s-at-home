@@ -1,0 +1,59 @@
+@startuml network-wiring
+
+node "Patch Panel" {
+  portout PO1
+  portout PO2
+  portout PO3
+  portout PO4
+  portout PO5
+  portout PO6
+  portout PO7
+  portout PO8
+  portout PO9
+  portout PO10
+  portout PO11
+  portout PO12
+  portout PO13
+  portout PO14
+  portout PO15
+  portout PO16
+  card "Salle à manger 1" as sm1
+  card "Salle à manger 2"
+  card "Salle à manger 3"
+  card "Salon"
+  card "Chambre parents"
+  card "Chambre Maïa"
+  card "Chambre Lisa"
+  card "Bureau Katleen"
+  card "Chambre invités"
+
+  sm1 -- PO1
+}
+
+node "D-Link DGS-1100-16v2" {
+  portout S1
+  portout S2
+  portout S3
+  portout S4
+  portout S5
+  portout S6
+  portout S7
+  portout S8
+  portout S9
+  portout S10
+  portout S11
+  portout S12
+  portout S13
+  portout S14
+  portout S15
+  portout S16
+}
+
+node "Ubiquiti Edge Router X" {
+  port R1
+  port R2
+  port R3
+  port R4
+}
+
+@enduml

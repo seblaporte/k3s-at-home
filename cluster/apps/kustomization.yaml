@@ -16,3 +16,4 @@ resources:
   - esphome
   - influxdb-home-assistant
   - homebridge
+  - hiksink

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hiksink-deployment
+  namespace: hiksink
+  labels:
+    app: hiksink
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hiksink
+  template:
+    metadata:
+      labels:
+        app: hiksink
+      containers:
+      - name: server
+        image: cornerbit/hiksink:1.2.1
+        volumeMounts:
+        - mountPath: /app
+          name: hiksink-config
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+      volumes:
+      - name: hiksink-config
+        configMap: 
+          name: hiksink-config
+          items:
+            - key: config.toml
+              path: config.toml

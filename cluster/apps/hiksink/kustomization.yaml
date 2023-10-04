@@ -4,4 +4,3 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - namespace.yaml
-  - deployment.yaml

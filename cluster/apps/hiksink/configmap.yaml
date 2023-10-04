@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hiksink-config
+  namespace: hiksink
+data:
+  config.toml: |
+    [system]
+    # Supports TRACE, DEBUG, INFO, WARN, and ERROR
+    log_level = "INFO"
+
+    [mqtt]
+    address = "${SVC_MOSQUITTO_ADDR}"
+    port = 1883
+    client_id = "hik-sink"
+    # The MQTT topic under which all camera events will be published
+    base_topic = "hikvision_cameras"
+    home_assistant_topic = "homeassistant"
+
+    # Duplicate this camera section to add multiple cameras
+    [[camera]]
+    name = "Hikvision NVR"
+    address = "192.168.1.3"
+    # Port is optional. Use this if your camera is behind an NVR.
+    port = 80
+    # The username and password of any account that has 'Notify Surveillance Center' permissions.
+    username = "${SECRET_HIKVISION_USERNAME}"
+    password = "${SECRET_HIKVISION_PASSWORD}"

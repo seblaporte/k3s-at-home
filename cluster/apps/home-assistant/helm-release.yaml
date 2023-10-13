@@ -72,6 +72,12 @@ spec:
         accessMode: "ReadWriteOnce"
         mountPath: /camera-snapshots
         size: "1Gi"
+      media:
+        enabled: true
+        storageClass: "nfs-client"
+        accessMode: "ReadWriteOnce"
+        mountPath: /media
+        size: "10Gi"
     resources:
       requests:
         memory: 500Mi

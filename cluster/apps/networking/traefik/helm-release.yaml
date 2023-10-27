@@ -53,7 +53,8 @@ spec:
       - "--providers.kubernetesingress.ingressendpoint.ip=${SVC_TRAEFIK_ADDR}"
     providers:
       kubernetesCRD:
-        enabled: false
+        enabled: true
+        allowExternalNameServices: true
       kubernetesIngress:
         enabled: true
         ingressClass: traefik

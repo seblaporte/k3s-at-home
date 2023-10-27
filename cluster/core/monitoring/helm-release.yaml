@@ -62,7 +62,7 @@ spec:
     prometheus:
       prometheusSpec:
         logLevel: error
-        retention: 2d
+        retention: 15d
         affinity:
           nodeAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:

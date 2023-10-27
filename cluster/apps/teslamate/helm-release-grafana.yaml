@@ -26,6 +26,10 @@ spec:
     grafana.ini:
       analytics:
         check_for_updates: false
+    persistence:
+        enabled: true
+        storageClassName: "nfs-client"
+        size: 1Gi
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

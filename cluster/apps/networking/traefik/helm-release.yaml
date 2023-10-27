@@ -40,30 +40,23 @@ spec:
         externalTrafficPolicy: Local
     logs:
       general:
-        format: json
-        level: ERROR
+        level: INFO
       access:
-        enabled: false
-        format: json
+        enabled: true
     ingressClass:
       enabled: true
       isDefaultClass: true
-      fallbackApiVersion: v1
     ingressRoute:
       dashboard:
         enabled: false
-    globalArguments:
-      - "--api.insecure=true"
-      - "--serverstransport.insecureskipverify=true"
-      - "--providers.kubernetesingress.ingressclass=traefik"
-      - "--metrics.prometheus=true"
-      - "--metrics.prometheus.entryPoint=metrics"
-      - "--log.level=ERROR"
     additionalArguments:
       - "--providers.kubernetesingress.ingressendpoint.ip=${SVC_TRAEFIK_ADDR}"
-      - "--providers.kubernetescrd.allowexternalnameservices=true"
-      - "--experimental.plugins.fail2ban.modulename=github.com/tomMoulard/fail2ban"
-      - "--experimental.plugins.fail2ban.version=v0.7.1"
+    providers:
+      kubernetesCRD:
+        enabled: false
+      kubernetesIngress:
+        enabled: true
+        ingressClass: traefik
     ports:
       traefik:
         expose: true
@@ -84,8 +77,6 @@ spec:
         minVersion: VersionTLS12
         maxVersion: VersionTLS13
         sniStrict: true
-    pilot:
-      enabled: false
     experimental:
       plugins:
         enabled: true
@@ -95,3 +86,4 @@ spec:
         cpu: 500m
       limits:
         memory: 500Mi
+        cpu: 1000m

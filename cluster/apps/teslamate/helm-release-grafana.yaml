@@ -17,6 +17,9 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    image:
+      repository: teslamate/grafana
+      tag: "1.27"
     env:
       DATABASE_USER: teslamate
       DATABASE_PASS: ${SECRET_TESLAMATE_DB_PASSWORD}

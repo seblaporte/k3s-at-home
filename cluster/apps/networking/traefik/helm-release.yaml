@@ -88,7 +88,7 @@ spec:
       enabled: false
     experimental:
       plugins:
-        enabled: false
+        enabled: true
     resources:
       requests:
         memory: 100Mi

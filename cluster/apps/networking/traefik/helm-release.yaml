@@ -62,6 +62,8 @@ spec:
     additionalArguments:
       - "--providers.kubernetesingress.ingressendpoint.ip=${SVC_TRAEFIK_ADDR}"
       - "--providers.kubernetescrd.allowexternalnameservices=true"
+      - "--experimental.plugins.fail2ban.modulename=github.com/tomMoulard/fail2ban"
+      - "--experimental.plugins.fail2ban.version=v0.7.1"
     ports:
       traefik:
         expose: true

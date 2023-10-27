@@ -49,7 +49,6 @@ spec:
         ingressClassName: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: networking-my-fail2ban@kubernetescrd
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
           - host: "home-assistant.${SECRET_DOMAIN}"

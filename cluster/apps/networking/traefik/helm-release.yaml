@@ -51,13 +51,22 @@ spec:
         enabled: false
     additionalArguments:
       - "--providers.kubernetesingress.ingressendpoint.ip=${SVC_TRAEFIK_ADDR}"
+      - "--experimental.plugins.bouncer.moduleName=github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
+      - "--experimental.plugins.bouncer.version=v1.1.7"
+      - "--entrypoints.web.http.middlewares=traefik-bouncer@kubernetescrd"
+      - "--entrypoints.websecure.http.middlewares=traefik-bouncer@kubernetescrd"
     providers:
       kubernetesCRD:
         enabled: true
         allowExternalNameServices: true
+        allowCrossNamespace: true
       kubernetesIngress:
         enabled: true
         ingressClass: traefik
+    volumes:
+      - name: crowdsec-bouncer-tls
+        mountPath: /etc/traefik/crowdsec-certs/
+        type: secret
     ports:
       traefik:
         expose: true

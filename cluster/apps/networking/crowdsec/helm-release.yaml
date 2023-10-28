@@ -1,0 +1,66 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: crowdsec
+  namespace: networking
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: crowdsec/crowdsec
+      version: 0.9.9
+      sourceRef:
+        kind: HelmRepository
+        name: crowdsec-charts
+        namespace: flux-system
+      interval: 5m
+  dependsOn:
+    - name: cert-manager
+      namespace: cert-manager
+  values:
+    container_runtime: containerd
+    tls:
+      enabled: true
+    agent:
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Equal
+          effect: NoSchedule
+      acquisition:
+        - namespace: networking
+          podName: traefik-*
+          program: traefik
+      env:
+        - name: PARSERS
+          value: "crowdsecurity/cri-logs"
+        - name: COLLECTIONS
+          value: "crowdsecurity/traefik"
+        # When testing, allow bans on private networks
+        - name: DISABLE_PARSERS
+          value: "crowdsecurity/whitelists"
+      persistentVolume:
+        data:
+          enabled: true
+          storageClassName: "nfs-client"
+          size: 1Gi
+        config:
+          enabled: true
+          storageClassName: "nfs-client"
+          size: 100Mi
+    lapi:
+      dashboard:
+        enabled: false
+        ingress:
+          host: dashboard.local
+          enabled: true
+      persistentVolume:
+        config:
+          enabled: false
+      env:
+        - name: ENROLL_KEY
+          value: ${SECRET_CROWDSEC_ENROLL_KEY}
+        - name: ENROLL_INSTANCE_NAME
+          value: "k3s_cluster"
+        - name: ENROLL_TAGS
+          value: "k3s at home"

@@ -36,9 +36,6 @@ spec:
           value: "crowdsecurity/cri-logs"
         - name: COLLECTIONS
           value: "crowdsecurity/traefik"
-        # When testing, allow bans on private networks
-        - name: DISABLE_PARSERS
-          value: "crowdsecurity/whitelists"
       persistentVolume:
         data:
           enabled: true

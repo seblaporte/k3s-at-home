@@ -49,6 +49,9 @@ spec:
                 - "true"
     prometheusOperator:
       enabled: true
+      image:
+        repository: prometheus-operator/prometheus-operator
+        tag: "v0.68.0"
       logLevel: error
       affinity:
         nodeAffinity:
@@ -59,8 +62,15 @@ spec:
                 operator: NotIn
                 values:
                 - "true"
+    prometheus-node-exporter:
+      image:
+          repository: prometheus/node-exporter
+          tag: "v1.6.1"
     prometheus:
       prometheusSpec:
+        image:
+          repository: prometheus/prometheus
+          tag: "v2.47.2"
         logLevel: error
         retention: 15d
         affinity:

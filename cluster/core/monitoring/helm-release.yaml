@@ -18,6 +18,9 @@ spec:
       interval: 1m
   install:
     crds: Create
+  global:
+    rbac:
+      create: true
   upgrade:
     crds: CreateReplace
   values:

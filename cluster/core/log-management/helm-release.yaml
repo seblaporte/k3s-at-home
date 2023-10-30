@@ -48,6 +48,8 @@ spec:
                 - "true"
     grafana:
       enabled: true
+      rbac:
+        create: false
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

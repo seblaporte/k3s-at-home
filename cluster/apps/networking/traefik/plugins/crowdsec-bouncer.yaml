@@ -7,7 +7,7 @@ spec:
   plugin:
     bouncer:
       enabled: true
-      crowdsecMode: none
+      crowdsecMode: stream
       crowdsecLapiScheme: https
       crowdsecLapiHost: crowdsec-service.networking:8080
       crowdsecLapiTLSCertificateAuthorityFile: /etc/traefik/crowdsec-certs/ca.crt

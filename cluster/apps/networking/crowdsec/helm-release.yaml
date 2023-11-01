@@ -19,6 +19,9 @@ spec:
     - name: cert-manager
       namespace: cert-manager
   values:
+    image:
+      repository: crowdsecurity/crowdsec
+      tag: "v1.5.5"
     container_runtime: containerd
     tls:
       enabled: true
@@ -27,10 +30,6 @@ spec:
         cidrs:
         - 192.168.1.1/24
     agent:
-      tolerations:
-        - key: node-role.kubernetes.io/control-plane
-          operator: Equal
-          effect: NoSchedule
       acquisition:
         - namespace: networking
           podName: traefik-*

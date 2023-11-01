@@ -53,6 +53,10 @@ spec:
       - "--api.insecure=true"
       - "--serverstransport.insecureskipverify=true"
       - "--providers.kubernetesingress.ingressendpoint.ip=${SVC_TRAEFIK_ADDR}"
+      - "--experimental.plugins.bouncer.moduleName=github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
+      - "--experimental.plugins.bouncer.version=v1.1.7"
+      - "--entrypoints.web.http.middlewares=networking-bouncer@kubernetescrd"
+      - "--entrypoints.websecure.http.middlewares=networking-bouncer@kubernetescrd"
     providers:
       kubernetesCRD:
         enabled: true

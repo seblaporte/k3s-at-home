@@ -6,4 +6,3 @@ resources:
   - dashboard
   - forward-auth
   - plugins/crowdsec-bouncer.yaml
-  - monitoring/servicemonitor.yaml

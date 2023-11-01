@@ -3,5 +3,3 @@ kind: Kustomization
 resources:
   - traefik
   - crowdsec/helm-release.yaml
-  - plugins/crowdsec-bouncer.yaml
-  - monitoring/servicemonitor.yaml

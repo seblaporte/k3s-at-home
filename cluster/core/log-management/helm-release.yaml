@@ -18,6 +18,9 @@ spec:
       interval: 1m
   values:
     loki:
+      image:
+        repository: grafana/loki
+        tag: "2.4.2"
       persistence:
         enabled: true
         accessModes:

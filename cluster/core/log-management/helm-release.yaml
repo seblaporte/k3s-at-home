@@ -10,7 +10,7 @@ spec:
     spec:
       # renovate: registryUrl=https://grafana.github.io/helm-charts
       chart: loki-stack
-      version: 2.5.0
+      version: 2.9.11
       sourceRef:
         kind: HelmRepository
         name: grafana-charts
@@ -48,8 +48,6 @@ spec:
                 - "true"
     grafana:
       enabled: true
-      rbac:
-        create: false
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

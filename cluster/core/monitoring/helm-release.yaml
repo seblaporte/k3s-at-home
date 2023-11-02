@@ -98,6 +98,9 @@ spec:
           matchLabels:
             app.kubernetes.io/part-of: flux
     grafana:
+      image:
+        repository: "grafana/grafana"
+        tag: "8.3.5"
       sidecar:
         dashboards:
           searchNamespace: ALL

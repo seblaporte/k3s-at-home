@@ -27,9 +27,15 @@ spec:
     tls:
       enabled: true
     config:
-      capi_whitelists.yaml: |
-        cidrs:
-        - 192.168.1.1/24
+      parsers:
+        s02-enrich:
+          whitelist-local.yaml: |
+            name: crowdsecurity/whitelists-local
+            description: "Whitelist for local network"
+            whitelist:
+              reason: "local IP"
+              cidr:
+                - "192.168.1.0/24"
     agent:
       acquisition:
         - namespace: networking

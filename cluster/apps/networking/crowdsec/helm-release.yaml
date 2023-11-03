@@ -52,9 +52,6 @@ spec:
     lapi:
       dashboard:
         enabled: false
-        ingress:
-          host: dashboard.local
-          enabled: true
       resources:
         limits:
           memory: 500Mi
@@ -63,12 +60,18 @@ spec:
           cpu: 200m
           memory: 250Mi
       persistentVolume:
+        data:
+          enabled: true
+          storageClassName: "nfs-client"
+          size: 1Gi
         config:
-          enabled: false
+          enabled: true
+          storageClassName: "nfs-client"
+          size: 100Mi
       env:
         - name: ENROLL_KEY
           value: ${SECRET_CROWDSEC_ENROLL_KEY}
         - name: ENROLL_INSTANCE_NAME
           value: "k3s_cluster"
         - name: ENROLL_TAGS
-          value: "k3s at home"
+          value: "k3s"

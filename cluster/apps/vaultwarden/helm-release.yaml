@@ -27,6 +27,7 @@ spec:
       ADMIN_TOKEN: "${SECRET_BITWARDEN_ADMIN_TOKEN}"
       SIGNUPS_ALLOWED: false
       INVITATIONS_ALLOWED: true
+      DOMAIN: "https://bitwarden.${SECRET_DOMAIN}"
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

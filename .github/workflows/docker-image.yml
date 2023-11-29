@@ -24,4 +24,4 @@ jobs:
         with:
           file: cluster/apps/home-assistant/Dockerfile
           push: true
-          tags: seblaporte/home-assistant:latest
+          tags: ghcr.io/seblaporte/home-assistant:latest

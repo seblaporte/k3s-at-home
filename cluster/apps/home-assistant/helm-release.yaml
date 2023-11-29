@@ -18,8 +18,8 @@ spec:
       interval: 5m
   values:
     image:
-      repository: homeassistant/home-assistant
-      tag: "2023.10"
+      repository: ghcr.io/seblaporte/home-assistant
+      tag: latest
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

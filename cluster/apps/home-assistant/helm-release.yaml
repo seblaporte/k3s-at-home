@@ -22,8 +22,7 @@ spec:
       tag: "2023.10"
     controller:
       type: deployment
-      strategy:
-        type: RollingUpdate
+      strategy: RollingUpdate
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

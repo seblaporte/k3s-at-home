@@ -1,7 +1,6 @@
 name: Home Assistant Docker image
 on:
-  push:
-    branches: ['main']
+  workflow_dispatch:
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -23,5 +22,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
+          file: cluster/apps/home-assistant/Dockerfile
           push: true
           tags: seblaporte/home-assistant:latest

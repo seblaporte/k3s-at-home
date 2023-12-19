@@ -6,3 +6,4 @@ resources:
   - mosquitto
   - adguard-home
   - homebridge
+  - home-assistant

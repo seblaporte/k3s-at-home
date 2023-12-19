@@ -93,9 +93,6 @@ spec:
     config: |
       bind_host: 0.0.0.0
       bind_port: 3000
-      users:
-        - name: admin
-          password: $2y$10$nOPPk6YQHZ3VAeJJPYcLv.Ktt4d44GJW670RjCy3jV9/fJEL4QO/.
       beta_bind_port: 0
       users: []
       auth_attempts: 5

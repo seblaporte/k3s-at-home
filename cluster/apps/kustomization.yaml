@@ -12,4 +12,3 @@ resources:
   - node-red
   - heimdall
   - esphome
-  - zigbee2mqtt

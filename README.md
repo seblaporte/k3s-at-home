@@ -256,7 +256,7 @@ kubectl get nodes
 1. Verify Flux can be installed
 
 ```sh
-flux --kubeconfig=./kubeconfig check --pre
+flux --kubeconfig=./.kube/config check --pre
 # ► checking prerequisites
 # ✔ kubectl 1.21.4 >=1.18.0-0
 # ✔ Kubernetes 1.21.4+k3s1 >=1.16.0-0
@@ -273,7 +273,7 @@ kubectl create namespace flux-system --dry-run=client -o yaml | kubectl apply -f
 
 ```sh
 gpg --export-secret-keys --armor "${FLUX_KEY_FP}" |
-kubectl --kubeconfig=./kubeconfig create secret generic sops-gpg \
+kubectl create secret generic sops-gpg \
     --namespace=flux-system \
     --from-file=sops.asc=/dev/stdin
 ```

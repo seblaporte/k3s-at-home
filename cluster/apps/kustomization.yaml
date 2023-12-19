@@ -7,3 +7,9 @@ resources:
   - adguard-home
   - homebridge
   - home-assistant
+  - unifi
+  - teslamate
+  - node-red
+  - heimdall
+  - esphome
+  - zigbee2mqtt

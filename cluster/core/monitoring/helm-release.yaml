@@ -100,7 +100,7 @@ spec:
     grafana:
       image:
         repository: "grafana/grafana"
-        tag: "10.1.2"
+        tag: "10.2.3"
       sidecar:
         dashboards:
           searchNamespace: ALL

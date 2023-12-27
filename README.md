@@ -37,8 +37,6 @@ sysctl --system
 
 - Disable **swap** with `sudo dphys-swapfile swapoff && sudo dphys-swapfile uninstall && sudo update-rc.d dphys-swapfile remove && sudo rm -f /etc/init.d/dphys-swapfile && sudo service dphys-swapfile stop && sudo systemctl disable dphys-swapfile.service`
 
-- Install [log2ram](https://github.com/azlux/log2ram) and configure `/etc/log2ram.conf` with `SIZE=100M`. Add rule `size 60M` to `/etc/logrotate.d/log2ram`.
-
 - Disable **syslog** to reduce pressure on SD card
 
 ```sh

@@ -17,10 +17,6 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
-    image:
-      repository: arm32v7/influxdb
-      tag: "1.8.10"
-      pullPolicy: IfNotPresent
     persistence:
       enabled: true
       storageClass: "nfs-client"

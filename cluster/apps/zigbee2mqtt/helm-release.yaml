@@ -58,7 +58,7 @@ spec:
         enabled: true
         storageClass: "nfs-client"
         accessMode: "ReadWriteOnce"
-        mountPath: /data
+        mountPath: /app/data
         size: "1Gi"
       usb-raspbee:
         enabled: true

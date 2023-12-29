@@ -30,6 +30,8 @@ spec:
               operator: NotIn
               values:
               - "true"
+    nodeSelector:
+      nodetype: hardware-gateway
     tolerations:
       - key: "hardware"
         operator: "Exists"

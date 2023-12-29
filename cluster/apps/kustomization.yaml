@@ -13,3 +13,4 @@ resources:
   - heimdall
   - esphome
   - influxdb-home-assistant
+  - zigbee2mqtt

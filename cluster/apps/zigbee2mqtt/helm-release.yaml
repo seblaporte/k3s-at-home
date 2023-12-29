@@ -58,12 +58,16 @@ spec:
         enabled: true
         storageClass: "nfs-client"
         accessMode: "ReadWriteOnce"
-        mountPath: /app/data
+        mountPath: /data
         size: "1Gi"
-      usb-raspbee:
+      raspbee:
         enabled: true
         type: hostPath
         hostPath: /dev/ttyAMA0
+      udev:
+        enabled: true
+        type: hostPath
+        hostPath: /run/udev
     securityContext:
       # Privileged securityContext required by USB devices accessed directly through the host machine
       privileged: true

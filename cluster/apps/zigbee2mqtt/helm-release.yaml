@@ -67,3 +67,156 @@ spec:
     securityContext:
       # Privileged securityContext required by USB devices accessed directly through the host machine
       privileged: true
+    config:
+      homeassistant: true
+      frontend: true
+      permit_join: true
+      mqtt:
+        base_topic: zigbee2mqtt
+        server: mqtt://192.168.1.21
+      serial:
+        adapter: deconz
+        port: /dev/ttyAMA0
+      advanced:
+        network_key:
+          - 203
+          - 204
+          - 145
+          - 56
+          - 122
+          - 69
+          - 16
+          - 58
+          - 210
+          - 236
+          - 189
+          - 21
+          - 58
+          - 65
+          - 70
+          - 81
+        log_level: error
+        log_output:
+          - console
+        log_syslog:
+          app_name: Zigbee2MQTT
+          eol: /n
+          host: localhost
+          localhost: localhost
+          path: /dev/log
+          pid: process.pid
+          port: 123
+          protocol: tcp4
+          type: '5424'
+      devices:
+        '0x5c0272fffe408ba6':
+          friendly_name: Lampe droite bureau Sébastien
+        '0x5c0272fffef6fd34':
+          friendly_name: Lampe gauche bureau Sébastien
+        '0x5c0272fffe5083a3':
+          friendly_name: Lampe atelier bureau Sébastien
+        '0x000b57fffe2fb7b0':
+          friendly_name: Variateur lumière bureau Sébastien
+        '0x804b50fffe5cdd02':
+          friendly_name: Lampe bleue salle à manger
+        '0x847127fffebda4db':
+          friendly_name: Lampe chinoise salle à manger
+        '0x040d84fffedc1741':
+          friendly_name: Lampe droite TV salon
+        '0x70ac08fffeac976f':
+          friendly_name: Lampe gauche TV salon
+        '0x5c0272fffe59b534':
+          friendly_name: Lampe droite TV chambre parents
+        '0x5c0272fffe9df8a9':
+          friendly_name: Interrupteur table de nuit Sébastien
+          legacy: false
+        '0x5c0272fffee9a467':
+          friendly_name: Lampe coin dressing chambre parents
+        '0x5c0272fffe9f1f2d':
+          friendly_name: Interrupteur table de nuit Katleen
+          legacy: false
+        '0x847127fffec97a7b':
+          friendly_name: Interrupteur guirlande Maïa
+          legacy: false
+        '0x00158d0002c127b2':
+          friendly_name: Capteur température chambre parents
+        '0x00158d0002ca02a0':
+          friendly_name: Capteur température palier étage
+        '0x00158d0002ca0379':
+          friendly_name: Capteur température salon
+          temperature_calibration: 0.9
+        '0x00158d0002ca0359':
+          friendly_name: Capteur température arrière cuisine
+        '0x00158d0002c127e5':
+          friendly_name: Capteur température chambre Maïa
+        '0x000d6ffffefcd9ab':
+          friendly_name: 'Lampe chambre Maïa '
+        '0x14b457fffe944af3':
+          friendly_name: Interrupteur table de nuit Lisa
+        '0x040d84fffecb9617':
+          friendly_name: Interrupteur lumières séjour
+          legacy: false
+        '0x84ba20fffecad9df':
+          friendly_name: Interrupteur circulateur d'eau
+        '0xf082c0fffee73380':
+          friendly_name: Chaine hifi
+        '0xccccccfffe082a96':
+          friendly_name: Interrupteur chaine hifi
+          legacy: false
+        '0x086bd7fffe1ccc5e':
+          friendly_name: Guirlande chambre Maïa
+        '0x000d6ffffefd9638':
+          friendly_name: Chargeur gyroroue
+        '0x00158d0009412643':
+          friendly_name: Capteur température bureau Sébastien
+        '0x84b4dbfffe0645b5':
+          friendly_name: Détecteur arrière cuisine
+        '0x84b4dbfffe0645ae':
+          friendly_name: Détecteur séjour
+        '0x1c34f1fffedce9f2':
+          friendly_name: Lampe cuisine
+        '0x84b4dbfffe0645b8':
+          friendly_name: Détecteur palier étage
+        '0x84b4dbfffe0645a7':
+          friendly_name: Détecteur bureau Sébastien
+        '0x00158d0009df1ec0':
+          friendly_name: Velux nord chambre parents
+        '0x00158d0009ce41a8':
+          friendly_name: Velux sud chambre parents
+        '0x00158d0009df1f08':
+          friendly_name: Velux chambre Maïa
+        '0x00158d0009df1ec3':
+          friendly_name: Velux chambre Lisa
+        '0x00158d0009df1f2e':
+          friendly_name: Velux palier
+        '0x00158d0009df1e72':
+          friendly_name: Velux salle de bain
+        '0x00158d0009df1e66':
+          friendly_name: Velux bureau
+        '0x54ef441000807778':
+          friendly_name: Interrupteur arrière cuisine
+        '0x5c0272fffe9e032d':
+          friendly_name: Interrupteur lumières bureau Sébastien
+        '0x00158d0009412258':
+          friendly_name: Capteur température chambre Lisa
+        '0x84ba20fffedf008a':
+          friendly_name: Éclairage devant garage
+        '0x086bd7fffe6175d8':
+          friendly_name: Interrupteur bureau Katleen
+      groups:
+        '1':
+          friendly_name: Lumières bureau Sébastien
+          devices:
+            - 0x5c0272fffe5083a3/1
+            - 0x5c0272fffe408ba6/1
+            - 0x5c0272fffef6fd34/1
+        '2':
+          friendly_name: Lumières du séjour
+          devices:
+            - 0x804b50fffe5cdd02/1
+            - 0x040d84fffedc1741/1
+            - 0x70ac08fffeac976f/1
+            - 0x1c34f1fffedce9f2/1
+            - 0x847127fffebda4db/1
+      ota:
+        ikea_ota_use_test_url: false

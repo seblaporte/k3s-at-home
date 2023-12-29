@@ -23,6 +23,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           file: cluster/apps/arduino2mqtt/Dockerfile
+          context: cluster/apps/arduino2mqtt
           platforms: linux/arm64
           push: true
           tags: ghcr.io/seblaporte/arduino2mqtt:latest

@@ -67,10 +67,3 @@ spec:
     securityContext:
       # Privileged securityContext required by USB devices accessed directly through the host machine
       privileged: true
-    resources:
-      requests:
-        memory: 250Mi
-        cpu: 500m
-      limits:
-        memory: 500Mi
-        cpu: 1000m

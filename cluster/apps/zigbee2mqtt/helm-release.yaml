@@ -60,6 +60,13 @@ spec:
         accessMode: "ReadWriteOnce"
         mountPath: /data
         size: "1Gi"
+      usb-raspbee:
+        enabled: true
+        type: hostPath
+        hostPath: /dev/ttyAMA0
+    securityContext:
+      # Privileged securityContext required by USB devices accessed directly through the host machine
+      privileged: true
     resources:
       requests:
         memory: 250Mi

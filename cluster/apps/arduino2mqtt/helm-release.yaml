@@ -55,3 +55,6 @@ spec:
         enabled: true
         type: hostPath
         hostPath: /dev/serial/by-id/usb-Arduino__www.arduino.cc__Arduino_Uno_6493832333135180D1F0-if00    
+    service:
+      main:
+        enabled: false

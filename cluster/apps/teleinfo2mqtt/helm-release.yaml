@@ -1,0 +1,57 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: teleinfo2mqtt
+  namespace: teleinfo2mqtt
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: app-template
+      version: 2.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-helm-charts
+        namespace: flux-system
+      interval: 15m
+  values:
+    defaultPodOptions:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
+      nodeSelector:
+        nodetype: hardware-gateway
+      tolerations:
+        - key: "hardware"
+          operator: "Exists"
+          effect: "NoSchedule"
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: ghcr.io/seblaporte/teleinfo2mqtt
+              tag: latest
+              pullPolicy: Always
+            resources:
+              requests:
+                memory: 64Mi
+                cpu: 125m
+              limits:
+                memory: 128Mi
+                cpu: 250m
+            securityContext:
+              # Privileged securityContext required by USB devices accessed directly through the host machine
+              privileged: true
+    persistence:
+      arduino:
+        enabled: true
+        type: hostPath
+        hostPath: /dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0

@@ -14,3 +14,5 @@ resources:
   - esphome
   - influxdb-home-assistant
   - zigbee2mqtt
+  - arduino2mqtt
+  - teleinfo2mqtt

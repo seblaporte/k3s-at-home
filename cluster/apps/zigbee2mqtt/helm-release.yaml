@@ -21,15 +21,6 @@ spec:
       repository: koenkk/zigbee2mqtt
       tag: 1.34.0
       pullPolicy: IfNotPresent
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: node-role.kubernetes.io/master
-              operator: NotIn
-              values:
-              - "true"
     nodeSelector:
       nodetype: hardware-gateway
     tolerations:

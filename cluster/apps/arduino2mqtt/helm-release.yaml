@@ -17,15 +17,6 @@ spec:
       interval: 15m
   values:
     defaultPodOptions:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: node-role.kubernetes.io/master
-                operator: NotIn
-                values:
-                - "true"
       nodeSelector:
         nodetype: hardware-gateway
       tolerations:

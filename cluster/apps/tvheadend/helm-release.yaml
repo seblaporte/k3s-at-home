@@ -28,7 +28,7 @@ spec:
         containers:
           main:
             image:
-              repository: ghcr.io/seblaporte/teleinfo2mqtt
+              repository: chris230291/tvheadend-armv7
               tag: latest
               pullPolicy: Always
             resources:
@@ -43,4 +43,17 @@ spec:
               privileged: true
     service:
       main:
-        enabled: false
+        enabled: true
+        controller: main
+        type: LoadBalancer
+        loadBalancerIP: "${SVC_TVHEADEND_ADDR}"
+        externalTrafficPolicy: Local
+        ports:
+          http:
+            enabled: true
+            port: 9981
+            protocol: HTTP
+          htsp:
+            enabled: true
+            port: 9982
+            protocol: TCP

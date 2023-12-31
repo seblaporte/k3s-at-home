@@ -31,6 +31,9 @@ spec:
               repository: chris230291/tvheadend-armv7
               tag: latest
               pullPolicy: Always
+            env:
+              PUID: 1000
+              PGID: 1000
             resources:
               requests:
                 memory: 128Mi

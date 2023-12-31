@@ -52,7 +52,6 @@ spec:
           http:
             enabled: true
             port: 9981
-            targetPort: 80
             protocol: HTTP
           htsp:
             enabled: true

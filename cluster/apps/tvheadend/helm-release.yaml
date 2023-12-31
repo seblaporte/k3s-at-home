@@ -52,8 +52,20 @@ spec:
           http:
             enabled: true
             port: 9981
+            targetPort: 80
             protocol: HTTP
           htsp:
             enabled: true
             port: 9982
             protocol: TCP
+      persistence:
+        config:
+          enabled: true
+          storageClass: "nfs-client"
+          accessMode: "ReadWriteOnce"
+          size: "1Gi"
+        recordings:
+          enabled: true
+          storageClass: "nfs-client"
+          accessMode: "ReadWriteOnce"
+          size: "50Gi"

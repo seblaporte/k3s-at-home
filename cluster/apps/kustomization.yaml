@@ -16,3 +16,4 @@ resources:
   - zigbee2mqtt
   - arduino2mqtt
   - teleinfo2mqtt
+  - tvheadend

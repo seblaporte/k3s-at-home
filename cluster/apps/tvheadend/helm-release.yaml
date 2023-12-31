@@ -28,10 +28,11 @@ spec:
         containers:
           main:
             image:
-              repository: chris230291/tvheadend-armv7
-              tag: latest
+              repository: nextpvr/nextpvr_arm32v7
+              tag: stable
               pullPolicy: Always
             env:
+              TZ: Europe/Paris
               PUID: 1000
               PGID: 1000
             resources:
@@ -54,12 +55,8 @@ spec:
         ports:
           http:
             enabled: true
-            port: 9981
+            port: 8866
             protocol: HTTP
-          htsp:
-            enabled: true
-            port: 9982
-            protocol: TCP
     persistence:
       dvb:
         enabled: true
@@ -77,3 +74,8 @@ spec:
         storageClass: "nfs-client"
         accessMode: "ReadWriteOnce"
         size: "50Gi"
+      buffer:
+        enabled: true
+        storageClass: "nfs-client"
+        accessMode: "ReadWriteOnce"
+        size: "2Gi"

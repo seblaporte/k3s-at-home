@@ -59,6 +59,12 @@ spec:
             port: 9982
             protocol: TCP
       persistence:
+        dvb:
+          enabled: true
+          type: hostPath
+          hostPath: /dev/dvb
+          globalMounts:
+            - path: /dev/dvb
         config:
           enabled: true
           storageClass: "nfs-client"

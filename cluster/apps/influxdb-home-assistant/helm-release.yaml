@@ -9,8 +9,8 @@ spec:
   chart:
     spec:
       # renovate: registryUrl=https://helm.influxdata.com/
-      chart: influxdb
-      version: 4.10.7
+      chart: influxdb2
+      version: 4.12.5
       sourceRef:
         kind: HelmRepository
         name: influxdata-charts
@@ -43,22 +43,8 @@ spec:
       spec:
         loadBalancerIP: "${SVC_INFLUXDB_HOME_ASSISTANT_ADDR}"
         externalTrafficPolicy: Local
-    ## InfluxDB configuration
-    ## ref: https://docs.influxdata.com/influxdb/v1.7/administration/config
-    config:
-      logging:
-        level: error
-      continuous_queries:
-        log-enabled: false
-      data:
-        query-log-enabled: false
-      http:
-        log-enabled: false
-    setDefaultUser:
-      enabled: true
-      user:
-        username: "home-assistant"
-        password: ${SECRET_DEFAULT_USER_INFLUX_DB_PASSWORD}
+    adminUser:
+      password: ${SECRET_DEFAULT_USER_INFLUX_DB_PASSWORD}
     initScripts:
       enabled: true
       scripts:

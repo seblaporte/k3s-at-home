@@ -89,7 +89,7 @@ spec:
         sniStrict: true
     experimental:
       plugins:
-        crowdsec:
+        bouncer:
           moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
           version: v1.1.16
     resources:

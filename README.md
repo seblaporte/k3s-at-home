@@ -413,3 +413,13 @@ A couple of Github workflows included in this repository help automate some proc
 
 - [Flux upgrade schedule](./.github/workflows/flux-schedule.yaml) - workflow to upgrade Flux.
 - [Renovate schedule](./.github/workflows/renovate-schedule.yaml) - workflow to annotate `HelmRelease`'s which allows [Renovate](https://www.whitesourcesoftware.com/free-developer-tools/renovate) to track Helm chart versions.
+
+
+
+
+
+### Ajouter une tainte à un noeud
+
+kubectl taint nodes k3s-node-hdw-1 hardware=true:NoSchedule
+
+kubectl label nodes k3s-node-hdw-1 nodetype=hardware-gateway

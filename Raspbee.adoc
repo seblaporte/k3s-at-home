@@ -1,0 +1,16 @@
+= Special note about Raspbee II
+
+Configure serial port :
+
+. `sudo raspi-config`
+. Goto `Interfacing Options` → `Serial` and adjust as follows:
+.. `Would you like a login shell accessible over serial?` → `No`
+.. `Would you like the serial port hardware to be enabled?` → `Yes`
+
+Using the Raspbee II adapter on a Raspberry Pi 3B requires to add 2 lines in `/boot/config.txt` :
+
+[source,txt]
+----
+enable_uart=1
+dtoverlay=pi3-disable-bt
+----

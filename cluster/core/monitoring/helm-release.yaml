@@ -49,9 +49,6 @@ spec:
                 - "true"
     prometheusOperator:
       enabled: true
-      image:
-        repository: prometheus-operator/prometheus-operator
-        tag: "v0.68.0"
       logLevel: error
       affinity:
         nodeAffinity:
@@ -63,16 +60,17 @@ spec:
                 values:
                 - "true"
     prometheus-node-exporter:
-      image:
-          repository: prometheus/node-exporter
-          tag: "v1.6.1"
+      resources:
+        requests:
+          cpu: 100m
+          memory: 30Mi
+        limits:
+          cpu: 200m
+          memory: 50Mi
     prometheus:
       prometheusSpec:
-        image:
-          repository: prometheus/prometheus
-          tag: "v2.47.2"
         logLevel: error
-        retention: 15d
+        retention: 90d
         affinity:
           nodeAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
@@ -85,11 +83,14 @@ spec:
         resources:
           requests:
             cpu: 1000m
+            memory: 1024Mi
+          limits:
+            cpu: 1000m
             memory: 2048Mi
         storageSpec:
           volumeClaimTemplate:
             spec:
-              storageClassName: "nfs-client"
+              storageClassName: "synology-iscsi-storage"
               accessModes: ["ReadWriteOnce"]
               resources:
                 requests:
@@ -98,9 +99,6 @@ spec:
           matchLabels:
             app.kubernetes.io/part-of: flux
     grafana:
-      image:
-        repository: "grafana/grafana"
-        tag: "10.1.2"
       sidecar:
         dashboards:
           searchNamespace: ALL

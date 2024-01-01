@@ -1,0 +1,212 @@
+== Installation
+
+=== System update
+
+[source,bash]
+----
+sudo apt update
+sudo apt upgrade -y
+sudo apt dist-upgrade -y
+----
+
+=== Requirements installation
+
+[source,bash]
+----
+sudo apt install -y nfs-common open-iscsi
+----
+
+=== Only for Raspberry Pi 3B
+
+[source,shell]
+----
+sudo touch /etc/iscsi/iscsi.initramfs
+sudo update-initramfs -v -k `uname -r` -c
+ls -lrt /boot/init*
+----
+
+=== iSCSI configuration
+
+Configurer l'ID unique iSCSI : `sudo nano /etc/iscsi/initiatorname.iscsi`
+
+- k3s-master : iqn.1993-08.org.debian:01:k3smaster -> iqn.2000-01.com.synology:DiskStation.k3s-master.fcdd91c2425
+- k3s-node-1 : iqn.1993-08.org.debian:01:k3snode1 -> iqn.2000-01.com.synology:DiskStation.k3s-node-1.fcdd91c2425
+- k3s-node-2 : iqn.1993-08.org.debian:01:k3snode2 -> iqn.2000-01.com.synology:DiskStation.k3s-node-2.fcdd91c2425
+- k3s-node-3 : iqn.1993-08.org.debian:01:k3snode3 -> iqn.2000-01.com.synology:DiskStation.k3s-node-3.fcdd91c2425
+- k3s-node-hdw-1 : iqn.1993-08.org.debian:01:k3snodehdw1 -> iqn.2000-01.com.synology:DiskStation.k3s-node-hdw-1.fcdd91c2425
+
+[source,bash]
+----
+sudo /etc/init.d/open-iscsi start
+sudo systemctl daemon-reload
+----
+
+Check iSCSI targets exposed by the NAS :
+
+[source,bash]
+----
+sudo iscsiadm -m discovery -t sendtargets -p 192.168.1.10
+----
+
+=== Bootloader update
+
+[source,bash]
+----
+sudo raspi-config
+----
+
+- Advanced Options > Bootloader Version > Latest
+- Advanced Options > Boot Order > Network Boot
+
+Change bootloader options :
+
+[source,bash]
+----
+sudo -E rpi-eeprom-config --edit
+----
+
+Add TFTP options :
+
+[source,bash]
+----
+TFTP_IP=192.168.1.10
+TFTP_PREFIX=0
+----
+
+=== Copy of /boot to NFS
+
+Extract the last 8 characteres of the "Serial" field :
+
+[source,bash]
+----
+sudo cat /proc/cpuinfo
+----
+
+Example :
+
+- **k3s-master** : 8c46f56c
+- **k3s-node-1** : babcec6e
+- **k3s-node-2** : b676264b
+- **k3s-node-3** : 3c7c5abc
+- **k3s-node-hdw-1** : 27a4c40d
+
+[source,bash]
+----
+sudo mount -t nfs -o defaults 192.168.1.10:/volume1/rpi-tftpboot /mnt
+sudo mkdir /mnt/<Serial>
+sudo rsync -avhP /boot/firmware/ /mnt/<Serial>
+----
+
+==== Only for Raspberry Pi 3B
+
+Edit `config.txt` on `/mnt` and add this line :
+
+[source,txt]
+----
+initramfs initrd.img-4.4.27-v7+ followkernel
+----
+
+=== Copy of / to iSCSI target
+
+Example :
+
+[cols="1,1"]
+|===
+|Initiator |Target
+
+|iqn.1993-08.org.debian:01:k3smaster
+|iqn.2000-01.com.synology:DiskStation.k3s-master.fcdd91c2425
+
+|iqn.1993-08.org.debian:01:k3snode1
+|iqn.2000-01.com.synology:DiskStation.k3s-node-1.fcdd91c2425
+
+|iqn.1993-08.org.debian:01:k3snode2
+|iqn.2000-01.com.synology:DiskStation.k3s-node-2.fcdd91c2425
+
+|iqn.1993-08.org.debian:01:k3snode3
+|iqn.2000-01.com.synology:DiskStation.k3s-node-3.fcdd91c2425
+
+|iqn.1993-08.org.debian:01:k3snodehdw1
+|iqn.2000-01.com.synology:DiskStation.k3s-node-hdw-1.fcdd91c2425
+|===
+
+Authentication configuration :
+
+[source,bash]
+----
+sudo iscsiadm -m node -T <Target> \
+-p 192.168.1.10 --o update -n node.session.auth.authmethod -v CHAP
+
+sudo iscsiadm -m node -T <Target> \
+-p 192.168.1.10 --o update -n node.session.auth.username -v <Username>
+
+sudo iscsiadm -m node -T <Target> \
+-p 192.168.1.10 --o update -n node.session.auth.password -v <Password>
+----
+
+Connection :
+
+[source,bash]
+----
+sudo iscsiadm -m node -l -T <Target> -p 192.168.1.10
+----
+
+Check that iSCSI volume is present :
+
+[source,bash]
+----
+sudo fdisk -l
+----
+
+Create a new file system :
+
+[source,bash]
+----
+sudo mkfs.ext4 /dev/sda
+----
+
+Get disk UUID :
+
+[source,bash]
+----
+sudo blkid /dev/sda
+----
+
+Example :
+
+- **k3s-master** : d9c6267f-8342-4975-9dcd-47926d7714df
+- **k3s-node-1** : e86be743-9863-4f1c-a611-f4d4d6f1d533
+- **k3s-node-2** : 3cf1513b-dfe8-4f51-8f6d-907997297f52
+- **k3s-node-3** : 0cb65f85-b360-467f-9585-80768b060dd2
+- **k3s-node-hdw-1** : d62966ed-7f98-447b-a66c-dbfd645efdb8
+
+Update boot command line : `sudo nano /mnt/27a4c40d/cmdline.txt`
+
+[source,bash]
+----
+console=serial0,115200 console=tty1 ip=dhcp root=UUID=<UUID> rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait ISCSI_USERNAME=<Username> ISCSI_PASSWORD=<Password> ISCSI_INITIATOR=<Initiator> ISCSI_TARGET_NAME=<Target> ISCSI_TARGET_IP=192.168.1.10 ISCSI_TARGET_PORT=3260 rw
+----
+
+Mount the target and copy file system :
+
+[source,bash]
+----
+sudo umount /mnt
+sudo mount -t ext4 -o defaults /dev/sda /mnt
+sudo rsync -avhP --exclude /boot --exclude /proc --exclude /sys --exclude /dev --exclude /mnt / /mnt/
+sudo mkdir /mnt/{dev,proc,sys,boot,mnt}
+----
+
+Update `/etc/fstab` with `sudo nano /mnt/etc/fstab` :
+
+[source,txt]
+----
+UUID=<UUID>                                    /               ext4   defaults           1 1
+192.168.1.10:/volume1/rpi-tftpboot/<Serial>    /boot           nfs    defaults,_netdev   0 0
+----
+
+=== Final
+
+- Reboot : `sudo reboot`
+- Halt : `sudo halt`
+- Remove SD card

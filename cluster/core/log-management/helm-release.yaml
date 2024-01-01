@@ -37,15 +37,10 @@ spec:
         log.level: error
     promtail:
       enabled: true
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: node-role.kubernetes.io/master
-                operator: NotIn
-                values:
-                - "true"
+      tolerations:
+        - key: "hardware"
+          operator: "Exists"
+          effect: "NoSchedule"
     grafana:
       enabled: true
       affinity:

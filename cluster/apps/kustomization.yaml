@@ -17,3 +17,4 @@ resources:
   - arduino2mqtt
   - teleinfo2mqtt
   - tvheadend
+  - system-upgrade

@@ -18,15 +18,12 @@ spec:
       interval: 1m
   values:
     loki:
-      image:
-        repository: grafana/loki
-        tag: "2.9.3"
       persistence:
         enabled: true
         accessModes:
         - ReadWriteOnce
-        size: 10Gi
-        storageClassName: "nfs-client"
+        size: 20Gi
+        storageClassName: "synology-iscsi-storage"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

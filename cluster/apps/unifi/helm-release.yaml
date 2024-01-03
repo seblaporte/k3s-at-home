@@ -40,7 +40,7 @@ spec:
               PGID: 1000
               MONGO_USER: unifi
               MONGO_PASS: ${SECRET_UNIFI_DB_PASSWORD}
-              MONGO_HOST: mongo.unifi.svc.cluster.local
+              MONGO_HOST: unifi-mongo.unifi.svc.cluster.local
               MONGO_PORT: 27017
               MONGO_DBNAME: unifi
             resources:
@@ -52,6 +52,8 @@ spec:
                 cpu: 2000m
       db:
         type: statefulset
+        statefulset:
+          podManagementPolicy: OrderedReady
         containers:
           main:
             image:

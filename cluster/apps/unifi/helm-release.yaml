@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: linuxserver/unifi-network-application
-              tag: "8.0.24"
+              tag: "8.0.26"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

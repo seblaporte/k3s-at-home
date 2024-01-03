@@ -8,74 +8,97 @@ spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://k8s-at-home.com/charts/
-      chart: unifi
-      version: 4.4.0
+      chart: app-template
+      version: 2.2.0
       sourceRef:
         kind: HelmRepository
-        name: k8s-at-home-charts
+        name: bjw-s-helm-charts
         namespace: flux-system
-      interval: 5m
+      interval: 15m
   values:
-    image:
-      repository: jacobalberty/unifi
-      tag: v7.3.76
-      pullPolicy: IfNotPresent
-    env:
-      TZ: Europe/Paris
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: node-role.kubernetes.io/master
-              operator: NotIn
-              values:
-              - "true"
-    persistence:
-      data:
+    defaultPodOptions:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: linuxserver/unifi-network-application
+              tag: "8.0.24"
+              pullPolicy: IfNotPresent
+            env:
+              TZ: Europe/Paris
+              PUID: 1000
+              PGID: 1000
+              MONGO_USER: unifi
+              MONGO_PASS: ${SECRET_UNIFI_DB_PASSWORD}
+              MONGO_HOST: mongo.unifi.svc.cluster.local
+              MONGO_PORT: 27017
+              MONGO_DBNAME: unifi
+            resources:
+              requests:
+                memory: 1024Mi
+                cpu: 1000m
+              limits:
+                memory: 2048Mi
+                cpu: 2000m
+      db:
+        containers:
+          main:
+            type: statefulset
+            image:
+              repository: mongo
+              tag: "4.4"
+              pullPolicy: IfNotPresent
+            env:
+              TZ: Europe/Paris
+            resources:
+              requests:
+                memory: 1024Mi
+                cpu: 1000m
+              limits:
+                memory: 2048Mi
+                cpu: 2000m
+    secrets:
+      secret:
         enabled: true
-        storageClass: "nfs-client"
-        accessMode: "ReadWriteOnce"
-        mountPath: /unifi
-        size: "5Gi"
-    resources:
-      requests:
-        memory: 1024Mi
-        cpu: 500m
-      limits:
-        memory: 1536Mi
-        cpu: 2000m
-    livenessProbe:
-      enabled: true
-      initialDelaySeconds: 30
-      periodSeconds: 10
-      timeoutSeconds: 1
-      failureThreshold: 3
-      successThreshold: 1
-    readinessProbe:
-      enabled: true
-      initialDelaySeconds: 15
-      periodSeconds: 10
-      timeoutSeconds: 1
-      failureThreshold: 3
-      successThreshold: 1
+        stringData:
+          init-mongo.js: |-
+            db.getSiblingDB("unifi").createUser({user: "unifi", pwd: "${SECRET_UNIFI_DB_PASSWORD}", roles: [{role: "dbOwner", db: "unifi"}]});
+            db.getSiblingDB("unifi_stat").createUser({user: "unifi", pwd: "${SECRET_UNIFI_DB_PASSWORD}", roles: [{role: "dbOwner", db: "unifi_stat"}]});
     service:
       main:
+        enabled: true
+        controller: main
         type: LoadBalancer
         loadBalancerIP: "${SVC_UNIFI_ADDR}"
         externalTrafficPolicy: Local
         annotations:
           metallb.universe.tf/allow-shared-ip: "unifi-controller"
         ports:
-          syslog:
-            enabled: false
-          stun:
-            enabled: false
-          discovery:
-            enabled: false
-      udp:
+          http:
+            enabled: true
+            port: 8080
+            protocol: HTTP
+          https:
+            enabled: true
+            port: 8443
+            protocol: HTTP
+          speed-test:
+            enabled: true
+            port: 6789
+            protocol: HTTP
+      udp-main:
         enabled: true
+        controller: main
         type: LoadBalancer
         loadBalancerIP: "${SVC_UNIFI_ADDR}"
         externalTrafficPolicy: Local
@@ -94,3 +117,37 @@ spec:
             enabled: true
             port: 10001
             protocol: UDP
+          l2-discovery:
+            enabled: true
+            port: 1900
+            protocol: UDP
+      mongo:
+        enabled: true
+        controller: db
+        type: ClusterIP
+        ports:
+          http:
+            enabled: false
+          mongo:
+            enabled: true
+            port: 27017
+            protocol: TCP
+    persistence:
+      config:
+        enabled: true
+        storageClass: "nfs-client"
+        accessMode: "ReadWriteOnce"
+        size: "1Gi"
+        advancedMounts:
+          main:
+            main:
+              - path: /config
+      db:
+        enabled: true
+        storageClass: "synology-iscsi-storage"
+        accessMode: "ReadWriteOnce"
+        size: "10Gi"
+        advancedMounts:
+          db:
+            main:
+              - path: /data/db

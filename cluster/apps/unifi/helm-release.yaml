@@ -51,12 +51,12 @@ spec:
                 memory: 2048Mi
                 cpu: 2000m
       db:
+        type: statefulset
         containers:
           main:
-            type: statefulset
             image:
-              repository: mongo
-              tag: "4.4"
+              repository: arm64v8/mongo
+              tag: "4.4-focal"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris
@@ -96,7 +96,7 @@ spec:
             enabled: true
             port: 6789
             protocol: HTTP
-      udp-main:
+      udp:
         enabled: true
         controller: main
         type: LoadBalancer

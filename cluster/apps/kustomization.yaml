@@ -18,4 +18,3 @@ resources:
   - teleinfo2mqtt
   - tvheadend
   - system-upgrade
-  - unifi

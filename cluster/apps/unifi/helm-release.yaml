@@ -31,18 +31,12 @@ spec:
         containers:
           main:
             image:
-              repository: linuxserver/unifi-network-application
-              tag: "8.0.24"
+              repository: jacobalberty/unifi
+              tag: "v8.0.24"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris
-              PUID: 1000
-              PGID: 1000
-              MONGO_USER: unifi
-              MONGO_PASS: ${SECRET_UNIFI_DB_PASSWORD}
-              MONGO_HOST: unifi-mongo.unifi.svc.cluster.local
-              MONGO_PORT: 27017
-              MONGO_DBNAME: unifi
+              LOTSOFDEVICES: true
             resources:
               requests:
                 memory: 1024Mi
@@ -50,29 +44,6 @@ spec:
               limits:
                 memory: 2048Mi
                 cpu: 2000m
-      db:
-        containers:
-          main:
-            image:
-              repository: arm64v8/mongo
-              tag: "4.4-focal"
-              pullPolicy: IfNotPresent
-            env:
-              TZ: Europe/Paris
-            resources:
-              requests:
-                memory: 1024Mi
-                cpu: 1000m
-              limits:
-                memory: 2048Mi
-                cpu: 2000m
-    secrets:
-      secret:
-        enabled: true
-        stringData:
-          init-mongo.js: |-
-            db.getSiblingDB("unifi").createUser({user: "unifi", pwd: "${SECRET_UNIFI_DB_PASSWORD}", roles: [{role: "dbOwner", db: "unifi"}]});
-            db.getSiblingDB("unifi_stat").createUser({user: "unifi", pwd: "${SECRET_UNIFI_DB_PASSWORD}", roles: [{role: "dbOwner", db: "unifi_stat"}]});
     service:
       main:
         enabled: true
@@ -120,33 +91,9 @@ spec:
             enabled: true
             port: 1900
             protocol: UDP
-      mongo:
-        enabled: true
-        controller: db
-        type: ClusterIP
-        ports:
-          http:
-            enabled: false
-          mongo:
-            enabled: true
-            port: 27017
-            protocol: TCP
     persistence:
-      config:
-        enabled: true
-        storageClass: "nfs-client"
-        accessMode: "ReadWriteOnce"
-        size: "1Gi"
-        advancedMounts:
-          main:
-            main:
-              - path: /config
-      db:
+      unifi:
         enabled: true
         storageClass: "synology-iscsi-storage"
         accessMode: "ReadWriteOnce"
         size: "10Gi"
-        advancedMounts:
-          db:
-            main:
-              - path: /data/db

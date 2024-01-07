@@ -2,6 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: home-assistant-db-backup
+  namespace: restic
 spec:
   schedule: "30 1 * * 0" # Tous les dimanches à 1h30 UTC
   jobTemplate:

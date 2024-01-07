@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-backup-script
+  namespace: restic
+data:
+  entrypoint.sh: |-
+    #!/bin/sh
+    mysqldump -u $MYSQL_USER --skip-dump-date --force --port $MYSQL_PORT --host $MYSQL_HOST $MYSQL_DB | \
+    gzip --rsyncable | \
+    restic backup --host k3s --stdin --stdin-filename databases/$MYSQL_DB.sql.gz --tag $MYSQL_DB

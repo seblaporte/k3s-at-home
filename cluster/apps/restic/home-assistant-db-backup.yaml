@@ -22,8 +22,16 @@ spec:
                   value: ${SECRET_RESTIC_OS_STORAGE_URL}
                 - name: OS_AUTH_TOKEN
                   value: ${SECRET_RESTIC_OS_AUTH_TOKEN}
+                - name: MYSQL_USER
+                  value: home-assistant
                 - name: MYSQL_PWD
                   value: ${SECRET_HOME_ASSISTANT_DB_PASSWORD}
+                - name: MYSQL_DB
+                  value: "home-assistant"
+                - name: MYSQL_HOST
+                  value: "192.168.1.10"
+                - name: MYSQL_PORT
+                  value: "3339"
               command: ["/bin/entrypoint.sh"]
               volumeMounts:
                 - name: script
@@ -34,5 +42,5 @@ spec:
             - name: script
               configMap:
                 defaultMode: 0700
-                name: home-assistant-db-backup-script
+                name: mysql-backup-script
           restartPolicy: OnFailure

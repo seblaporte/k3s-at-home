@@ -9,7 +9,7 @@ spec:
       template:
         spec:
           containers:
-            - name: mysqldump
+            - name: restic-home-assistant-db
               image: ghcr.io/seblaporte/restic
               imagePullPolicy: Always
               env:

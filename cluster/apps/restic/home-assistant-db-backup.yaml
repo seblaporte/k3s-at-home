@@ -24,9 +24,15 @@ spec:
                   value: ${SECRET_RESTIC_OS_AUTH_TOKEN}
                 - name: MYSQL_PWD
                   value: ${SECRET_HOME_ASSISTANT_DB_PASSWORD}
-              command: ["/bin/sh", "-c"]
-              args:
-                - "mysqldump -u home-assistant --skip-dump-date --force --port 3339 --host 192.168.1.10 home-assistant | "
-                - "gzip --rsyncable | "
-                - "restic backup --stdin --stdin-filename databases/home-assistant.sql.gz --tag mariadb --tag home-assistant"
+              command: ["/bin/entrypoint.sh"]
+              volumeMounts:
+                - name: script
+                  mountPath: /bin/entrypoint.sh
+                  readOnly: true
+                  subPath: entrypoint.sh
+          volumes:
+            - name: script
+              configMap:
+                defaultMode: 0700
+                name: home-assistant-db-backup-script
           restartPolicy: OnFailure

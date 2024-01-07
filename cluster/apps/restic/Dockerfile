@@ -1,2 +1,2 @@
-FROM apline:3.19
+FROM alpine:3.19
 RUN apk update && apk add restic gzip mysql-client

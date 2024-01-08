@@ -4,7 +4,7 @@ metadata:
   name: bitwarden-db-backup
   namespace: restic
 spec:
-  schedule: "0 14 * * 1" # Tous les lundi à 14h UTC
+  schedule: "15 14 * * 1" # Tous les lundi à 14h UTC
   jobTemplate:
     spec:
       template:

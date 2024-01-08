@@ -21,11 +21,11 @@ spec:
                 - name: OS_AUTH_URL
                   value: ${SECRET_RESTIC_OS_AUTH_URL}
                 - name: OS_IDENTITY_API_VERSION
-                  value: ${SECRET_RESTIC_OS_IDENTITY_API_VERSION}
+                  value: "${SECRET_RESTIC_OS_IDENTITY_API_VERSION}"
                 - name: OS_TENANT_ID
                   value: ${SECRET_RESTIC_OS_TENANT_ID}
                 - name: OS_TENANT_NAME
-                  value: ${SECRET_RESTIC_OS_TENANT_NAME}
+                  value: "${SECRET_RESTIC_OS_TENANT_NAME}"
                 - name: OS_USERNAME
                   value: ${SECRET_RESTIC_OS_USERNAME}
                 - name: OS_PASSWORD

@@ -1,2 +1,2 @@
 FROM alpine:3.19
-RUN apk update && apk add restic gzip mysql-client
+RUN apk update && apk add restic gzip mysql-client curl

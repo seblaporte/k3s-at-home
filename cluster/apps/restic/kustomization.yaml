@@ -5,3 +5,5 @@ resources:
   - mysql-backup-script.yaml
   - home-assistant-db-backup.yaml
   - bitwarden-db-backup.yaml
+  - volume-backup-script.yaml
+  - volume-backup.yaml

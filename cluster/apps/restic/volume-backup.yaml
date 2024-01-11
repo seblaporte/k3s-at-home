@@ -4,7 +4,7 @@ metadata:
   name: volume-backup
   namespace: restic
 spec:
-  schedule: "30 14 * * 1" # Tous les lundi à 14h UTC
+  schedule: "20 1 * * 5" # Tous les vendredi à 01h20 UTC
   jobTemplate:
     spec:
       template:

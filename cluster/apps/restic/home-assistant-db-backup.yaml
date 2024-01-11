@@ -4,7 +4,7 @@ metadata:
   name: home-assistant-db-backup
   namespace: restic
 spec:
-  schedule: "10 14 * * 1" # Tous les lundi à 14h05 UTC
+  schedule: "0 1 * * 5" # Tous les vendredi à 01h00 UTC
   jobTemplate:
     spec:
       template:

@@ -1,6 +1,11 @@
 name: Restic Docker image
 on:
   workflow_dispatch:
+    inputs:
+      image_version:
+        description: 'Image version'
+        required: true
+        default: 'latest'
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -26,4 +31,4 @@ jobs:
           context: cluster/apps/restic
           platforms: linux/arm64
           push: true
-          tags: ghcr.io/seblaporte/restic:latest
+          tags: 'ghcr.io/seblaporte/restic:${{ github.event.inputs.image_version }}'

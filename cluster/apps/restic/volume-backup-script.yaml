@@ -20,3 +20,4 @@ data:
     restic --host k3s --tag heimdall                backup /k3s/heimdall*
     restic --host k3s --tag esphome                 backup /k3s/esphome*
     restic --host k3s --tag adguard-home            backup /k3s/adguard-home*
+    curl -fsS -m 10 --retry 5 -o /dev/null https://hc-ping.com/$HEALTH_CHECK_UUID

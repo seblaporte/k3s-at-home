@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
             - name: restic-volume
-              image: ghcr.io/seblaporte/restic
+              image: ghcr.io/seblaporte/restic:1.0.0
               imagePullPolicy: Always
               env:
                 - name: RESTIC_PASSWORD
@@ -36,6 +36,8 @@ spec:
                   value: "Default"
                 - name: OS_PROJECT_DOMAIN_NAME
                   value: "Default"
+                - name: HEALTH_CHECK_UUID
+                  value: ${SECRET_VOLUMES_BACKUP_HEALTH_CHECK_UUID}
               command: ["/bin/entrypoint.sh"]
               volumeMounts:
                 - name: script

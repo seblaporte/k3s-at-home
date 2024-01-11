@@ -6,4 +6,17 @@ metadata:
 data:
   entrypoint.sh: |-
     #!/bin/sh
-    restic --host k3s --tag zigbee2mqtt backup /k3s/zigbee2mqtt*
+    restic --host k3s --tag zigbee2mqtt             backup /k3s/zigbee2mqtt*
+    restic --host k3s --tag vaultwarden             backup /k3s/vaultwarden*
+    restic --host k3s --tag tvheadend               backup /k3s/tvheadend-tvheadend-config*
+    restic --host k3s --tag teslamate               backup /k3s/teslamate*
+    restic --host k3s --tag node-red                backup /k3s/node-red*
+    restic --host k3s --tag crowdsec                backup /k3s/networking-crowdsec*
+    restic --host k3s --tag mosquitto               backup /k3s/mosquitto*
+    restic --host k3s --tag prometheus-grafana      backup /k3s/monitoring-kube-prometheus-stack-grafana*
+    restic --host k3s --tag loki-grafana            backup /k3s/log-management-loki-stack-grafana*
+    restic --host k3s --tag homebridge              backup /k3s/homebridge*
+    restic --host k3s --tag home-assistant          backup /k3s/home-assistant-home-assistant-data*
+    restic --host k3s --tag heimdall                backup /k3s/heimdall*
+    restic --host k3s --tag esphome                 backup /k3s/esphome*
+    restic --host k3s --tag adguard-home            backup /k3s/adguard-home*

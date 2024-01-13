@@ -45,6 +45,13 @@ spec:
               limits:
                 memory: 512Mi
                 cpu: 1000m
+    service:
+      main:
+        enabled: true
+        ports:
+          http:
+            enabled: true
+            port: 8989
     ingress:
       main:
         enabled: true

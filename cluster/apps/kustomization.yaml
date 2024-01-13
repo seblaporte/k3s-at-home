@@ -20,4 +20,3 @@ resources:
   - system-upgrade
   - restic
   - sonarr
-  - transmission

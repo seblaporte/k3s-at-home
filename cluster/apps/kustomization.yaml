@@ -19,3 +19,4 @@ resources:
   - tvheadend
   - system-upgrade
   - restic
+  - sonarr

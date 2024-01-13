@@ -167,23 +167,6 @@ spec:
           - hosts:
               - "prowlarr.${SECRET_DOMAIN}"
             secretName: prowlarr-tls-secret
-      flaresolverr:
-        enabled: true
-        ingressClassName: "traefik"
-        annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
-        hosts:
-          - host: "flaresolverr.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  name: flaresolverr
-        tls:
-          - hosts:
-              - "flaresolverr.${SECRET_DOMAIN}"
-            secretName: flaresolverr-tls-secret
       transmission:
         enabled: true
         ingressClassName: "traefik"

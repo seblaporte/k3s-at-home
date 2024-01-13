@@ -48,10 +48,12 @@ spec:
     service:
       main:
         enabled: true
+        controller: main
         ports:
           http:
             enabled: true
             port: 8989
+            protocol: HTTP
     ingress:
       main:
         enabled: true
@@ -64,6 +66,8 @@ spec:
             paths:
               - path: /
                 pathType: Prefix
+                service:
+                  name: main
         tls:
           - hosts:
               - "sonarr.${SECRET_DOMAIN}"

@@ -2,8 +2,8 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: sonarr
-  namespace: sonarr
+  name: transmission
+  namespace: transmission
 spec:
   interval: 5m
   chart:
@@ -31,8 +31,8 @@ spec:
         containers:
           main:
             image:
-              repository: ghcr.io/linuxserver/sonarr
-              tag: "arm64v8-4.0.0.748-ls220"
+              repository: ghcr.io/linuxserver/transmission
+              tag: "4.0.5"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris
@@ -52,7 +52,7 @@ spec:
         ports:
           http:
             enabled: true
-            port: 8989
+            port: 9091
             protocol: HTTP
     ingress:
       main:
@@ -62,7 +62,7 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - host: "sonarr.${SECRET_DOMAIN}"
+          - host: "transmission.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
@@ -70,8 +70,8 @@ spec:
                   name: main
         tls:
           - hosts:
-              - "sonarr.${SECRET_DOMAIN}"
-            secretName: sonarr-tls-secret
+              - "transmission.${SECRET_DOMAIN}"
+            secretName: transmission-tls-secret
     persistence:
       config:
         enabled: true

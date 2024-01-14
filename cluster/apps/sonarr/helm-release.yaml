@@ -120,6 +120,7 @@ spec:
                 pathType: Prefix
                 service:
                   name: transmission
+                  port: http
         tls:
           - hosts:
               - "transmission.${SECRET_DOMAIN}"

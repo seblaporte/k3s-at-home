@@ -77,11 +77,18 @@ spec:
       transmission:
         enabled: true
         controller: transmission
+        type: LoadBalancer
+        loadBalancerIP: "${SVC_TRANSMISSION_ADDR}"
+        externalTrafficPolicy: Local
         ports:
           http:
             enabled: true
             port: 9091
             protocol: HTTP
+          torrent:
+            enabled: true
+            port: 51413
+            protocol: TCP
     ingress:
       main:
         enabled: true

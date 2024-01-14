@@ -21,3 +21,4 @@ resources:
   - restic
   - sonarr
   - jackett
+  - prowlarr

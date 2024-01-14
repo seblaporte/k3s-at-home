@@ -45,40 +45,6 @@ spec:
               limits:
                 memory: 512Mi
                 cpu: 1000m
-      prowlarr:
-        containers:
-          main:
-            image:
-              repository: ghcr.io/linuxserver/prowlarr
-              tag: "1.11.4"
-              pullPolicy: IfNotPresent
-            env:
-              TZ: Europe/Paris
-              PUID: 1000
-              PGID: 1000
-            resources:
-              requests:
-                memory: 128Mi
-                cpu: 250m
-              limits:
-                memory: 256Mi
-                cpu: 500m
-      flaresolverr:
-        containers:
-          main:
-            image:
-              repository: ghcr.io/flaresolverr/flaresolverr
-              tag: "v3.3.13"
-              pullPolicy: IfNotPresent
-            env:
-              TZ: Europe/Paris
-            resources:
-              requests:
-                memory: 128Mi
-                cpu: 250m
-              limits:
-                memory: 256Mi
-                cpu: 500m
       transmission:
         containers:
           main:
@@ -108,22 +74,6 @@ spec:
             enabled: true
             port: 8989
             protocol: HTTP
-      prowlarr:
-        enabled: true
-        controller: prowlarr
-        ports:
-          http:
-            enabled: true
-            port: 9696
-            protocol: HTTP
-      flaresolverr:
-        enabled: true
-        controller: flaresolverr
-        ports:
-          http:
-            enabled: true
-            port: 8191
-            protocol: HTTP
       transmission:
         enabled: true
         controller: transmission
@@ -150,23 +100,6 @@ spec:
           - hosts:
               - "sonarr.${SECRET_DOMAIN}"
             secretName: sonarr-tls-secret
-      prowlarr:
-        enabled: true
-        ingressClassName: "traefik"
-        annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
-        hosts:
-          - host: "prowlarr.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  name: prowlarr
-        tls:
-          - hosts:
-              - "prowlarr.${SECRET_DOMAIN}"
-            secretName: prowlarr-tls-secret
       transmission:
         enabled: true
         ingressClassName: "traefik"
@@ -192,16 +125,6 @@ spec:
         size: "1Gi"
         advancedMounts:
           main:
-            main:
-              - path: /config
-                readOnly: false
-      config-prowlarr:
-        enabled: true
-        storageClass: "nfs-client"
-        accessMode: "ReadWriteOnce"
-        size: "1Gi"
-        advancedMounts:
-          prowlarr:
             main:
               - path: /config
                 readOnly: false

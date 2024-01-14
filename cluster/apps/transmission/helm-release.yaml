@@ -2,8 +2,8 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: sonarr
-  namespace: sonarr
+  name: transmission
+  namespace: transmission
 spec:
   interval: 5m
   chart:
@@ -31,29 +31,38 @@ spec:
         containers:
           main:
             image:
-              repository: ghcr.io/linuxserver/sonarr
-              tag: "arm64v8-4.0.0.748-ls220"
+              repository: ghcr.io/linuxserver/transmission
+              tag: "4.0.5"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris
               PUID: 1000
               PGID: 1000
+              USER: ${SECRET_TRANSMISSION_USER}
+              PASS: ${SECRET_TRANSMISSION_PASSWORD}
             resources:
               requests:
+                memory: 128Mi
+                cpu: 250m
+              limits:
                 memory: 256Mi
                 cpu: 500m
-              limits:
-                memory: 512Mi
-                cpu: 1000m
     service:
       main:
         enabled: true
         controller: main
+        type: LoadBalancer
+        loadBalancerIP: "${SVC_TRANSMISSION_ADDR}"
+        externalTrafficPolicy: Local
         ports:
           http:
             enabled: true
-            port: 8989
+            port: 9091
             protocol: HTTP
+          torrent:
+            enabled: true
+            port: 51413
+            protocol: TCP
     ingress:
       main:
         enabled: true
@@ -62,16 +71,17 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - host: "sonarr.${SECRET_DOMAIN}"
+          - host: "transmission.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
                 service:
                   name: main
+                  port: http
         tls:
           - hosts:
-              - "sonarr.${SECRET_DOMAIN}"
-            secretName: sonarr-tls-secret
+              - "transmission.${SECRET_DOMAIN}"
+            secretName: transmission-tls-secret
     persistence:
       config:
         enabled: true
@@ -83,4 +93,4 @@ spec:
         server: 192.168.1.10
         path: /volume1/media
         globalMounts:
-          - path: /data/media
+          - path: /data/torrent

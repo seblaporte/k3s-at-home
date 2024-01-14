@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: ghcr.io/linuxserver/jackett
-              tag: 0.21.1546"
+              tag: "0.21.1546"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

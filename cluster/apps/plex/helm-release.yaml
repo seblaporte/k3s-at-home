@@ -54,7 +54,6 @@ spec:
           http:
             enabled: true
             port: 32400
-            protocol: HTTP
     ingress:
       main:
         enabled: true

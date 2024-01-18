@@ -36,7 +36,7 @@ spec:
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris
-              TRANSMISSION__DOWNLOAD_DIR: "/data/torrent"
+              TRANSMISSION__DOWNLOAD_DIR: "/data/download"
               TRANSMISSION__INCOMPLETE_DIR_ENABLED: false
             resources:
               requests:

@@ -81,8 +81,8 @@ spec:
       media:
         type: nfs
         server: 192.168.1.10
-        path: /volume1/media
+        path: /volume1/media/media
         globalMounts:
-          - path: /data/nas-media
+          - path: /data/media
       transcode:
         type: emptyDir

@@ -31,15 +31,13 @@ spec:
         containers:
           main:
             image:
-              repository: ghcr.io/linuxserver/transmission
+              repository: ghcr.io/onedr0p/transmission
               tag: "4.0.5"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris
-              PUID: 1000
-              PGID: 1000
-              USER: ${SECRET_TRANSMISSION_USER}
-              PASS: ${SECRET_TRANSMISSION_PASSWORD}
+              TRANSMISSION__DOWNLOAD_DIR: "/data/torrent"
+              TRANSMISSION__INCOMPLETE_DIR_ENABLED: false
             resources:
               requests:
                 memory: 128Mi
@@ -63,25 +61,6 @@ spec:
             enabled: true
             port: 51413
             protocol: TCP
-    ingress:
-      main:
-        enabled: true
-        ingressClassName: "traefik"
-        annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
-        hosts:
-          - host: "transmission.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  name: main
-                  port: http
-        tls:
-          - hosts:
-              - "transmission.${SECRET_DOMAIN}"
-            secretName: transmission-tls-secret
     persistence:
       config:
         enabled: true
@@ -91,6 +70,6 @@ spec:
       media:
         type: nfs
         server: 192.168.1.10
-        path: /volume1/media
+        path: /volume1/media/download
         globalMounts:
-          - path: /data
+          - path: /data/download

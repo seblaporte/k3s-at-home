@@ -2,8 +2,8 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: jackett
-  namespace: jackett
+  name: joal
+  namespace: joal
 spec:
   interval: 5m
   chart:
@@ -21,23 +21,29 @@ spec:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-            - matchExpressions:
-              - key: node-role.kubernetes.io/master
-                operator: NotIn
-                values:
-                - "true"
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: NotIn
+                    values:
+                      - "true"
     controllers:
       main:
         containers:
           main:
             image:
-              repository: ghcr.io/linuxserver/jackett
-              tag: "0.21.1546"
+              repository: anthonyraymond/joal
+              tag: "2.1.36"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris
-              PUID: 1000
-              PGID: 1000
+            command:
+              [
+                "--joal-conf=/config",
+                "--spring.main.web-environment=true",
+                "--server.port=8090",
+                "--joal.ui.path.prefix=nastiness",
+                "--joal.ui.secret-token=${SECRET_JOAL_TOKEN}",
+              ]
             resources:
               requests:
                 memory: 256Mi
@@ -52,8 +58,8 @@ spec:
         ports:
           http:
             enabled: true
-            port: 9117
-            protocol: HTTP
+            port: 8090
+            protocol: TCP
     ingress:
       main:
         enabled: true
@@ -62,7 +68,7 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - host: "jackett.${SECRET_DOMAIN}"
+          - host: "joal.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
@@ -70,8 +76,8 @@ spec:
                   name: main
         tls:
           - hosts:
-              - "jackett.${SECRET_DOMAIN}"
-            secretName: jackett-tls-secret
+              - "joal.${SECRET_DOMAIN}"
+            secretName: joal-tls-secret
     persistence:
       config:
         enabled: true

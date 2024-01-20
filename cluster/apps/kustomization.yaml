@@ -20,8 +20,6 @@ resources:
   - system-upgrade
   - restic
   - sonarr
-  - jackett
   - prowlarr
   - transmission
-  - overseerr
-  - plex
+  - joal

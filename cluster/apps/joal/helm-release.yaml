@@ -55,6 +55,9 @@ spec:
       main:
         enabled: true
         controller: main
+        type: LoadBalancer
+        loadBalancerIP: "${SVC_JOAL_ADDR}"
+        externalTrafficPolicy: Local
         ports:
           http:
             enabled: true

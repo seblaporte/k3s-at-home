@@ -23,3 +23,4 @@ resources:
   - prowlarr
   - transmission
   - joal
+  - gluetun-test

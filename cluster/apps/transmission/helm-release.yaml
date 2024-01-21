@@ -38,6 +38,9 @@ spec:
               TZ: Europe/Paris
               TRANSMISSION__DOWNLOAD_DIR: "/data/download"
               TRANSMISSION__INCOMPLETE_DIR_ENABLED: false
+            securityContext:
+              capabilities:
+                drop: ["ALL"]
             resources:
               requests:
                 memory: 512Mi
@@ -45,6 +48,28 @@ spec:
               limits:
                 memory: 1024Mi
                 cpu: 1500m
+          gluetun:
+            image:
+              repository: ghcr.io/qdm12/gluetun
+              tag: v3.37.0
+              pullPolicy: Always
+            env:
+              TZ: Europe/Paris
+              VPN_SERVICE_PROVIDER: cyberghost
+              OPENVPN_USER: ${SECRET_VPN_USERNAME}
+              OPENVPN_PASSWORD: ${SECRET_VPN_PASSWORD}
+              UPDATER_PERIOD: 24h
+              SERVER_COUNTRIES: Belgium
+            securityContext:
+             capabilities:
+               add: ["NET_ADMIN"]
+            resources:
+              requests:
+                memory: 128Mi
+                cpu: 250m
+              limits:
+                memory: 256Mi
+                cpu: 250m
     service:
       main:
         enabled: true
@@ -58,7 +83,7 @@ spec:
             port: 9091
             protocol: HTTP
           torrent:
-            enabled: true
+            enabled: false
             port: 51413
             protocol: TCP
     persistence:
@@ -67,6 +92,19 @@ spec:
         storageClass: "nfs-client"
         accessMode: "ReadWriteOnce"
         size: "1Gi"
+        advancedMounts:
+          main:
+            main:
+              - path: /config
+      gluetun:
+        enabled: true
+        storageClass: "nfs-client"
+        accessMode: "ReadWriteOnce"
+        size: "1Gi"
+        advancedMounts:
+          main:
+            gluetun:
+              - path: /gluetun
       media:
         type: nfs
         server: 192.168.1.10

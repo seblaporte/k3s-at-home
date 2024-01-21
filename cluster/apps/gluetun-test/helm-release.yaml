@@ -39,6 +39,8 @@ spec:
               VPN_SERVICE_PROVIDER: cyberghost
               OPENVPN_USER: ${SECRET_VPN_USERNAME}
               OPENVPN_PASSWORD: ${SECRET_VPN_PASSWORD}
+              UPDATER_PERIOD: 24h
+              SERVER_COUNTRIES: Belgium
             securityContext:
              capabilities:
                add: ["NET_ADMIN"]

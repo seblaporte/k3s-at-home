@@ -64,10 +64,6 @@ spec:
               OPENVPN_PASSWORD: ${SECRET_VPN_PASSWORD}
               UPDATER_PERIOD: 24h
               SERVER_COUNTRIES: Belgium
-              HEALTH_TARGET_ADDRESS: https://hc-ping.com/${SECRET_VPN_TRANSMISSION_HEALTH_CHECK_UUID}
-              HEALTH_VPN_DURATION_INITIAL: 30s
-              HEALTH_VPN_DURATION_ADDITION: 1m
-              HEALTH_SUCCESS_WAIT_DURATION: 5m
             securityContext:
              capabilities:
                add: ["NET_ADMIN"]

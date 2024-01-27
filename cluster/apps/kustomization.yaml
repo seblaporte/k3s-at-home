@@ -24,3 +24,4 @@ resources:
   - prowlarr
   - transmission
   - joal
+  - obsidian-couchdb

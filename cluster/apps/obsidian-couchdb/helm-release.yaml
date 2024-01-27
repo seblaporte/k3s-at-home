@@ -1,0 +1,104 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: obsidian-couchdb
+  namespace: obsidian-couchdb
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: app-template
+      version: 2.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-helm-charts
+        namespace: flux-system
+      interval: 15m
+  values:
+    defaultPodOptions:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: NotIn
+                    values:
+                      - "true"
+    controllers:
+      main:
+        initContainers:
+          init-config:
+            image:
+              repository: public.ecr.aws/docker/library/busybox
+              tag: latest@sha256:6d9ac9237a84afe1516540f40a0fafdc86859b2141954b4d643af7066d598b74
+              pullPolicy: IfNotPresent
+            command:
+              - "/bin/sh"
+              - "-c"
+              - "cp /tmp/config/*.ini /opt/couchdb/etc/default.d/; ls -lrt /opt/couchdb/etc/default.d;"
+        containers:
+          main:
+            image:
+              repository: public.ecr.aws/docker/library/couchdb
+              tag: "3.3.3"
+              pullPolicy: IfNotPresent
+            env:
+              TZ: Europe/Paris
+              COUCHDB_USER: ${SECRET_OBSIDIAN_COUCHDB_USERNAME}
+              COUCHDB_PASSWORD: ${SECRET_OBSIDIAN_COUCHDB_PASSWORD}
+            resources:
+              requests:
+                memory: 128Mi
+                cpu: 150m
+              limits:
+                memory: 150Mi
+                cpu: 500m
+    service:
+      main:
+        ports:
+          http:
+            port: 5984
+
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+        hosts:
+          - host: "obsidian-couchdb.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
+        tls:
+          - hosts:
+              - "obsidian-couchdb.${SECRET_DOMAIN}"
+            secretName: obsidian-couchdb-tls-secret
+    persistence:
+      config:
+        enabled: true
+        type: configMap
+        name: obsidian-couchdb-configmap
+        advancedMounts:
+          main:
+            init-config:
+              - path: /tmp/config
+      data:
+        enabled: true
+        storageClass: "nfs-client"
+        accessMode: "ReadWriteOnce"
+        size: "20Gi"
+        advancedMounts:
+          main:
+            main:
+              - path: /opt/couchdb/data
+      config-storage:
+        enabled: true
+        type: emptyDir
+        globalMounts:
+          - path: /opt/couchdb/etc/default.d

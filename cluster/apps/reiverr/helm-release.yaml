@@ -2,8 +2,8 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: reiverr
-  namespace: reiverr
+  name: jellyfin
+  namespace: jellyfin
 spec:
   interval: 5m
   chart:
@@ -31,18 +31,18 @@ spec:
         containers:
           main:
             image:
-              repository: ghcr.io/aleksilassila/reiverr
-              tag: "v0.8.0"
+              repository: jellyfin/jellyfin
+              tag: "10.8.13-1"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris
             resources:
               requests:
-                memory: 196Mi
+                memory: 256Mi
                 cpu: 250m
               limits:
-                memory: 256Mi
-                cpu: 300m
+                memory: 512Mi
+                cpu: 1000m
     service:
       main:
         enabled: true
@@ -50,8 +50,8 @@ spec:
         ports:
           http:
             enabled: true
-            port: 9494
-            protocol: HTTP
+            port: 8096
+            protocol: TCP
     ingress:
       main:
         enabled: true
@@ -60,7 +60,7 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - host: "reiverr.${SECRET_DOMAIN}"
+          - host: "jellyfin.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
@@ -68,11 +68,22 @@ spec:
                   name: main
         tls:
           - hosts:
-              - "reiverr.${SECRET_DOMAIN}"
-            secretName: reiverr-tls-secret
+              - "jellyfin.${SECRET_DOMAIN}"
+            secretName: jellyfin-tls-secret
     persistence:
       config:
         enabled: true
         storageClass: "nfs-client"
         accessMode: "ReadWriteOnce"
         size: "1Gi"
+      cache:
+        enabled: true
+        storageClass: "nfs-client"
+        accessMode: "ReadWriteOnce"
+        size: "10Gi"
+      media:
+        type: nfs
+        server: 192.168.1.10
+        path: /volume1/media
+        globalMounts:
+          - path: /media

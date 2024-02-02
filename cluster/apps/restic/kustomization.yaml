@@ -3,7 +3,9 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - mysql-backup-script.yaml
+  - postgres-backup-script.yaml
   - home-assistant-db-backup.yaml
   - bitwarden-db-backup.yaml
+  - sonarr-db-backup.yaml
   - volume-backup-script.yaml
   - volume-backup.yaml

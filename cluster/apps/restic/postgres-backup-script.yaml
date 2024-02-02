@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-backup-script
+  namespace: restic
+data:
+  entrypoint.sh: |-
+    #!/bin/sh
+    pg_dump --create --clean --if-exists --no-owner --no-privileges $PGDATABASE | \
+    gzip --rsyncable | \
+    restic backup --host k3s --stdin --stdin-filename databases/$PGDATABASE.sql.gz --tag $PGDATABASE
+    curl -fsS -m 10 --retry 5 -o /dev/null https://hc-ping.com/$HEALTH_CHECK_UUID

@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: sonarr-db-backup
+  name: prowlarr-db-backup
   namespace: restic
 spec:
   schedule: "0 1 * * 5" # Tous les vendredi à 01h00 UTC
@@ -10,7 +10,7 @@ spec:
       template:
         spec:
           containers:
-            - name: restic-sonarr-db
+            - name: restic-prowlarr-db
               image: ghcr.io/seblaporte/restic:1.1.0
               imagePullPolicy: Always
               env:
@@ -37,17 +37,17 @@ spec:
                 - name: OS_PROJECT_DOMAIN_NAME
                   value: "Default"
                 - name: PGUSER
-                  value: sonarr
+                  value: prowlarr
                 - name: PGPASSWORD
-                  value: ${SECRET_SONARR_DB_PASSWORD}
+                  value: ${SECRET_PROWLARR_DB_PASSWORD}
                 - name: PGDATABASE
-                  value: "sonarr-main"
+                  value: "prowlarr-main"
                 - name: PGHOST
                   value: "192.168.1.10"
                 - name: PGPORT
-                  value: "5438"
+                  value: "5436"
                 - name: HEALTH_CHECK_UUID
-                  value: ${SECRET_SONARR_DB_BACKUP_HEALTH_CHECK_UUID}
+                  value: ${SECRET_PROWLARR_DB_BACKUP_HEALTH_CHECK_UUID}
               command: ["/bin/entrypoint.sh"]
               volumeMounts:
                 - name: script

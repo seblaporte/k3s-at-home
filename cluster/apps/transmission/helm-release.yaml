@@ -64,6 +64,8 @@ spec:
               OPENVPN_PASSWORD: ${SECRET_VPN_PASSWORD}
               UPDATER_PERIOD: 24h
               SERVER_COUNTRIES: Belgium
+              HEALTH_VPN_DURATION_INITIAL: 30s
+              HEALTH_SUCCESS_WAIT_DURATION: 30s
             securityContext:
              capabilities:
                add: ["NET_ADMIN"]

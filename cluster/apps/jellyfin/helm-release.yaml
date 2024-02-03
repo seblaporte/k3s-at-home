@@ -47,6 +47,9 @@ spec:
       main:
         enabled: true
         controller: main
+        type: LoadBalancer
+        loadBalancerIP: "${SVC_JELLYFIN_ADDR}"
+        externalTrafficPolicy: Local
         ports:
           http:
             enabled: true

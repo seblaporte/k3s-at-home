@@ -1,0 +1,62 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: teslamate-db-backup
+  namespace: restic
+spec:
+  schedule: "0 2 * * 5" # Tous les vendredi à 02h00 UTC
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: restic-teslamate-db
+              image: ghcr.io/seblaporte/restic:1.1.0
+              imagePullPolicy: Always
+              env:
+                - name: RESTIC_PASSWORD
+                  value: ${SECRET_RESTIC_PASSWORD}
+                - name: RESTIC_REPOSITORY
+                  value: ${SECRET_RESTIC_REPOSITORY}
+                - name: OS_AUTH_URL
+                  value: ${SECRET_RESTIC_OS_AUTH_URL}
+                - name: OS_IDENTITY_API_VERSION
+                  value: "${SECRET_RESTIC_OS_IDENTITY_API_VERSION}"
+                - name: OS_TENANT_ID
+                  value: ${SECRET_RESTIC_OS_TENANT_ID}
+                - name: OS_TENANT_NAME
+                  value: "${SECRET_RESTIC_OS_TENANT_NAME}"
+                - name: OS_USERNAME
+                  value: ${SECRET_RESTIC_OS_USERNAME}
+                - name: OS_PASSWORD
+                  value: ${SECRET_RESTIC_OS_PASSWORD}
+                - name: OS_REGION_NAME
+                  value: ${SECRET_RESTIC_OS_REGION_NAME}
+                - name: OS_USER_DOMAIN_NAME
+                  value: "Default"
+                - name: OS_PROJECT_DOMAIN_NAME
+                  value: "Default"
+                - name: PGUSER
+                  value: teslamate
+                - name: PGPASSWORD
+                  value: ${SECRET_TESLAMATE_DB_PASSWORD}
+                - name: PGDATABASE
+                  value: "teslamate"
+                - name: PGHOST
+                  value: "192.168.1.10"
+                - name: PGPORT
+                  value: "5439"
+                - name: HEALTH_CHECK_UUID
+                  value: ${SECRET_TESLAMATE_DB_BACKUP_HEALTH_CHECK_UUID}
+              command: ["/bin/entrypoint.sh"]
+              volumeMounts:
+                - name: script
+                  mountPath: /bin/entrypoint.sh
+                  readOnly: true
+                  subPath: entrypoint.sh
+          volumes:
+            - name: script
+              configMap:
+                defaultMode: 0700
+                name: postgres-backup-script
+          restartPolicy: OnFailure

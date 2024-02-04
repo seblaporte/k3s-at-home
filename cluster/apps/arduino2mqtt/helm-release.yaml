@@ -33,7 +33,7 @@ spec:
               pullPolicy: Always
             resources:
               requests:
-                memory: 16Mi
+                memory: 32Mi
                 cpu: 25m
               limits:
                 memory: 32Mi

@@ -10,5 +10,6 @@ resources:
   - radarr-db-backup.yaml
   - prowlarr-db-backup.yaml
   - teslamate-db-backup.yaml
+  - k3s-db-backup.yaml
   - volume-backup-script.yaml
   - volume-backup.yaml

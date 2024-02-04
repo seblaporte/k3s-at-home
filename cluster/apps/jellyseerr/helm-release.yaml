@@ -38,11 +38,11 @@ spec:
               TZ: Europe/Paris
             resources:
               requests:
-                memory: 192Mi
-                cpu: 250m
-              limits:
                 memory: 256Mi
-                cpu: 500m
+                cpu: 125m
+              limits:
+                memory: 384Mi
+                cpu: 250m
     service:
       main:
         enabled: true

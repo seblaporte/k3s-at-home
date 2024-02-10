@@ -25,8 +25,6 @@ spec:
       enabled: false
     kubeEtcd:
       enabled: false
-    kubeApiServer:
-      enabled: false
     kubeControllerManager:
       enabled: false
     kubeDns:

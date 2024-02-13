@@ -7,3 +7,4 @@ resources:
   - forward-auth
   - plugins/crowdsec-bouncer.yaml
   - monitoring/servicemonitor.yaml
+  - https-redirect.yaml

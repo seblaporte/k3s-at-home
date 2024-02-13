@@ -40,6 +40,10 @@ spec:
               cidr:
                 - "192.168.1.0/24"
     agent:
+      metrics:
+        enabled: true
+        serviceMonitor:
+          enabled: true
       acquisition:
         - namespace: networking
           podName: traefik-*
@@ -59,6 +63,10 @@ spec:
           storageClassName: "nfs-client"
           size: 100Mi
     lapi:
+      metrics:
+        enabled: true
+        serviceMonitor:
+          enabled: true
       dashboard:
         enabled: false
       resources:

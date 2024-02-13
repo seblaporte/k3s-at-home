@@ -90,9 +90,9 @@ spec:
               - path: /tmp/config
       data:
         enabled: true
-        storageClass: "nfs-client"
-        accessMode: "ReadWriteOnce"
-        size: "20Gi"
+        storageClass: "synology-iscsi-storage"
+        accessMode: ReadWriteOnce
+        size: "50Gi"
         advancedMounts:
           main:
             main:

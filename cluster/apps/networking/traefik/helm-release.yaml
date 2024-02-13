@@ -51,7 +51,7 @@ spec:
         enabled: false
     additionalArguments:
       - "--entrypoints.web.http.middlewares=networking-bouncer@kubernetescrd"
-      - "--entrypoints.websecure.http.middlewares=networking-bouncer@kubernetescrd, networking-redirectscheme@kubernetescrd"
+      - "--entrypoints.websecure.http.middlewares=networking-redirectscheme@kubernetescrd, networking-bouncer@kubernetescrd"
       - "--api.insecure=true"
       - "--serverstransport.insecureskipverify=true"
       - "--providers.kubernetesingress.ingressendpoint.ip=${SVC_TRAEFIK_ADDR}"

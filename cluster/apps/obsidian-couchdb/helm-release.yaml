@@ -92,7 +92,7 @@ spec:
         enabled: true
         storageClass: "synology-iscsi-storage"
         accessMode: ReadWriteOnce
-        size: "50Gi"
+        size: "40Gi"
         advancedMounts:
           main:
             main:

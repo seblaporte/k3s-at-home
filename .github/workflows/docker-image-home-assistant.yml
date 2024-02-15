@@ -1,6 +1,11 @@
 name: Home Assistant Docker image
 on:
   workflow_dispatch:
+    inputs:
+      image_version:
+        description: 'Image version'
+        required: true
+        default: 'latest'
 jobs:
   docker:
     runs-on: ubuntu-latest

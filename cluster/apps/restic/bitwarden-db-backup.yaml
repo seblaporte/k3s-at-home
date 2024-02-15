@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
             - name: restic-bitwarden-db
-              image: ghcr.io/seblaporte/restic:1.0.0
+              image: ghcr.io/seblaporte/restic:1.1.0
               imagePullPolicy: Always
               env:
                 - name: RESTIC_PASSWORD

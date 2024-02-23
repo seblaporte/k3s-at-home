@@ -1,0 +1,99 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: tandoor-recipes
+  namespace: tandoor-recipes
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: app-template
+      version: 2.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-helm-charts
+        namespace: flux-system
+      interval: 15m
+  values:
+    defaultPodOptions:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: NotIn
+                    values:
+                      - "true"
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: vabene1111/recipes
+              tag: "1.5.13"
+              pullPolicy: IfNotPresent
+            env:
+              TIMEZONE: Europe/Paris
+              DB_ENGINE: django.db.backends.postgresql
+              POSTGRES_HOST: 192.168.1.10
+              POSTGRES_PORT: 5440
+              POSTGRES_USER: tandoor
+              POSTGRES_PASSWORD: ${SECRET_TANDOOR_DB_PASSWORD}
+              POSTGRES_DB: tandoor
+              TANDOOR_PORT: 80
+              ALLOWED_HOSTS: "*"
+              COMMENT_PREF_DEFAULT: 1
+              CSRF_TRUSTED_ORIGINS: ""
+              DEBUG: 0
+              FRACTION_PREF_DEFAULT: 0
+              GUNICORN_MEDIA: 1
+              SECRET_KEY: ${SECRET_TANDOOR_KEY}
+              SHOPPING_MIN_AUTOSYNC_INTERVAL: 5
+            resources:
+              requests:
+                memory: 128Mi
+                cpu: 500m
+    service:
+      main:
+        ports:
+          http:
+            port: 80
+
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+        hosts:
+          - host: "tandoor-recipes.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
+        tls:
+          - hosts:
+              - "tandoor-recipes.${SECRET_DOMAIN}"
+            secretName: tandoor-recipes-tls-secret
+    persistence:
+      media:
+        enabled: true
+        storageClass: "nfs-client"
+        accessMode: ReadWriteOnce
+        size: "1Gi"
+        advancedMounts:
+          main:
+            main:
+              - path: /opt/recipes/mediafiles
+      static:
+        enabled: true
+        type: emptyDir
+        advancedMounts:
+          main:
+            main:
+              - path: /opt/recipes/staticfiles
+      

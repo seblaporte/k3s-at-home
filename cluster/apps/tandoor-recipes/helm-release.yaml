@@ -35,7 +35,7 @@ spec:
               tag: "1.5.13"
               pullPolicy: IfNotPresent
             env:
-              TIMEZONE: Europe/Paris
+              TZ: Europe/Paris
               DB_ENGINE: django.db.backends.postgresql
               POSTGRES_HOST: 192.168.1.10
               POSTGRES_PORT: 5440

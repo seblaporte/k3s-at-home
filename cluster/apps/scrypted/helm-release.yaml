@@ -20,6 +20,7 @@ spec:
     image:
       repository: koush/scrypted
       tag: "18-jammy-lite.s6-v0.93.0"
+    hostNetwork: true
     probes:
       startup:
         enabled: true

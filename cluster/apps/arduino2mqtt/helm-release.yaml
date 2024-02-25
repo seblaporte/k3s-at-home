@@ -33,11 +33,11 @@ spec:
               pullPolicy: Always
             resources:
               requests:
-                memory: 32Mi
-                cpu: 25m
+                memory: 20Mi
+                cpu: 10m
               limits:
-                memory: 32Mi
-                cpu: 50m
+                memory: 25Mi
+                cpu: 20m
             securityContext:
               # Privileged securityContext required by USB devices accessed directly through the host machine
               privileged: true

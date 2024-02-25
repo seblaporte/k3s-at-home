@@ -42,8 +42,8 @@ spec:
       whitelist: ${SECRET_AUTH_RESTRICTION_FIRST_ADDRESS}
     resources:
       requests:
-        memory: 32Mi
-        cpu: 50m
+        memory: 18Mi
+        cpu: 10m
       limits:
-        memory: 32Mi
-        cpu: 50m
+        memory: 25Mi
+        cpu: 20m

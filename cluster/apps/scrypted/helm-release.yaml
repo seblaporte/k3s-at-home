@@ -47,6 +47,11 @@ spec:
               - "true"
     service:
       main:
+        enabled: true
+        controller: main
+        type: LoadBalancer
+        loadBalancerIP: "${SVC_SCRYPTED_ADDR}"
+        externalTrafficPolicy: Local
         ports:
           http:
             port: 11080

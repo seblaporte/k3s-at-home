@@ -21,6 +21,13 @@ spec:
       repository: koush/scrypted
       tag: "18-jammy-lite.s6-v0.93.0"
     hostNetwork: true
+    resources:
+      requests:
+        memory: 1024Mi
+        cpu: 800m
+      limits:
+        memory: 1300Mi
+        cpu: 1000m
     probes:
       startup:
         enabled: true

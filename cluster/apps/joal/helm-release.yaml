@@ -47,10 +47,18 @@ spec:
             resources:
               requests:
                 memory: 270Mi
-                cpu: 10m
+                cpu: 20m
               limits:
                 memory: 338Mi
-                cpu: 50m
+                cpu: 100m
+            probes:
+              startup:
+                spec:
+                  initialDelaySeconds: 0
+                  timeoutSeconds: 1
+                  ## This means it has a maximum of 8*60=480 seconds to start up before it fails
+                  periodSeconds: 8
+                  failureThreshold: 60
     service:
       main:
         enabled: true

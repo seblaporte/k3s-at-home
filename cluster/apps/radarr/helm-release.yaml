@@ -40,11 +40,11 @@ spec:
               PGID: 1000
             resources:
               requests:
-                memory: 256Mi
-                cpu: 500m
+                memory: 190Mi
+                cpu: 50m
               limits:
-                memory: 512Mi
-                cpu: 1000m
+                memory: 265Mi
+                cpu: 100m
     service:
       main:
         enabled: true

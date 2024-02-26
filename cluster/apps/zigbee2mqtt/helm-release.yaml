@@ -78,7 +78,8 @@ spec:
         enabled: true
         storageClass: "nfs-client"
         accessMode: "ReadWriteOnce"
-        mountPath: /data
+        globalMounts:
+          - path: /app/data
         size: "1Gi"
       raspbee:
         enabled: true

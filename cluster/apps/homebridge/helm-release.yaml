@@ -8,35 +8,58 @@ spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://k8s-at-home.com/charts/
-      chart: homebridge
-      version: 5.3.2
+      chart: app-template
+      version: 2.2.0
       sourceRef:
         kind: HelmRepository
-        name: k8s-at-home-charts
+        name: bjw-s-helm-charts
         namespace: flux-system
-      interval: 5m
+      interval: 15m
   values:
-    image:
-      repository: oznu/homebridge
-      tag: "2023-01-08"
-    env:
-      # -- To interact with the self-signed certificate with local Tydom
-      NODE_TLS_REJECT_UNAUTHORIZED: 0
-      TZ: UTC
-      PUID: "1000"
-      PGID: "1000"
-      HOMEBRIDGE_CONFIG_UI: 1
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: node-role.kubernetes.io/master
-              operator: NotIn
-              values:
-              - "true"
-    hostNetwork: true
+    defaultPodOptions:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: homebridge/homebridge
+              tag: "2024-01-08"
+              pullPolicy: IfNotPresent
+            env:
+              # -- To interact with the self-signed certificate with local Tydom
+              NODE_TLS_REJECT_UNAUTHORIZED: 0
+              TZ: Europe/Paris
+              PUID: "1000"
+              PGID: "1000"
+              HOMEBRIDGE_CONFIG_UI: 1
+            resources:
+              requests:
+                memory: 280Mi
+                cpu: 150m
+              limits:
+                memory: 350Mi
+                cpu: 250m
+    service:
+      main:
+        enabled: true
+        controller: main
+        type: LoadBalancer
+        loadBalancerIP: "${SVC_HOMEBRIDGE_ADDR}"
+        externalTrafficPolicy: Local
+        ports:
+          http:
+            enabled: true
+            port: 8581
+            protocol: HTTP
     ingress:
       main:
         enabled: true
@@ -50,7 +73,7 @@ spec:
               - path: /
                 pathType: Prefix
                 service:
-                  port: 8581
+                  name: main
         tls:
           - hosts:
               - "homebridge.${SECRET_DOMAIN}"
@@ -60,28 +83,8 @@ spec:
         enabled: true
         storageClass: "nfs-client"
         accessMode: "ReadWriteOnce"
-        mountPath: /homebridge
         size: "1Gi"
-    configmap:
-      scripts:
-        enabled: true
-        data:
-          startup.sh: |
-            #!/bin/sh
-            #
-            # Docker Homebridge Custom Startup Script - oznu/homebridge
-            #
-            # This script can be used to customise the environment and will be executed as
-            # the root user each time the container starts.
-            #
-            # If using this to install plugins DO NOT use the global flag (-g).
-            #
-            npm install homebridge-tydom
-            echo "Started successfully."
-    resources:
-      requests:
-        memory: 280Mi
-        cpu: 150m
-      limits:
-        memory: 350Mi
-        cpu: 250m
+        advancedMounts:
+          main:
+            main:
+              - path: /homebridge

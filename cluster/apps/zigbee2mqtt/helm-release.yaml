@@ -37,10 +37,10 @@ spec:
               PGID: 1000
             resources:
               requests:
-                memory: 128Mi
+                memory: 332Mi
                 cpu: 1000m
               limits:
-                memory: 256Mi
+                memory: 430Mi
                 cpu: 1000m
             securityContext:
               # Privileged securityContext required by USB devices accessed directly through the host machine

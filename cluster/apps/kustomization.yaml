@@ -5,7 +5,7 @@ resources:
   - vaultwarden
   - mosquitto
   - adguard-home
-  - homebridge
+  - tydom2mqtt
   - home-assistant
   - unifi
   - teslamate

@@ -1,0 +1,53 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: tydom2mqtt
+  namespace: tydom2mqtt
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: app-template
+      version: 2.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-helm-charts
+        namespace: flux-system
+      interval: 15m
+  values:
+    defaultPodOptions:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: fmartinou/tydom2mqtt
+              tag: "3.4.3"
+              pullPolicy: IfNotPresent
+            env:
+              TZ: Europe/Paris
+              TYDOM_MAC: ${SECRET_TYDOM_MAC}
+              TYDOM_PASSWORD: ${SECRET_TYDOM_PASSWORD}
+              TYDOM_IP: ${SECRET_TYDOM_IP}
+              MQTT_HOST: ${SVC_MOSQUITTO_ADDR}
+              MQTT_PORT: "1883"
+            resources:
+              requests:
+                memory: 64Mi
+                cpu: 150m
+              limits:
+                memory: 128Mi
+                cpu: 250m
+    service:
+      main:
+        enabled: false

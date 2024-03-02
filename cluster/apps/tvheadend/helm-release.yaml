@@ -41,7 +41,7 @@ spec:
                 cpu: 1000m
               limits:
                 memory: 256Mi
-                cpu: 1000m
+                cpu: 1500m
             securityContext:
               # Privileged securityContext required by USB devices accessed directly through the host machine
               privileged: true
@@ -71,11 +71,11 @@ spec:
         size: "1Gi"
       recordings:
         enabled: true
-        storageClass: "nfs-client"
-        accessMode: "ReadWriteOnce"
-        size: "50Gi"
+        type: nfs
+        server: 192.168.1.10
+        path: /volume1/media/tv
       buffer:
         enabled: true
-        storageClass: "nfs-client"
-        accessMode: "ReadWriteOnce"
+        storageClass: "synology-iscsi-storage"
+        accessMode: ReadWriteOnce
         size: "2Gi"

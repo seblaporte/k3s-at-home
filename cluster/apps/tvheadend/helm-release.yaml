@@ -28,8 +28,8 @@ spec:
         containers:
           main:
             image:
-              repository: nextpvr/nextpvr_arm32v7
-              tag: stable
+              repository: lscr.io/linuxserver/tvheadend
+              tag: latest
               pullPolicy: Always
             env:
               TZ: Europe/Paris
@@ -55,7 +55,7 @@ spec:
         ports:
           http:
             enabled: true
-            port: 8866
+            port: 9981
             protocol: HTTP
     persistence:
       dvb:
@@ -74,8 +74,3 @@ spec:
         type: nfs
         server: 192.168.1.10
         path: /volume1/media/media/tv
-      buffer:
-        enabled: true
-        storageClass: "synology-iscsi-storage"
-        accessMode: ReadWriteOnce
-        size: "2Gi"

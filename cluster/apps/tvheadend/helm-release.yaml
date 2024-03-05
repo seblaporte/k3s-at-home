@@ -29,8 +29,7 @@ spec:
           main:
             image:
               repository: lscr.io/linuxserver/tvheadend
-              tag: latest
-              pullPolicy: Always
+              tag: version-a9c6db8a
             env:
               TZ: Europe/Paris
               PUID: 1000
@@ -66,7 +65,7 @@ spec:
           - path: /dev/dvb
       config:
         enabled: true
-        storageClass: "nfs-client"
+        storageClass: "synology-iscsi-storage"
         accessMode: "ReadWriteOnce"
         size: "1Gi"
       recordings:

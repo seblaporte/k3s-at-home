@@ -41,6 +41,9 @@ spec:
               limits:
                 memory: 256Mi
                 cpu: 1500m
+            securityContext:
+              # Privileged securityContext required by USB devices accessed directly through the host machine
+              privileged: true
     service:
       main:
         enabled: true

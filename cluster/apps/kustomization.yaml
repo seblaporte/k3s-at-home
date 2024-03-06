@@ -16,7 +16,6 @@ resources:
   - zigbee2mqtt
   - arduino2mqtt
   - teleinfo2mqtt
-  - tvheadend
   - system-upgrade
   - restic
   - sonarr

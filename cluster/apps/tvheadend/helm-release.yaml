@@ -56,6 +56,10 @@ spec:
             enabled: true
             port: 9981
             protocol: HTTP
+          htsp:
+            enabled: true
+            port: 9982
+            protocol: TCP
     persistence:
       dvb:
         enabled: true

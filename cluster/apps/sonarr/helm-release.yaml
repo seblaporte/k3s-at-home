@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: ghcr.io/linuxserver/sonarr
-              tag: "arm64v8-4.0.0.748-ls220"
+              tag: "arm64v8-4.0.2"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

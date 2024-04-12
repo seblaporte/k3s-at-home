@@ -30,4 +30,4 @@ jobs:
           file: cluster/apps/home-assistant/Dockerfile
           platforms: linux/arm64
           push: true
-          tags: ghcr.io/seblaporte/home-assistant:latest
+          tags: 'ghcr.io/seblaporte/home-assistant:${{ github.event.inputs.image_version }}'

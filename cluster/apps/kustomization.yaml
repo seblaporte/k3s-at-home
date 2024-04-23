@@ -28,6 +28,5 @@ resources:
   - unpoller
   - jellyfin
   - jellyseerr
-  - tandoor-recipes
   - scrypted
   - flaresolverr

@@ -71,11 +71,11 @@ spec:
         enabled: false
       resources:
         limits:
-          memory: 125Mi
-          cpu: 100m
+          memory: 150Mi
+          cpu: 500m
         requests:
           cpu: 50m
-          memory: 100Mi
+          memory: 125Mi
       persistentVolume:
         data:
           enabled: true

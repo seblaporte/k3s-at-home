@@ -84,8 +84,8 @@ spec:
         size: "10Gi"
     resources:
       requests:
-        memory: 1024Mi
+        memory: 1280Mi
         cpu: 200m
       limits:
-        memory: 1280Mi
+        memory: 1500Mi
         cpu: 500m

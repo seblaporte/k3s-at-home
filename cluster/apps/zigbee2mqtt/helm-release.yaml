@@ -84,7 +84,7 @@ spec:
       raspbee:
         enabled: true
         type: hostPath
-        hostPath: /dev/ttyAMA0
+        hostPath: /dev/serial0
       udev:
         enabled: true
         type: hostPath

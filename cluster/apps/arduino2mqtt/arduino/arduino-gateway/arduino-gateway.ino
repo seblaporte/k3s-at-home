@@ -5,7 +5,7 @@ const int pinSwitch2 = 3;
 const int pinSwitch3 = 4;
 const int pinSwitch4 = 5;
 
-const int ringInputTriggerLevel = 30;
+const int ringInputTriggerLevel = 15;
 
 const int idSwitch1 = 2;
 const int idSwitch2 = 3;

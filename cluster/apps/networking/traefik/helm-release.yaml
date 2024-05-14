@@ -40,7 +40,7 @@ spec:
         externalTrafficPolicy: Local
     logs:
       general:
-        level: INFO
+        level: ERROR
       access:
         enabled: true
     ingressClass:

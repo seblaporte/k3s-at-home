@@ -23,7 +23,7 @@ spec:
       pullPolicy: Always
     controller:
       type: deployment
-      strategy: RollingUpdate
+      strategy: Recreate
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

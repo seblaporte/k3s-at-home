@@ -22,7 +22,7 @@ spec:
     image:
       repository: crowdsecurity/crowdsec
       pullPolicy: Always
-      tag: "v1.6.0-1"
+      tag: "v1.6.1-1"
     container_runtime: containerd
     tls:
       enabled: true

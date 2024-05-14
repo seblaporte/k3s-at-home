@@ -91,7 +91,7 @@ spec:
       plugins:
         bouncer:
           moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
-          version: v1.1.16
+          version: v1.3.0
     resources:
       requests:
         memory: 100Mi

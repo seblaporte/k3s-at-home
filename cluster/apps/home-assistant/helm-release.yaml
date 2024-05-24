@@ -33,6 +33,18 @@ spec:
               operator: NotIn
               values:
               - "true"
+    service:
+      main:
+        primary: true
+        type: LoadBalancer
+        loadBalancerIP: "${SVC_ADGUARD_ADDR}"
+        externalTrafficPolicy: Local
+        ports:
+          http:
+            enabled: true
+            port: 80
+            protocol: TCP
+            targetPort: 8123
     dnsPolicy: ClusterFirst
     hostNetwork: true
     termination:
@@ -84,8 +96,8 @@ spec:
         size: "10Gi"
     resources:
       requests:
-        memory: 1280Mi
+        memory: 1400Mi
         cpu: 200m
       limits:
-        memory: 1500Mi
+        memory: 1600Mi
         cpu: 500m

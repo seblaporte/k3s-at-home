@@ -37,7 +37,7 @@ spec:
       main:
         primary: true
         type: LoadBalancer
-        loadBalancerIP: "${SVC_ADGUARD_ADDR}"
+        loadBalancerIP: "${SVC_HOME_ASSISTANT_ADDR}"
         externalTrafficPolicy: Local
         ports:
           http:

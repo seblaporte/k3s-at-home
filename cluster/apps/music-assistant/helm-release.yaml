@@ -73,9 +73,12 @@ spec:
               - "music-assistant.${SECRET_DOMAIN}"
             secretName: music-assistant-tls-secret
     persistence:
+      data:
+        enabled: true
+        storageClass: "nfs-client"
+        accessMode: "ReadWriteOnce"
+        size: "5Gi"
       media:
         type: nfs
         server: 192.168.1.10
         path: /volume1/media/media/music
-        globalMounts:
-          - path: /data

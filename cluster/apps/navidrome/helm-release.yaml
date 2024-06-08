@@ -2,8 +2,8 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: music-assistant
-  namespace: music-assistant
+  name: navidrome
+  namespace: navidrome
 spec:
   interval: 5m
   chart:
@@ -29,27 +29,27 @@ spec:
         containers:
           main:
             image:
-              repository: ghcr.io/music-assistant/server
-              tag: "2.0.4"
+              repository: deluan/navidrome
+              tag: "0.52.5"
               pullPolicy: IfNotPresent
             resources:
               requests:
-                memory: 1024Mi
+                memory: 256Mi
                 cpu: 250m
               limits:
-                memory: 2048Mi
+                memory: 1024Mi
                 cpu: 500m
     service:
       main:
         enabled: true
         controller: main
         type: LoadBalancer
-        loadBalancerIP: "${SVC_MUSIC_ASSISTANT_ADDR}"
+        loadBalancerIP: "${SVC_NAVIDROME_ADDR}"
         externalTrafficPolicy: Local
         ports:
           http:
             enabled: true
-            port: 8095
+            port: 4533
             protocol: HTTP
     ingress:
       main:
@@ -59,7 +59,7 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - host: "music-assistant.${SECRET_DOMAIN}"
+          - host: "navidrome.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
@@ -67,15 +67,15 @@ spec:
                   name: main
         tls:
           - hosts:
-              - "music-assistant.${SECRET_DOMAIN}"
-            secretName: music-assistant-tls-secret
+              - "navidrome.${SECRET_DOMAIN}"
+            secretName: navidrome-tls-secret
     persistence:
       data:
         enabled: true
         storageClass: "nfs-client"
         accessMode: "ReadWriteOnce"
         size: "5Gi"
-      media:
+      music:
         type: nfs
         server: 192.168.1.10
         path: /volume1/media/media/music

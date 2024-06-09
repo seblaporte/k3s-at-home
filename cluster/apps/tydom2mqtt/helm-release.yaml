@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: fmartinou/tydom2mqtt
-              tag: "3.4.3"
+              tag: "3.5.1"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

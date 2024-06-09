@@ -31,7 +31,7 @@ spec:
         containers:
           main:
             image:
-              repository: ghcr.io/jmbannon/ytdl-sub-gui
+              repository: ghcr.io/jmbannon/ytdl-sub
               tag: "2024.06.06"
               pullPolicy: IfNotPresent
             env:
@@ -43,36 +43,8 @@ spec:
                 memory: 128Mi
                 cpu: 150m
               limits:
-                memory: 256Mi
-                cpu: 500m
-    service:
-      main:
-        enabled: true
-        controller: main
-        ports:
-          http:
-            enabled: true
-            port: 8443
-            protocol: HTTP
-    ingress:
-      main:
-        enabled: true
-        ingressClassName: "traefik"
-        annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: networking-traefik-forward-auth@kubernetescrd
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
-        hosts:
-          - host: "ytdl-sub.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  name: main
-        tls:
-          - hosts:
-              - "ytdl-sub.${SECRET_DOMAIN}"
-            secretName: ytdl-sub-tls-secret
+                memory: 512Mi
+                cpu: 1000m
     persistence:
       config:
         enabled: true

@@ -17,6 +17,7 @@ spec:
       interval: 15m
   values:
     defaultPodOptions:
+      hostNetwork: true
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

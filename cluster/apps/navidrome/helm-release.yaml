@@ -32,6 +32,11 @@ spec:
               repository: deluan/navidrome
               tag: "0.52.5"
               pullPolicy: IfNotPresent
+            env:
+              ND_LASTFM_ENABLED: true
+              ND_LASTFM_APIKEY: ${SECRET_NAVIDROME_LASTFM_APIKEY}
+              ND_LASTFM_SECRET: ${SECRET_NAVIDROME_LASTFM_SECRET}
+              ND_LASTFM_LANGUAGE: fr
             resources:
               requests:
                 memory: 256Mi

@@ -37,6 +37,8 @@ spec:
               ND_LASTFM_APIKEY: ${SECRET_NAVIDROME_LASTFM_APIKEY}
               ND_LASTFM_SECRET: ${SECRET_NAVIDROME_LASTFM_SECRET}
               ND_LASTFM_LANGUAGE: fr
+              ND_SPOTIFY_ID: ${SECRET_NAVIDROME_SPOTIFY_ID}
+              ND_SPOTIFY_SECRET: ${SECRET_NAVIDROME_SPOTIFY_SECRET}
             resources:
               requests:
                 memory: 256Mi

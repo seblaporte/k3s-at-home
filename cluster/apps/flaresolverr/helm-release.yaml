@@ -36,6 +36,7 @@ spec:
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris
+              LANG: en_GB
               PUID: 1000
               PGID: 1000
             resources:

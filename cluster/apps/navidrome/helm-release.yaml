@@ -34,6 +34,7 @@ spec:
               pullPolicy: IfNotPresent
             env:
               ND_LASTFM_ENABLED: true
+              ND_SCANSCHEDULE: "0"
               ND_LASTFM_APIKEY: ${SECRET_NAVIDROME_LASTFM_APIKEY}
               ND_LASTFM_SECRET: ${SECRET_NAVIDROME_LASTFM_SECRET}
               ND_LASTFM_LANGUAGE: fr

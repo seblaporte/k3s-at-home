@@ -45,7 +45,7 @@ spec:
                 memory: 256Mi
                 cpu: 250m
               limits:
-                memory: 1024Mi
+                memory: 512Mi
                 cpu: 500m
     service:
       main:
@@ -80,9 +80,9 @@ spec:
     persistence:
       data:
         enabled: true
-        storageClass: "nfs-client"
+        storageClass: "synology-iscsi-storage"
         accessMode: "ReadWriteOnce"
-        size: "5Gi"
+        size: "10Gi"
       music:
         type: nfs
         server: 192.168.1.10

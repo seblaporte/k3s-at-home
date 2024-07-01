@@ -63,9 +63,7 @@ spec:
         storageClass: "nfs-client"
         accessMode: "ReadWriteOnce"
         size: "1Gi"
-      media:
+      downloads:
         type: nfs
         server: 192.168.1.10
-        path: /volume1/media/download
-        globalMounts:
-          - path: /downloads
+        path: /volume1/media/znbget-downloads

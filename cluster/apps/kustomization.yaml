@@ -29,7 +29,6 @@ resources:
   - jellyfin
   - jellyseerr
   - scrypted
-  - flaresolverr
   - lidarr
   - navidrome
   - nzbget

@@ -22,7 +22,7 @@ spec:
   values:
     deployment:
       kind: Deployment
-      replicas: 2
+      replicas: 1
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

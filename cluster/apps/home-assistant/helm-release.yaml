@@ -18,7 +18,7 @@ spec:
       interval: 5m
   values:
     image:
-      repository: homeassistant/home-assistant
+      repository: ghcr.io/seblaporte/home-assistant
       tag: '2024.7.3'
       pullPolicy: Always
     controller:

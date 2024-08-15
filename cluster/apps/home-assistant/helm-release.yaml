@@ -18,7 +18,7 @@ spec:
       interval: 5m
   values:
     image:
-      repository: homeassistant/home-assistant
+      repository: ghcr.io/seblaporte/home-assistant
       tag: '2024.7.3'
       pullPolicy: Always
     controller:
@@ -96,8 +96,8 @@ spec:
         size: "10Gi"
     resources:
       requests:
-        memory: 1500Mi
-        cpu: 500m
+        memory: 1400Mi
+        cpu: 200m
       limits:
-        memory: 1700Mi
-        cpu: 1000m
+        memory: 1600Mi
+        cpu: 500m

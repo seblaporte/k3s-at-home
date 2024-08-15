@@ -40,10 +40,10 @@ spec:
               PGID: 1000
             resources:
               requests:
-                memory: 128Mi
+                memory: 200Mi
                 cpu: 150m
               limits:
-                memory: 192Mi
+                memory: 250Mi
                 cpu: 200m
             probes:
               startup:

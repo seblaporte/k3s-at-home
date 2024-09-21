@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: vabene1111/recipes
-              tag: "1.5.17"
+              tag: "1.5.19"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

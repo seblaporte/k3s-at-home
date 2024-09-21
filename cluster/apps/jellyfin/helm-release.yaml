@@ -33,17 +33,30 @@ spec:
           main:
             image:
               repository: jellyfin/jellyfin
-              tag: "10.9.10"
+              tag: "10.9.11"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris
             resources:
               requests:
-                memory: 380Mi
-                cpu: 100m
-              limits:
                 memory: 480Mi
                 cpu: 500m
+              limits:
+                memory: 550Mi
+                cpu: 1000m
+            probes:
+              startup:
+                spec:
+                  initialDelaySeconds: 0
+                  timeoutSeconds: 1
+                  periodSeconds: 5
+                  failureThreshold: 60
+              liveness:
+                spec:
+                  initialDelaySeconds: 0
+                  timeoutSeconds: 1
+                  periodSeconds: 60
+                  failureThreshold: 5
     service:
       main:
         enabled: true

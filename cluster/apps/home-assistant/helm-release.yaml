@@ -17,6 +17,16 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    defaultPodOptions:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: name
+                operator: In
+                values:
+                - flaresolverr
     image:
       repository: homeassistant/home-assistant
       tag: '2024.9.2'

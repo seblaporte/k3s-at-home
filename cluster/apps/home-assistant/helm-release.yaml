@@ -27,6 +27,7 @@ spec:
                 operator: In
                 values:
                 - flaresolverr
+            topologyKey: "kubernetes.io/hostname"
     image:
       repository: homeassistant/home-assistant
       tag: '2024.9.2'

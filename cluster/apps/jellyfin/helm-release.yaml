@@ -39,10 +39,10 @@ spec:
               TZ: Europe/Paris
             resources:
               requests:
-                memory: 480Mi
+                memory: 550Mi
                 cpu: 500m
               limits:
-                memory: 550Mi
+                memory: 700Mi
                 cpu: 1000m
             probes:
               startup:

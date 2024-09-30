@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: ghcr.io/linuxserver/prowlarr
-              tag: "1.23.1"
+              tag: "1.24.3"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

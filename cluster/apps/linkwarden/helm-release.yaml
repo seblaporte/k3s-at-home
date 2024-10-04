@@ -34,6 +34,8 @@ spec:
             env:
               TZ: Europe/Paris
               DATABASE_URL: postgresql://linkwarden:${SECRET_LINKWARDEN_DB_PASSWORD}@192.168.1.10:5428/linkwarden
+              NEXTAUTH_URL: https://linkwarden.home.sebastien-laporte.fr/api/v1/auth
+              NEXTAUTH_SECRET: ${SECRET_LINKWARDEN_NEXTAUTH_SECRET}
             resources:
               requests:
                 memory: 256Mi

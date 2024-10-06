@@ -35,8 +35,8 @@ spec:
               tag: "1.23.15"
               pullPolicy: IfNotPresent
             env:
-              ADMIN_EMAIL: ${SECRET_UPTIME-KUMA_ADMIN_EMAIL}
-              ADMIN_PASSWORD: ${SECRET_UPTIME-KUMA_ADMIN_PASSWORD}
+              ADMIN_EMAIL: ${SECRET_UPTIME_KUMA_ADMIN_EMAIL}
+              ADMIN_PASSWORD: ${SECRET_UPTIME_KUMA_ADMIN_PASSWORD}
             resources:
               requests:
                 memory: 128Mi

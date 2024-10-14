@@ -16,13 +16,6 @@ spec:
         namespace: flux-system
       interval: 15m
   values:
-    defaultPodOptions:
-      nodeSelector:
-        nodetype: hardware-gateway
-      tolerations:
-        - key: "hardware"
-          operator: "Exists"
-          effect: "NoSchedule"
     controllers:
       main:
         containers:

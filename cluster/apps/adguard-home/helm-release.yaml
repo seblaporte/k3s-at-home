@@ -20,7 +20,7 @@ spec:
   values:
     image:
       repository: adguard/adguardhome
-      tag: "v0.107.54"
+      tag: "v0.107.55"
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

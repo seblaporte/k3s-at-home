@@ -16,6 +16,16 @@ spec:
         namespace: flux-system
       interval: 15m
   values:
+    defaultPodOptions:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
     controllers:
       main:
         containers:
@@ -34,6 +44,7 @@ spec:
               limits:
                 memory: 256Mi
                 cpu: 500m
+    hostNetwork: true
     service:
       main:
         enabled: true

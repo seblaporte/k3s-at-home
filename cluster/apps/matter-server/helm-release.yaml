@@ -17,6 +17,7 @@ spec:
       interval: 15m
   values:
     defaultPodOptions:
+      hostNetwork: true
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -44,7 +45,6 @@ spec:
               limits:
                 memory: 256Mi
                 cpu: 500m
-    hostNetwork: true
     service:
       main:
         enabled: true

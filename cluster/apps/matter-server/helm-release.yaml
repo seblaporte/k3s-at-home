@@ -18,6 +18,9 @@ spec:
   values:
     defaultPodOptions:
       hostNetwork: true
+      securityContext:
+        appArmorProfile:
+          type: Unconfined
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

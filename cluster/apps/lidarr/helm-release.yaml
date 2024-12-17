@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: ghcr.io/linuxserver/lidarr
-              tag: "arm64v8-2.3.3"
+              tag: "2.8.2"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

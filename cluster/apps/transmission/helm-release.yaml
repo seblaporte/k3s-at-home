@@ -38,9 +38,6 @@ spec:
               TZ: Europe/Paris
               PUID: 1000
               PGID: 1000
-            securityContext:
-              capabilities:
-                drop: ["ALL"]
             resources:
               requests:
                 memory: 512Mi
@@ -111,4 +108,4 @@ spec:
         advancedMounts:
           main:
             main:
-              - path: /downloads
+              - path: /data/download

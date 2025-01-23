@@ -60,8 +60,9 @@ spec:
               HEALTH_VPN_DURATION_INITIAL: 30s
               HEALTH_SUCCESS_WAIT_DURATION: 30s
             securityContext:
-             capabilities:
-               add: ["NET_ADMIN"]
+              privileged: true
+              capabilities:
+                add: ["NET_ADMIN"]
             resources:
               requests:
                 memory: 256Mi

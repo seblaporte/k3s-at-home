@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: jacobalberty/unifi
-              tag: "v9.0.108"
+              tag: "v9.0.114"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

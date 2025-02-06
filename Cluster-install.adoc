@@ -1,6 +1,8 @@
 == Installation
 
-=== System update
+=== System Update
+
+Update the packages and the operating system to ensure everything is up to date.
 
 [source,bash]
 ----
@@ -9,7 +11,9 @@ sudo apt upgrade -y
 sudo apt dist-upgrade -y
 ----
 
-=== Requirements installation
+=== Requirements Installation
+
+Install the necessary packages for NFS and iSCSI.
 
 [source,bash]
 ----
@@ -18,6 +22,8 @@ sudo apt install -y nfs-common open-iscsi
 
 === Only for Raspberry Pi 3B
 
+Create an iSCSI configuration file and update the initramfs.
+
 [source,shell]
 ----
 sudo touch /etc/iscsi/iscsi.initramfs
@@ -25,9 +31,11 @@ sudo update-initramfs -v -k `uname -r` -c
 ls -lrt /boot/init*
 ----
 
-=== iSCSI configuration
+=== iSCSI Configuration
 
-Configurer l'ID unique iSCSI : `sudo nano /etc/iscsi/initiatorname.iscsi`
+Configure the unique iSCSI ID for each node.
+
+Configure the unique iSCSI ID: `sudo nano /etc/iscsi/initiatorname.iscsi`
 
 - k3s-master : iqn.1993-08.org.debian:01:k3smaster -> iqn.2000-01.com.synology:DiskStation.k3s-master.fcdd91c2425
 - k3s-node-1 : iqn.1993-08.org.debian:01:k3snode1 -> iqn.2000-01.com.synology:DiskStation.k3s-node-1.fcdd91c2425
@@ -35,20 +43,24 @@ Configurer l'ID unique iSCSI : `sudo nano /etc/iscsi/initiatorname.iscsi`
 - k3s-node-3 : iqn.1993-08.org.debian:01:k3snode3 -> iqn.2000-01.com.synology:DiskStation.k3s-node-3.fcdd91c2425
 - k3s-node-hdw-1 : iqn.1993-08.org.debian:01:k3snodehdw1 -> iqn.2000-01.com.synology:DiskStation.k3s-node-hdw-1.fcdd91c2425
 
+Start the iSCSI service and reload the daemons.
+
 [source,bash]
 ----
 sudo /etc/init.d/open-iscsi start
 sudo systemctl daemon-reload
 ----
 
-Check iSCSI targets exposed by the NAS :
+Check the iSCSI targets exposed by the NAS:
 
 [source,bash]
 ----
 sudo iscsiadm -m discovery -t sendtargets -p 192.168.1.10
 ----
 
-=== Bootloader update
+=== Bootloader Update
+
+Update the bootloader via raspi-config.
 
 [source,bash]
 ----
@@ -58,14 +70,14 @@ sudo raspi-config
 - Advanced Options > Bootloader Version > Latest
 - Advanced Options > Boot Order > Network Boot
 
-Change bootloader options :
+Change the bootloader options:
 
 [source,bash]
 ----
 sudo -E rpi-eeprom-config --edit
 ----
 
-Add TFTP options :
+Add TFTP options:
 
 [source,bash]
 ----
@@ -75,20 +87,22 @@ TFTP_PREFIX=0
 
 === Copy of /boot to NFS
 
-Extract the last 8 characteres of the "Serial" field :
+Extract the last 8 characters of the "Serial" field:
 
 [source,bash]
 ----
 sudo cat /proc/cpuinfo
 ----
 
-Example :
+Example:
 
 - **k3s-master** : 8c46f56c
 - **k3s-node-1** : babcec6e
 - **k3s-node-2** : b676264b
 - **k3s-node-3** : 3c7c5abc
 - **k3s-node-hdw-1** : 27a4c40d
+
+Mount the NFS share and copy the contents of /boot.
 
 [source,bash]
 ----
@@ -99,16 +113,16 @@ sudo rsync -avhP /boot/firmware/ /mnt/<Serial>
 
 ==== Only for Raspberry Pi 3B
 
-Edit `config.txt` on `/mnt` and add this line :
+Edit `config.txt` on `/mnt` and add this line:
 
 [source,txt]
 ----
 initramfs initrd.img-4.4.27-v7+ followkernel
 ----
 
-=== Copy of / to iSCSI target
+=== Copy of / to iSCSI Target
 
-Example :
+Example:
 
 [cols="1,1"]
 |===
@@ -130,7 +144,7 @@ Example :
 |iqn.2000-01.com.synology:DiskStation.k3s-node-hdw-1.fcdd91c2425
 |===
 
-Authentication configuration :
+Authentication configuration:
 
 [source,bash]
 ----
@@ -144,35 +158,35 @@ sudo iscsiadm -m node -T <Target> \
 -p 192.168.1.10 --o update -n node.session.auth.password -v <Password>
 ----
 
-Connection :
+Connection:
 
 [source,bash]
 ----
 sudo iscsiadm -m node -l -T <Target> -p 192.168.1.10
 ----
 
-Check that iSCSI volume is present :
+Check that the iSCSI volume is present:
 
 [source,bash]
 ----
 sudo fdisk -l
 ----
 
-Create a new file system :
+Create a new file system:
 
 [source,bash]
 ----
 sudo mkfs.ext4 /dev/sda
 ----
 
-Get disk UUID :
+Get the disk UUID:
 
 [source,bash]
 ----
 sudo blkid /dev/sda
 ----
 
-Example :
+Example:
 
 - **k3s-master** : d9c6267f-8342-4975-9dcd-47926d7714df
 - **k3s-node-1** : e86be743-9863-4f1c-a611-f4d4d6f1d533
@@ -180,14 +194,14 @@ Example :
 - **k3s-node-3** : 0cb65f85-b360-467f-9585-80768b060dd2
 - **k3s-node-hdw-1** : d62966ed-7f98-447b-a66c-dbfd645efdb8
 
-Update boot command line : `sudo nano /mnt/27a4c40d/cmdline.txt`
+Update the boot command line: `sudo nano /mnt/27a4c40d/cmdline.txt`
 
 [source,bash]
 ----
 console=serial0,115200 console=tty1 ip=dhcp root=UUID=<UUID> rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait ISCSI_USERNAME=<Username> ISCSI_PASSWORD=<Password> ISCSI_INITIATOR=<Initiator> ISCSI_TARGET_NAME=<Target> ISCSI_TARGET_IP=192.168.1.10 ISCSI_TARGET_PORT=3260 rw
 ----
 
-Mount the target and copy file system :
+Mount the target and copy the file system:
 
 [source,bash]
 ----
@@ -197,7 +211,7 @@ sudo rsync -avhP --exclude /boot --exclude /proc --exclude /sys --exclude /dev -
 sudo mkdir /mnt/{dev,proc,sys,boot,mnt}
 ----
 
-Update `/etc/fstab` with `sudo nano /mnt/etc/fstab` :
+Update `/etc/fstab` with `sudo nano /mnt/etc/fstab`:
 
 [source,txt]
 ----
@@ -207,6 +221,6 @@ UUID=<UUID>                                    /               ext4   defaults  
 
 === Final
 
-- Reboot : `sudo reboot`
-- Halt : `sudo halt`
-- Remove SD card
+- Reboot: `sudo reboot`
+- Halt: `sudo halt`
+- Remove the SD card

@@ -1,118 +1,63 @@
-= 🚀 k3s cluster at 🏠
+= k3s cluster at 🏠
 
-This repository is dedicated to my personal [k3s](https://k3s.io/) cluster deployed with [k3sup](https://github.com/alexellis/k3sup) backed by [Flux](https://toolkit.fluxcd.io/), [SOPS](https://toolkit.fluxcd.io/guides/mozilla-sops/) and maintained by [Renovate](https://github.com/renovatebot/renovate).
+This repository is dedicated to my personal https://k3s.io/[k3s] cluster backed by https://toolkit.fluxcd.io/[Flux], https://toolkit.fluxcd.io/guides/mozilla-sops/[SOPS] and maintained by https://github.com/renovatebot/renovate[Renovate].
 
 image::doc/k3s-cluster.jpeg[k3s-cluster]
 
 == 📦 Components
 
-* [flannel](https://github.com/flannel-io/flannel) - default CNI provided by k3s
-* [local-path-provisioner](https://github.com/rancher/local-path-provisioner) - default storage class provided by k3s
-* [flux](https://toolkit.fluxcd.io/) - GitOps tool for deploying manifests from the `cluster` directory
-* [metallb](https://metallb.universe.tf/) - bare metal load balancer
-* [cert-manager](https://cert-manager.io/) - SSL certificates - with Cloudflare DNS challenge
-* [traefik](https://traefik.io) - ingress controller
-* [system-upgrade-controller](https://github.com/rancher/system-upgrade-controller) - upgrade k3s
-* [nfs-subdir-external-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner) - external cluster storage
-* [Prometheus](https://github.com/prometheus/prometheus) - cluster monitoring
-* [Loki](https://github.com/grafana/loki) - log management
-* [Grafana](https://grafana.com) - visualization for cluster monitoring and log management
+* https://github.com/flannel-io/flannel[flannel] - CNI
+* https://github.com/rancher/local-path-provisioner[local-path-provisioner] - default storage class provided by k3s
+* https://toolkit.fluxcd.io/[flux] - GitOps tool for deploying manifests from the `cluster` directory
+* https://metallb.universe.tf/[metallb] - bare metal load balancer
+* https://cert-manager.io/[cert-manager] - SSL certificates - with Cloudflare DNS challenge
+* https://traefik.io[traefik] - ingress controller
+* https://github.com/rancher/system-upgrade-controller[system-upgrade-controller] - upgrade k3s
+* https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner[nfs-subdir-external-provisioner] - external cluster storage
+* https://github.com/prometheus/prometheus[Prometheus] - cluster monitoring
+* https://github.com/grafana/loki[Loki] - log management
+* https://grafana.com[Grafana] - visualization for cluster monitoring and log management
 
-== 📝 Prerequisites
-
-=== 💻 Nodes
-
-* Enable packet forwarding on the hosts and increase `max_user_watches`
-
-```sh
-cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
-net.bridge.bridge-nf-call-iptables = 1
-net.ipv4.ip_forward=1
-fs.inotify.max_user_watches=65536
-EOF
-sysctl --system
-```
-
-* Configure DNS on nodes to use an upstream provider (e.g. `1.1.1.1`, `9.9.9.9`), or router's IP (Ad-blockers should only be used on devices with a web browser) and set a static IP with `/etc/dhcpcd.conf` file.
-
-* Disable **swap** with `sudo dphys-swapfile swapoff && sudo dphys-swapfile uninstall && sudo update-rc.d dphys-swapfile remove && sudo rm -f /etc/init.d/dphys-swapfile && sudo service dphys-swapfile stop && sudo systemctl disable dphys-swapfile.service`
-
-* Disable **syslog** to reduce pressure on the SD card
-
-```sh
-sudo service rsyslog stop
-sudo systemctl disable rsyslog
-```
-
-* Configure **logrotate** for all logs with `/etc/logrotate.conf` file
-
-```sh
-# use daily rotation
-daily
-
-# keep 3 days of logs
-rotate 3
-
-copytruncate
-```
-
-* Disable LEDs on Raspberry Pi with `/boot/config.txt` file
-
-```sh
-[pi4]
-# Disable PWR LED
-dtparam=pwr_led_trigger=none
-dtparam=pwr_led_activelow=off
-# Disable activity LED
-dtparam=act_led_trigger=none
-dtparam=act_led_activelow=off
-# Disable Ethernet port LEDs
-dtparam=eth_led0=4
-dtparam=eth_led1=4
-```
-
-=== Boot NFS
-
-```sh
-# Create a local directory to mount
-sudo mkdir -p /nfs/rpi-tftpboot
-# Mount the NFS directory
-sudo mount -t nfs -O proto=tcp,port=2049,rw,all_squash,anonuid=1001,anongid=1001 192.168.1.10:/volume1/rpi-tftpboot /nfs/rpi-tftpboot -vvv
-# Get the node UUID
-vcgencmd otp_dump | grep 28: | sed s/.*://g
-# Create a directory for each node (replace b676264b with the node UUID)
-sudo mkdir -p /nfs/rpi-tftpboot/b676264b
-# Copy /boot to the NFS directory
-sudo cp -r /boot/* /nfs/rpi-tftpboot/b676264b/
-# Modify the /boot entry in /etc/fstab:
-# 192.168.1.10:/volume1/rpi-tftpboot/b676264b /boot nfs defaults,vers=3,proto=tcp 0 0
-sudo nano /etc/fstab
-```
-
-=== Root on iSCSI target
-
-=== 🔧 Tools
+== 🔧 Tools
 
 📍 Required CLI tools on the workstation.
 
-| Tool                                                              | Purpose                                                             |
-|--------------------------------------------------------------------|---------------------------------------------------------------------|
-| [k3sup](https://github.com/alexellis/k3sup)                        | Tool to install k3s on your nodes                                   |
-| [kubectl](https://kubernetes.io/docs/tasks/tools/)                 | Allows you to run commands against Kubernetes clusters              |
-| [flux](https://toolkit.fluxcd.io/)                                 | Operator that manages your k8s cluster based on your Git repository |
-| [SOPS](https://github.com/mozilla/sops)                            | Encrypts k8s secrets with GnuPG                                     |
-| [GnuPG](https://gnupg.org/)                                        | Encrypts and signs your data                                        |
-| [pinentry](https://gnupg.org/related_software/pinentry/index.html) | Allows GnuPG to read passphrases and PIN numbers                    |
-| [direnv](https://github.com/direnv/direnv)                         | Exports environment variables based on the current working directory|
-| [pre-commit](https://github.com/pre-commit/pre-commit)             | Runs checks before `git commit`                                     |
-| [kustomize](https://kustomize.io/)                                 | Template-free way to customize application configuration            |
-| [helm](https://helm.sh/)                                           | Manage Kubernetes applications                                      |
-| [go-task](https://github.com/go-task/task)                         | A task runner / simpler alternative to Make written in Go           |
-| [prettier](https://github.com/prettier/prettier)                   | Prettier is an opinionated code formatter.                          |
+|===
+|Tool | Purpose 
 
-=== ⚠️ pre-commit
+|https://kubernetes.io/docs/tasks/tools/[kubectl]
+|Allows you to run commands against Kubernetes clusters
 
-[sops-pre-commit](https://github.com/k8s-at-home/sops-pre-commit) will check that we do not accidentally commit unencrypted secrets.
+|https://toolkit.fluxcd.io/[flux]
+|Operator that manages your k8s cluster based on your Git repository
+
+|https://github.com/mozilla/sops[SOPS]
+|Encrypts k8s secrets with GnuPG
+
+|https://gnupg.org/[GnuPG]
+|Encrypts and signs your data
+
+|https://gnupg.org/related_software/pinentry/index.html[pinentry]
+|Allows GnuPG to read passphrases and PIN numbers
+
+|https://github.com/direnv/direnv[direnv]
+|Exports environment variables based on the current working directory
+
+|https://github.com/pre-commit/pre-commit[pre-commit]
+|Runs checks before `git commit`
+
+|https://kustomize.io/[kustomize]
+|Template-free way to customize application configuration
+
+|https://helm.sh/[helm]
+|Manage Kubernetes applications
+
+|===
+
+
+== ⚠️ pre-commit
+
+https://github.com/k8s-at-home/sops-pre-commit[sops-pre-commit] will check that we do not accidentally commit unencrypted secrets.
 
 After installing pre-commit:
 
@@ -129,38 +74,247 @@ The Git repository contains the following directories under `cluster` and are or
 * The **core** directory (depends on **crds**) contains important infrastructure applications (grouped by namespace) that should never be pruned by Flux
 * The **apps** directory (depends on **core**) is where applications (grouped by namespace) are placed. Flux will prune resources here if they are no longer tracked by Git.
 
-```
-cluster
-├── apps
-│   ├── default
-│   ├── home-assistant
-│   ├── mosquitto
-│   ├── networking
-│   ├── system-upgrade
-│   ├── unifi
-│   └── vaultwarden
-├── base
-│   └── flux-system
-├── core
-│   ├── cert-manager
-│   ├── log-management
-│   ├── metallb-system
-│   ├── monitoring
-│   ├── monitoring-config
-│   ├── namespaces
-│   ├── nfs-provisioner
-│   └── system-upgrade
-└── crds
-    └── cert-manager
-```
-
 == 🚀 Deployment
+
+=== Installation
+
+This section outlines the installation steps for each machine in the cluster.
+
+Each machine is a Raspberry Pi, which does not have an SD card and boots from the network via an iSCSI target exposed on a Synology NAS.
+
+The instructions ensure that all necessary packages and the operating system are updated to the latest versions to maintain compatibility and performance.
+
+==== System Update
+
+Update the packages and the operating system to ensure everything is up to date.
+
+[source,bash]
+----
+sudo apt update
+sudo apt upgrade -y
+sudo apt dist-upgrade -y
+----
+
+==== Requirements Installation
+
+Install the necessary packages for NFS and iSCSI.
+
+[source,bash]
+----
+sudo apt install -y nfs-common open-iscsi
+----
+
+==== Only for Raspberry Pi 3B
+
+Create an iSCSI configuration file and update the initramfs.
+
+[source,shell]
+----
+sudo touch /etc/iscsi/iscsi.initramfs
+sudo update-initramfs -v -k `uname -r` -c
+ls -lrt /boot/init*
+----
+
+==== iSCSI Configuration
+
+Configure the unique iSCSI ID for each node.
+
+Configure the unique iSCSI ID: `sudo nano /etc/iscsi/initiatorname.iscsi`
+
+- k3s-master : iqn.1993-08.org.debian:01:k3smaster -> iqn.2000-01.com.synology:DiskStation.k3s-master.fcdd91c2425
+- k3s-node-1 : iqn.1993-08.org.debian:01:k3snode1 -> iqn.2000-01.com.synology:DiskStation.k3s-node-1.fcdd91c2425
+- k3s-node-2 : iqn.1993-08.org.debian:01:k3snode2 -> iqn.2000-01.com.synology:DiskStation.k3s-node-2.fcdd91c2425
+- k3s-node-3 : iqn.1993-08.org.debian:01:k3snode3 -> iqn.2000-01.com.synology:DiskStation.k3s-node-3.fcdd91c2425
+- k3s-node-hdw-1 : iqn.1993-08.org.debian:01:k3snodehdw1 -> iqn.2000-01.com.synology:DiskStation.k3s-node-hdw-1.fcdd91c2425
+
+Start the iSCSI service and reload the daemons.
+
+[source,bash]
+----
+sudo /etc/init.d/open-iscsi start
+sudo systemctl daemon-reload
+----
+
+Check the iSCSI targets exposed by the NAS:
+
+[source,bash]
+----
+sudo iscsiadm -m discovery -t sendtargets -p 192.168.1.10
+----
+
+==== Bootloader Update
+
+Update the bootloader via raspi-config.
+
+[source,bash]
+----
+sudo raspi-config
+----
+
+- Advanced Options > Bootloader Version > Latest
+- Advanced Options > Boot Order > Network Boot
+
+Change the bootloader options:
+
+[source,bash]
+----
+sudo -E rpi-eeprom-config --edit
+----
+
+Add TFTP options:
+
+[source,bash]
+----
+TFTP_IP=192.168.1.10
+TFTP_PREFIX=0
+----
+
+==== Copy of /boot to NFS
+
+Extract the last 8 characters of the "Serial" field:
+
+[source,bash]
+----
+sudo cat /proc/cpuinfo
+----
+
+Example:
+
+- **k3s-master** : 8c46f56c
+- **k3s-node-1** : babcec6e
+- **k3s-node-2** : b676264b
+- **k3s-node-3** : 3c7c5abc
+- **k3s-node-hdw-1** : 27a4c40d
+
+Mount the NFS share and copy the contents of /boot.
+
+[source,bash]
+----
+sudo mount -t nfs -o defaults 192.168.1.10:/volume1/rpi-tftpboot /mnt
+sudo mkdir /mnt/<Serial>
+sudo rsync -avhP /boot/firmware/ /mnt/<Serial>
+----
+
+===== Only for Raspberry Pi 3B
+
+Edit `config.txt` on `/mnt` and add this line:
+
+[source,txt]
+----
+initramfs initrd.img-4.4.27-v7+ followkernel
+----
+
+==== Copy of / to iSCSI Target
+
+Example:
+
+[cols="1,1"]
+|===
+|Initiator |Target
+
+|iqn.1993-08.org.debian:01:k3smaster
+|iqn.2000-01.com.synology:DiskStation.k3s-master.fcdd91c2425
+
+|iqn.1993-08.org.debian:01:k3snode1
+|iqn.2000-01.com.synology:DiskStation.k3s-node-1.fcdd91c2425
+
+|iqn.1993-08.org.debian:01:k3snode2
+|iqn.2000-01.com.synology:DiskStation.k3s-node-2.fcdd91c2425
+
+|iqn.1993-08.org.debian:01:k3snode3
+|iqn.2000-01.com.synology:DiskStation.k3s-node-3.fcdd91c2425
+
+|iqn.1993-08.org.debian:01:k3snodehdw1
+|iqn.2000-01.com.synology:DiskStation.k3s-node-hdw-1.fcdd91c2425
+|===
+
+Authentication configuration:
+
+[source,bash]
+----
+sudo iscsiadm -m node -T <Target> \
+-p 192.168.1.10 --o update -n node.session.auth.authmethod -v CHAP
+
+sudo iscsiadm -m node -T <Target> \
+-p 192.168.1.10 --o update -n node.session.auth.username -v <Username>
+
+sudo iscsiadm -m node -T <Target> \
+-p 192.168.1.10 --o update -n node.session.auth.password -v <Password>
+----
+
+Connection:
+
+[source,bash]
+----
+sudo iscsiadm -m node -l -T <Target> -p 192.168.1.10
+----
+
+Check that the iSCSI volume is present:
+
+[source,bash]
+----
+sudo fdisk -l
+----
+
+Create a new file system:
+
+[source,bash]
+----
+sudo mkfs.ext4 /dev/sda
+----
+
+Get the disk UUID:
+
+[source,bash]
+----
+sudo blkid /dev/sda
+----
+
+Example:
+
+- **k3s-master** : d9c6267f-8342-4975-9dcd-47926d7714df
+- **k3s-node-1** : e86be743-9863-4f1c-a611-f4d4d6f1d533
+- **k3s-node-2** : 3cf1513b-dfe8-4f51-8f6d-907997297f52
+- **k3s-node-3** : 0cb65f85-b360-467f-9585-80768b060dd2
+- **k3s-node-hdw-1** : d62966ed-7f98-447b-a66c-dbfd645efdb8
+
+Update the boot command line: `sudo nano /mnt/27a4c40d/cmdline.txt`
+
+[source,bash]
+----
+console=serial0,115200 console=tty1 ip=dhcp root=UUID=<UUID> rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait ISCSI_USERNAME=<Username> ISCSI_PASSWORD=<Password> ISCSI_INITIATOR=<Initiator> ISCSI_TARGET_NAME=<Target> ISCSI_TARGET_IP=192.168.1.10 ISCSI_TARGET_PORT=3260 rw
+----
+
+Mount the target and copy the file system:
+
+[source,bash]
+----
+sudo umount /mnt
+sudo mount -t ext4 -o defaults /dev/sda /mnt
+sudo rsync -avhP --exclude /boot --exclude /proc --exclude /sys --exclude /dev --exclude /mnt / /mnt/
+sudo mkdir /mnt/{dev,proc,sys,boot,mnt}
+----
+
+Update `/etc/fstab` with `sudo nano /mnt/etc/fstab`:
+
+[source,txt]
+----
+UUID=<UUID>                                    /               ext4   defaults           1 1
+192.168.1.10:/volume1/rpi-tftpboot/<Serial>    /boot           nfs    defaults,_netdev   0 0
+----
+
+==== Final
+
+- Reboot: `sudo reboot`
+- Halt: `sudo halt`
+- Remove the SD card
+
 
 === 🔐 Setting up GnuPG keys
 
 📍 SOPS with GnuPG allows you to encrypt and decrypt secrets.
 
-1. Create a personal GPG key, protected by a password, and export the fingerprint.
+1) Create a personal GPG key, protected by a password, and export the fingerprint.
 
 ```sh
 export GPG_TTY=$(tty)
@@ -184,7 +338,7 @@ gpg --list-secret-keys "${PERSONAL_KEY_NAME}"
 export PERSONAL_KEY_FP=772154FFF783DE317KLCA0EC77149AC618D75581
 ```
 
-2. Create a Flux GPG key and export the fingerprint
+2) Create a Flux GPG key and export the fingerprint
 
 ```sh
 export GPG_TTY=$(tty)
@@ -211,44 +365,11 @@ export FLUX_KEY_FP=AB675CE4CC64251G3S9AE1DAA88ARRTY2C009E2D
 
 === ⛵ Installing k3s
 
-1. Install the master node
-
-_Servicelb is replaced by metallb, traefik and metrics-server will be installed with Flux._
-
-```sh
-curl -sfL https://get.k3s.io | \
-INSTALL_K3S_VERSION=v1.21.4+k3s1 sh -s - server \
---node-taint CriticalAddonsOnly=true:NoExecute \
---disable servicelb \
---disable traefik \
---disable metrics-server \
---tls-san <master-ip> \
---datastore-endpoint="postgres://<user>:<password>@<ip>:<port>/<db>?sslmode=disable"
-```
-
-2. Join the worker nodes
-
-```sh
-curl -sfL https://get.k3s.io | \
-INSTALL_K3S_VERSION=v1.21.4+k3s1 \
-K3S_TOKEN=<token>  \
-K3S_URL=https://<master-ip>:6443 sh -
-```
-
-3. Verify that the nodes are online
-
-```sh
-kubectl get nodes
-# NAME         STATUS   ROLES                  AGE   VERSION
-# k3s-master   Ready    control-plane,master   46d   v1.21.4+k3s1
-# k3s-node-3   Ready    <none>                 46d   v1.21.4+k3s1
-# k3s-node-2   Ready    <none>                 46d   v1.21.4+k3s1
-# k3s-node-1   Ready    <none>                 46d   v1.21.4+k3s1
-```
+See https://github.com/seblaporte/k3s-ansible[seblaporte/k3s-ansible] to install the k3s cluster with https://github.com/ansible/ansible[Ansible].
 
 === 🔷 GitOps with Flux
 
-1. Verify that Flux can be installed
+1) Verify that Flux can be installed
 
 ```sh
 flux --kubeconfig=./.kube/config check --pre
@@ -258,13 +379,13 @@ flux --kubeconfig=./.kube/config check --pre
 # ✔ prerequisites checks passed
 ```
 
-2. Pre-create the `flux-system` namespace
+2) Pre-create the `flux-system` namespace
 
 ```sh
 kubectl create namespace flux-system --dry-run=client -o yaml | kubectl apply -f -
 ```
 
-3. Add the Flux GPG key so Flux can decrypt SOPS secrets
+3) Add the Flux GPG key so Flux can decrypt SOPS secrets
 
 ```sh
 gpg --export-secret-keys --armor "${FLUX_KEY_FP}" |
@@ -273,13 +394,13 @@ kubectl create secret generic sops-gpg \
     --from-file=sops.asc=/dev/stdin
 ```
 
-4. Export more environment variables for application configuration
+4) Export more environment variables for application configuration
 
 ```sh
 source .env
 ```
 
-5. Create the required files based on ALL exported environment variables.
+5) Create the required files based on ALL exported environment variables.
 
 ```sh
 envsubst < ./tmpl/.sops.yaml > ./.sops.yaml
@@ -289,9 +410,9 @@ envsubst < ./tmpl/gotk-sync.yaml > ./cluster/base/flux-system/gotk-sync.yaml
 envsubst < ./tmpl/secret.sops.yaml > ./cluster/core/cert-manager/secret.sops.yaml
 ```
 
-6. **Verify** that all the above files contain the correct information
+6) **Verify** that all the above files contain the correct information
 
-7. Encrypt `cluster/cluster-secrets.sops.yaml` and `cert-manager/secret.sops.yaml` with SOPS
+7) Encrypt `cluster/cluster-secrets.sops.yaml` and `cert-manager/secret.sops.yaml` with SOPS
 
 ```sh
 export GPG_TTY=$(tty)
@@ -301,9 +422,9 @@ sops --encrypt --in-place ./cluster/core/cert-manager/secret.sops.yaml
 
 📍 Variables defined in `cluster-secrets.sops.yaml` and `cluster-settings.sops.yaml` will be usable anywhere in your YAML manifests under `./cluster`
 
-8. **Verify** that all the above files are **encrypted** with SOPS
+8) **Verify** that all the above files are **encrypted** with SOPS
 
-9. Push your changes to git
+9) Push your changes to git
 
 ```sh
 git add -A
@@ -311,7 +432,7 @@ git commit -m "initial commit"
 git push
 ```
 
-10. Install Flux
+10) Install Flux
 
 📍 Due to race conditions with Flux CRDs, this command needs to be run twice. There should be no errors on this second run.
 
@@ -343,12 +464,13 @@ kubectl get pods -n flux-system
 
 === VSCode SOPS Extension
 
-[VSCode SOPS](https://marketplace.visualstudio.com/items?itemName=signageos.signageos-vscode-sops) is a handy little plugin for those using VSCode.
+https://marketplace.visualstudio.com/items?itemName=signageos.signageos-vscode-sops[VSCode SOPS] is a handy little plugin for those using VSCode.
+
 It will automatically decrypt SOPS secrets when the file is opened in the editor and encrypt them when saving and closing the file.
 
 === 👉 Debugging
 
-Manually synchronize Flux with your Git repository
+* Manually synchronize Flux with your Git repository
 
 ```sh
 flux reconcile source git flux-system
@@ -359,7 +481,7 @@ flux reconcile source git flux-system
 # ✔ fetched revision main/943e4126e74b273ff603aedab89beb7e36be4998
 ```
 
-Show the health of your kustomizations
+* Show the health of your kustomizations
 
 ```sh
 kubectl get kustomization -A
@@ -370,7 +492,7 @@ kubectl get kustomization -A
 # flux-system   flux-system   True    Applied revision: main/943e4126e74b273ff603aedab89beb7e36be4998    4d6h
 ```
 
-Show the health of your main Flux `GitRepository`
+* Show the health of your main Flux `GitRepository`
 
 ```sh
 flux get sources git
@@ -378,7 +500,7 @@ flux get sources git
 # flux-system    True 	Fetched revision: main/943e4126e74b273ff603aedab89beb7e36be4998    main/943e4126e74b273ff603aedab89beb7e36be4998    False
 ```
 
-Show the health of your `HelmRelease`s
+* Show the health of your `HelmRelease`s
 
 ```sh
 flux get helmrelease -A
@@ -388,7 +510,7 @@ flux get helmrelease -A
 # networking  	    ingress-nginx       	True 	Release reconciliation succeeded	3.30.0  	False
 ```
 
-Show the health of your `HelmRepository`s
+* Show the health of your `HelmRepository`s
 
 ```sh
 flux get sources helm -A
@@ -402,14 +524,9 @@ flux get sources helm -A
 
 === 🤖 Automation
 
-* [Renovate](https://www.whitesourcesoftware.com/free-developer-tools/renovate) is a very useful tool that creates PRs in this Github repository when Docker images, Helm charts, or anything else that can be tracked has a newer version. The renovate configuration can be found [here](./.github/renovate.json5).
+* https://www.whitesourcesoftware.com/free-developer-tools/renovate[Renovate] is a very useful tool that creates PRs in this Github repository when Docker images, Helm charts, or anything else that can be tracked has a newer version.
 
-* [system-upgrade-controller](https://github.com/rancher/system-upgrade-controller) watches for new k3s releases and upgrades your nodes when new versions are found.
-
-Some Github workflows included in this repository help automate some processes.
-
-* [Flux upgrade schedule](./.github/workflows/flux-schedule.yaml) - workflow to upgrade Flux.
-* [Renovate schedule](./.github/workflows/renovate-schedule.yaml) - workflow to annotate `HelmRelease` allowing [Renovate](https://www.whitesourcesoftware.com/free-developer-tools/renovate) to track Helm chart versions.
+* https://github.com/rancher/system-upgrade-controller[system-upgrade-controller] watches for new k3s releases and upgrades your nodes when new versions are found.
 
 === Add a taint to a node
 

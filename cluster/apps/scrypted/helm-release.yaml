@@ -19,7 +19,7 @@ spec:
   values:
     image:
       repository: koush/scrypted
-      tag: "v0.123.58-jammy-lite"
+      tag: "v0.138.2-noble-lite"
     hostNetwork: true
     resources:
       requests:

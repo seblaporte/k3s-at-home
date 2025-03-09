@@ -30,7 +30,7 @@ spec:
           main:
             image:
               repository: ghcr.io/music-assistant/server
-              tag: "2.4.2"
+              tag: "2.4.4"
               pullPolicy: IfNotPresent
             env:
               LOG_LEVEL: warning 

@@ -34,7 +34,6 @@ spec:
         memory: 128Mi
         cpu: 100m
     webhook:
-      enabled: true
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

@@ -8,40 +8,54 @@ spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://grafana.github.io/helm-charts
-      chart: grafana
-      version: 6.61.2
+      chart: app-template
+      version: 2.2.0
       sourceRef:
         kind: HelmRepository
-        name: grafana-charts
+        name: bjw-s-helm-charts
         namespace: flux-system
-      interval: 5m
+      interval: 15m
   values:
-    image:
-      repository: teslamate/grafana
-      tag: "1.27"
-    env:
-      DATABASE_USER: teslamate
-      DATABASE_PASS: ${SECRET_TESLAMATE_DB_PASSWORD}
-      DATABASE_NAME: teslamate
-      DATABASE_HOST: 192.168.1.10
-      DATABASE_PORT: 5439
-    grafana.ini:
-      analytics:
-        check_for_updates: false
-    persistence:
+    defaultPodOptions:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: teslamate/grafana
+              tag: "1.27"
+              pullPolicy: IfNotPresent
+            env:
+              DATABASE_USER: teslamate
+              DATABASE_PASS: ${SECRET_TESLAMATE_DB_PASSWORD}
+              DATABASE_NAME: teslamate
+              DATABASE_HOST: 192.168.1.10
+              DATABASE_PORT: 5439
+            resources:
+              requests:
+                memory: 250Mi
+                cpu: 500m
+              limits:
+                memory: 500Mi
+                cpu: 1000m
+    service:
+      main:
         enabled: true
-        storageClassName: "nfs-client"
-        size: 1Gi
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: node-role.kubernetes.io/master
-              operator: NotIn
-              values:
-              - "true"
+        controller: main
+        ports:
+          http:
+            enabled: true
+            port: 80
+            protocol: HTTP
     ingress:
       enabled: true
       ingressClassName: "traefik"
@@ -50,15 +64,22 @@ spec:
         traefik.ingress.kubernetes.io/router.middlewares: networking-traefik-forward-auth@kubernetescrd
         cert-manager.io/cluster-issuer: "letsencrypt-production"
       hosts:
-        - "teslamate-grafana.${SECRET_DOMAIN}"
+        - host: "teslamate-grafana.${SECRET_DOMAIN}"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
       tls:
         - secretName: teslamate-grafana-tls-secret
           hosts:
             - "teslamate-grafana.${SECRET_DOMAIN}"
-    resources:
-      requests:
-        memory: 250Mi
-        cpu: 500m
-      limits:
-        memory: 500Mi
-        cpu: 1000m
+    persistence:
+      grafana:
+        enabled: true
+        storageClassName: "nfs-client"
+        size: 1Gi
+        advancedMounts:
+          main:
+            main:
+              - path: /var/lib/grafana

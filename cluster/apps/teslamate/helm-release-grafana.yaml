@@ -78,6 +78,7 @@ spec:
       grafana:
         enabled: true
         storageClassName: "nfs-client"
+        accessMode: "ReadWriteOnce"
         size: 1Gi
         advancedMounts:
           main:

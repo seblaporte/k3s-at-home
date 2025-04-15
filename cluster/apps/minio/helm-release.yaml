@@ -35,6 +35,11 @@ spec:
               repository: minio/minio
               tag: "RELEASE.2025-04-08T15-41-24Z"
               pullPolicy: IfNotPresent
+            command:
+              - minio
+              - server
+              - --console-address
+              - ":9001"
             env:
               TZ: Europe/Paris
               MINIO_VOLUMES: /data

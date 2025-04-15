@@ -1,0 +1,99 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: minio
+  namespace: minio
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: app-template
+      version: 2.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-helm-charts
+        namespace: flux-system
+      interval: 15m
+  values:
+    defaultPodOptions:
+      hostNetwork: true
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: minio/minio
+              tag: "RELEASE.2025-04-08T15-41-24Z"
+              pullPolicy: IfNotPresent
+            env:
+              TZ: Europe/Paris
+              MINIO_VOLUMES: /data
+              MINIO_ROOT_USER: ${SECRET_MINIO_ROOT_USER}
+              MINIO_ROOT_PASSWORD: ${SECRET_MINIO_ROOT_PASSWORD}
+            resources:
+              requests:
+                memory: 128Mi
+                cpu: 100m
+              limits:
+                memory: 256Mi
+                cpu: 200m
+            probes:
+              startup:
+                spec:
+                  initialDelaySeconds: 0
+                  timeoutSeconds: 1
+                  periodSeconds: 5
+                  failureThreshold: 60
+              liveness:
+                spec:
+                  initialDelaySeconds: 0
+                  timeoutSeconds: 1
+                  periodSeconds: 60
+                  failureThreshold: 5
+    service:
+      main:
+        enabled: true
+        controller: main
+        type: LoadBalancer
+        loadBalancerIP: "${SVC_MINIO_ADDR}"
+        externalTrafficPolicy: Local
+        ports:
+          http:
+            enabled: true
+            port: 9001
+            protocol: TCP
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+        hosts:
+          - host: "minio.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
+        tls:
+          - hosts:
+              - "minio.${SECRET_DOMAIN}"
+            secretName: minio-tls-secret
+    persistence:
+      data:
+        type: nfs
+        server: 192.168.1.10
+        path: /volume1/minio
+        globalMounts:
+          - path: /data

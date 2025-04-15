@@ -33,3 +33,4 @@ resources:
   - navidrome
   - flaresolverr
   - uptime-kuma
+  - minio

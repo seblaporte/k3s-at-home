@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: spotdl-update-playlist
+  namespace: spotdl
+spec:
+  schedule: "30 1 * * *" # Tous les jours à 01h30 UTC
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: NotIn
+                    values:
+                    - "true"
+          containers:
+            - name: spotdl-update-playlist
+              image: spotdl/spotify-downloader:v4.2.10
+              imagePullPolicy: IfNotPresent
+              command: ["/bin/entrypoint.sh"]
+              volumeMounts:
+                - name: script
+                  mountPath: /bin/entrypoint.sh
+                  readOnly: true
+                  subPath: entrypoint.sh
+                - name: media
+                  mountPath: /music
+          volumes:
+            - name: script
+              configMap:
+                defaultMode: 0700
+                name: update-all-playlist-script
+            - name: media
+              nfs:
+                server: 192.168.1.10
+                path: /volume1/media
+          restartPolicy: OnFailure

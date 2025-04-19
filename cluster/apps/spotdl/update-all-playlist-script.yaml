@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: update-all-playlist-script
+  namespace: spotdl
+data:
+  entrypoint.sh: |-
+    #!/bin/sh
+    # Script pour synchroniser tous les fichiers .spotdl dans un répertoire donné
+
+    # Boucle sur tous les fichiers du dossier spotdl avec l'extension .spotdl
+    for file in /music/spotdl/*.spotdl; do
+      if [ -e "$file" ]; then
+        echo "Synchronisation du fichier : $file"
+
+        # Extraction du champ "list_name" du premier élément du tableau "songs"
+        list_name=$(grep -m 1 '"list_name"' "$file" | sed -E 's/.*"list_name": "([^"]+)".*/\1/')
+
+        if [ -n "$list_name" ]; then
+          echo "Utilisation du répertoire : $list_name"
+          
+          # Création du chemin du répertoire de téléchargement
+          download_dir="/music/media/music/Playlists/$list_name"
+
+          # Création du répertoire de téléchargement s'il n'existe pas
+          if [ ! -d "$download_dir" ]; then
+            echo "Création du répertoire : $download_dir"
+            mkdir -p "$download_dir"
+          fi
+
+          # Changement de répertoire vers le répertoire de téléchargement
+          cd "$download_dir"
+
+          poetry run spotdl sync "$file"
+        else
+          echo "Champ 'list_name' introuvable dans $file"
+        fi
+      else
+        echo "Aucun fichier .spotdl trouvé"
+        break
+      fi
+    done

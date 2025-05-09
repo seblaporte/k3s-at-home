@@ -30,7 +30,7 @@ spec:
             topologyKey: "kubernetes.io/hostname"
     image:
       repository: homeassistant/home-assistant
-      tag: '2025.4.3'
+      tag: '2025.5.1'
       pullPolicy: Always
     controller:
       type: deployment

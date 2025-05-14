@@ -1,0 +1,98 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: backrest
+  namespace: backrest
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: app-template
+      version: 2.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-helm-charts
+        namespace: flux-system
+      interval: 15m
+  values:
+    defaultPodOptions:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: garethgeorge/backrest
+              tag: "v1.8.1-scratch"
+              pullPolicy: IfNotPresent
+            env:
+              TZ: Europe/Paris
+              BACKREST_CONFIG: /config/config.json
+              BACKREST_DATA: /data
+              XDG_CACHE_HOME: /cache
+            resources:
+              requests:
+                memory: 128Mi
+                cpu: 150m
+              limits:
+                memory: 256Mi
+                cpu: 250m
+            probes:
+              startup:
+                spec:
+                  initialDelaySeconds: 0
+                  timeoutSeconds: 1
+                  periodSeconds: 5
+                  failureThreshold: 60
+    service:
+      main:
+        enabled: true
+        controller: main
+        ports:
+          http:
+            enabled: true
+            port: 9898
+            protocol: HTTP
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+        hosts:
+          - host: "backrest.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
+        tls:
+          - hosts:
+              - "backrest.${SECRET_DOMAIN}"
+            secretName: backrest-tls-secret
+    persistence:
+      config:
+        enabled: true
+        storageClass: "nfs-client"
+        accessMode: "ReadWriteOnce"
+        size: "1Gi"
+      data:
+        enabled: true
+        storageClass: "nfs-client"
+        accessMode: "ReadWriteOnce"
+        size: "1Gi"
+      cache:
+        enabled: true
+        storageClass: "nfs-client"
+        accessMode: "ReadWriteOnce"
+        size: "1Gi"

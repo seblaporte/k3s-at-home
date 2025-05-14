@@ -35,3 +35,4 @@ resources:
   - uptime-kuma
   - minio
   - spotdl
+  - backrest

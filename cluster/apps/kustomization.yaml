@@ -36,3 +36,4 @@ resources:
   - minio
   - spotdl
   - backrest
+  - emqx

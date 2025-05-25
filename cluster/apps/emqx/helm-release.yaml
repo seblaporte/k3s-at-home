@@ -52,7 +52,7 @@ spec:
         loadBalancerIP: "${SVC_EMQX_ADDR}"
         externalTrafficPolicy: Local
         ports:
-          mqtt-ssl:
+          http:
             enabled: true
             port: 8883
             targetPort: 8883

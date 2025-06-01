@@ -167,7 +167,7 @@ spec:
           main:
             image:
               repository: appflowyinc/appflowy_worker
-              tag: "0.9.52"
+              tag: "0.9.54"
               pullPolicy: IfNotPresent
             env:
               - name: RUST_LOG

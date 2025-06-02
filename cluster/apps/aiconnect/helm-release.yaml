@@ -44,6 +44,9 @@ spec:
               limits:
                 memory: 300Mi
                 cpu: 250m
+    service:
+      main:
+        enabled: false
     persistence:
       config:
         enabled: true

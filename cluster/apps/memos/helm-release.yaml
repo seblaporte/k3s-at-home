@@ -38,7 +38,7 @@ spec:
               MEMOS_MODE: prod
               MEMOS_PORT: 5230
               MEMOS_DRIVER: postgres
-              MEMOS_DSN: "postgresql://memos:${SECRET_MEMOS_DB_PASSWORD}@memos:5476/memos?sslmode=disable"
+              MEMOS_DSN: "postgresql://memos:${SECRET_MEMOS_DB_PASSWORD}@${NAS_ADDR}:5476/memos?sslmode=disable"
             resources:
               requests:
                 memory: 200Mi

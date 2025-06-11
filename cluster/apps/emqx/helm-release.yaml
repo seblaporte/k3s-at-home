@@ -33,7 +33,7 @@ spec:
           main:
             image:
               repository: emqx/emqx
-              tag: "5.9.0-elixir"
+              tag: "5.10.0-elixir"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

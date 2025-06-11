@@ -33,7 +33,7 @@ spec:
           main:
             image:
               repository: appflowyinc/appflowy_cloud
-              tag: "0.9.58"
+              tag: "0.9.60"
               pullPolicy: IfNotPresent
             env:
               - name: RUST_LOG

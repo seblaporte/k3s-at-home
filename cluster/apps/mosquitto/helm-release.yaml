@@ -20,7 +20,7 @@ spec:
     image:
       repository: eclipse-mosquitto
       pullPolicy: IfNotPresent
-      version : "2.0.21"
+      version : "2.0.22"
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

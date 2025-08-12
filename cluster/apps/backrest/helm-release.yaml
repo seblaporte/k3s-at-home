@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: garethgeorge/backrest
-              tag: "v1.8.1-scratch"
+              tag: "v1.9.1-scratch"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

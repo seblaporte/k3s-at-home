@@ -19,7 +19,7 @@ spec:
   values:
     image:
       repository: esphome/esphome
-      tag: "2025.7"
+      tag: "2025.8"
     env:
       ESPHOME_DASHBOARD_USE_PING: true
     ingress:

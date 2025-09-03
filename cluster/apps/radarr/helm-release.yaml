@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: ghcr.io/linuxserver/radarr
-              tag: "5.26.2"
+              tag: "5.27.5"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

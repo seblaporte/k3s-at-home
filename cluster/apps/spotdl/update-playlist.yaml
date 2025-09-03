@@ -20,7 +20,7 @@ spec:
                     - "true"
           containers:
             - name: spotdl-update-playlist
-              image: spotdl/spotify-downloader:v4.2.10
+              image: spotdl/spotify-downloader:v4.4.2
               imagePullPolicy: IfNotPresent
               command: ["/bin/entrypoint.sh"]
               volumeMounts:

@@ -144,7 +144,7 @@ spec:
           main:
             image:
               repository: appflowyinc/appflowy_ai
-              tag: "0.9.100"
+              tag: "0.9.122"
               pullPolicy: IfNotPresent
             env:
               - name: OPENAI_API_KEY

@@ -208,7 +208,7 @@ spec:
           main:
             image:
               repository: appflowyinc/appflowy_web
-              tag: "0.9.99"
+              tag: "0.9.123"
               pullPolicy: IfNotPresent
             resources:
               requests:

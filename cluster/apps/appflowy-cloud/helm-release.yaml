@@ -121,7 +121,7 @@ spec:
           main:
             image:
               repository: appflowyinc/admin_frontend
-              tag: "0.9.123"
+              tag: "0.9.127"
               pullPolicy: IfNotPresent
             env:
               - name: ADMIN_FRONTEND_REDIS_URL

@@ -9,6 +9,8 @@ spec:
     spec:
       template:
         spec:
+          concurrencyPolicy: Forbid
+          successfulJobsHistoryLimit: 1
           affinity:
             nodeAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:

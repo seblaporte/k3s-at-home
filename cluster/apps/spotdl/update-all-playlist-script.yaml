@@ -31,7 +31,7 @@ data:
           # Changement de répertoire vers le répertoire de téléchargement
           cd "$download_dir"
 
-          poetry run spotdl sync "$file"
+          uv run --project /app spotdl sync "$file"
         else
           echo "Champ 'list_name' introuvable dans $file"
         fi

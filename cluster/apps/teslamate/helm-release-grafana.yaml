@@ -39,7 +39,7 @@ spec:
               DATABASE_PASS: ${SECRET_TESLAMATE_DB_PASSWORD}
               DATABASE_NAME: teslamate
               DATABASE_HOST: 192.168.1.10
-              DATABASE_PORT: 5439
+              DATABASE_PORT: 5440
             resources:
               requests:
                 memory: 250Mi

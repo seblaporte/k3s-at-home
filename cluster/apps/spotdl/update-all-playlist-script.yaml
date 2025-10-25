@@ -8,6 +8,9 @@ data:
     #!/bin/sh
     # Script pour synchroniser tous les fichiers .spotdl dans un répertoire donné
 
+    # Maj de yt-dlp pour avoir la dernière version
+    uv pip install -U yt-dlp --directory /app 
+
     # Boucle sur tous les fichiers du dossier spotdl avec l'extension .spotdl
     for file in /music/spotdl/*.spotdl; do
       if [ -e "$file" ]; then

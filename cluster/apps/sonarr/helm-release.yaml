@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: ghcr.io/linuxserver/sonarr
-              tag: "4.0.15"
+              tag: "4.0.16"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2025.10.4
+FROM homeassistant/home-assistant:2025.11.1
 
 # Add dependencies required by leikoilja/ha-google-home plugin
 # https://github.com/leikoilja/ha-google-home#arm-docker-container-dependencies-workaround

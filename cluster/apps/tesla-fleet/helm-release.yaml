@@ -77,3 +77,20 @@ spec:
           - hosts:
               - "tesla-fleet.${SECRET_DOMAIN}"
             secretName: tesla-fleet-tls-secret
+    persistence:
+      config:
+        enabled: true
+        type: configMap
+        name: tesla-fleet-nginx-configmap
+        advancedMounts:
+          main:
+            main:
+              - path: /etc/nginx/sites-enabled
+      key:
+        enabled: true
+        type: configMap
+        name: tesla-fleet-public-key-configmap
+        advancedMounts:
+          main:
+            main:
+              - path: /var/www/tesla/.well-known/appspecific

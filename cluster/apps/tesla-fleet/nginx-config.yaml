@@ -4,7 +4,7 @@ metadata:
   name: tesla-fleet-nginx-configmap
   namespace: tesla-fleet
 data:
-  tesla-fleet.home.sebastien-laporte.fr: |
+  default.conf: |
     server {
       listen 80;
       server_name tesla-fleet.home.sebastien-laporte.fr;

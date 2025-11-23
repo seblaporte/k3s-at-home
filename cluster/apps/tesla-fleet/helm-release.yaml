@@ -85,7 +85,7 @@ spec:
         advancedMounts:
           main:
             main:
-              - path: /etc/nginx/sites-enabled
+              - path: /etc/nginx/conf.d
       key:
         enabled: true
         type: configMap

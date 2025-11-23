@@ -1,0 +1,79 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tesla-fleet
+  namespace: tesla-fleet
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: app-template
+      version: 2.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-helm-charts
+        namespace: flux-system
+      interval: 15m
+  values:
+    defaultPodOptions:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: nginx
+              tag: "1.29.3"
+              pullPolicy: IfNotPresent
+            env:
+              TZ: Europe/Paris
+            resources:
+              requests:
+                memory: 64Mi
+                cpu: 150m
+              limits:
+                memory: 128Mi
+                cpu: 150m
+            probes:
+              startup:
+                spec:
+                  initialDelaySeconds: 0
+                  timeoutSeconds: 1
+                  periodSeconds: 5
+                  failureThreshold: 60
+    service:
+      main:
+        enabled: true
+        controller: main
+        ports:
+          http:
+            enabled: true
+            port: 80
+            protocol: HTTP
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+        hosts:
+          - host: "tesla-fleet.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
+        tls:
+          - hosts:
+              - "tesla-fleet.${SECRET_DOMAIN}"
+            secretName: tesla-fleet-tls-secret

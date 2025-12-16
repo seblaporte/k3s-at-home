@@ -74,13 +74,9 @@ spec:
     persistence:
       config:
         enabled: true
-        storageClass: "synology-iscsi-storage"
-        accessMode: ReadWriteOnce
+        storageClass: "nfs-client"
+        accessMode: "ReadWriteOnce"
         size: "1Gi"
-        advancedMounts:
-          main:
-            main:
-              - path: /config
       logs:
         enabled: true
         storageClass: "synology-iscsi-storage"

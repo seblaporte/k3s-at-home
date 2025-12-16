@@ -46,7 +46,6 @@ spec:
     service:
       main:
         enabled: true
-        externalTrafficPolicy: Local
         controller: main
         ports:
           http:

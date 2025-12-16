@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - crowdsec/helm-release.yaml
   - traefik
+  - authelia

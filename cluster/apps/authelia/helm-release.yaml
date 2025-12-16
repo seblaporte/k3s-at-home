@@ -76,7 +76,7 @@ spec:
         enabled: true
         storageClass: "nfs-client"
         accessMode: "ReadWriteOnce"
-        size: "1Gi"
+        size: "2Gi"
       logs:
         enabled: true
         storageClass: "synology-iscsi-storage"

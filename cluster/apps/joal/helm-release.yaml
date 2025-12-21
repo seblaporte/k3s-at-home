@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: anthonyraymond/joal
-              tag: "2.1.36"
+              tag: "2.1.37"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

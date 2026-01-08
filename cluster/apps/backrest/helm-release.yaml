@@ -39,6 +39,7 @@ spec:
               BACKREST_CONFIG: /config/config.json
               BACKREST_DATA: /data
               XDG_CACHE_HOME: /cache
+              BACKREST_PORT: "9898"
             resources:
               requests:
                 memory: 128Mi
@@ -68,6 +69,7 @@ spec:
         ingressClassName: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: networking-forwardauth-authelia@kubernetescrd
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
           - host: "backrest.${SECRET_DOMAIN}"

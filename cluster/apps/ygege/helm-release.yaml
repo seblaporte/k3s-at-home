@@ -36,6 +36,8 @@ spec:
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris
+              YGG_USERNAME: "${SECRET_YGG_USERNAME}"
+              YGG_PASSWORD: "${SECRET_YGG_PASSWORD}"
             resources:
               requests:
                 memory: 50Mi

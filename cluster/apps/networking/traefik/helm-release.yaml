@@ -52,6 +52,7 @@ spec:
     additionalArguments:
       - "--entrypoints.web.http.middlewares=networking-bouncer@kubernetescrd"
       - "--entrypoints.websecure.http.middlewares=networking-redirectscheme@kubernetescrd, networking-bouncer@kubernetescrd"
+      - "--entryPoints.lan.address=:8085"
       - "--api.insecure=true"
       - "--serverstransport.insecureskipverify=true"
       - "--providers.kubernetesingress.ingressendpoint.ip=${SVC_TRAEFIK_ADDR}"
@@ -83,6 +84,12 @@ spec:
           tls:
             enabled: true
             options: "default"
+      lan:
+        port: 8085
+        expose:
+          default: true
+        exposedPort: 8085
+        protocol: TCP
       metrics:
         port: 8082
         expose:

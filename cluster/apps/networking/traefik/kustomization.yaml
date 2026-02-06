@@ -6,3 +6,4 @@ resources:
   - plugins/crowdsec-bouncer.yaml
   - monitoring/servicemonitor.yaml
   - https-redirect.yaml
+  - lan-only-middleware.yaml

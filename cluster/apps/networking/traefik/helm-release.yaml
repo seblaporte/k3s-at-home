@@ -69,18 +69,24 @@ spec:
         type: secret
     ports:
       traefik:
-        expose: true
+        expose:
+          default: true
       web:
-        expose: true
+        expose:
+          default: true
         exposedPort: 80
         protocol: TCP
       websecure:
-        tls:
-          enabled: true
-          options: "default"
+        expose:
+          default: true
+        http:
+          tls:
+            enabled: true
+            options: "default"
       metrics:
         port: 8082
-        expose: true
+        expose:
+          default: true
         exposedPort: 8082
     tlsOptions:
       default:

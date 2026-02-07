@@ -18,6 +18,9 @@ spec:
       interval: 1m
   values:
     loki:
+      persistence:
+        enabled: true
+        size: 2Gi
       config:
         auth_enabled: false
 

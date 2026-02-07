@@ -20,7 +20,10 @@ spec:
     loki:
       persistence:
         enabled: true
-        size: 2Gi
+        accessModes:
+        - ReadWriteOnce
+        size: 5Gi
+        storageClassName: "synology-iscsi-storage"
       config:
         auth_enabled: false
 

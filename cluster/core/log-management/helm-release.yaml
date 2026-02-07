@@ -27,7 +27,6 @@ spec:
         compactor:
           retention_enabled: true
           compaction_interval: 10m
-          delete_request_store: boltdb-shipper
           working_directory: /var/loki/compactor
 
         schema_config:

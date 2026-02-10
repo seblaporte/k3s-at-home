@@ -52,6 +52,11 @@ spec:
                   value: "30s"
                 - name: HEALTH_SUCCESS_WAIT_DURATION
                   value: "30s"
+              volumeMounts:
+                - name: media
+                  readOnly: true
+                  subPath: spotdl/vpn
+                  mountPath: /gluetun
               securityContext:
                 privileged: true
                 capabilities:

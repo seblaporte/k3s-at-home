@@ -5,12 +5,12 @@ metadata:
   namespace: spotdl
 spec:
   schedule: "30 1 * * *" # Tous les jours à 01h30 UTC
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
         spec:
-          concurrencyPolicy: Forbid
-          successfulJobsHistoryLimit: 1
           affinity:
             nodeAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
@@ -32,6 +32,34 @@ spec:
                   subPath: entrypoint.sh
                 - name: media
                   mountPath: /music
+            - name: spotdl-vpn
+              image: ghcr.io/qdm12/gluetun:v3.41.0
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: TZ
+                  value: "Europe/Paris"
+                - name: VPN_SERVICE_PROVIDER
+                  value: "cyberghost"
+                - name: OPENVPN_USER
+                  value: "${SECRET_VPN_USERNAME}"
+                - name: OPENVPN_PASSWORD
+                  value: "${SECRET_VPN_PASSWORD}"
+                - name: UPDATER_PERIOD
+                  value: "24h"
+                - name: SERVER_COUNTRIES
+                  value: "Belgium"
+                - name: HEALTH_VPN_DURATION_INITIAL
+                  value: "30s"
+                - name: HEALTH_SUCCESS_WAIT_DURATION
+                  value: "30s"
+              securityContext:
+                privileged: true
+                capabilities:
+                  add: ["NET_ADMIN"]
+              resources:
+                requests:
+                  memory: 256Mi
+                  cpu: 250m
           volumes:
             - name: script
               configMap:

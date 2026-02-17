@@ -77,4 +77,4 @@ spec:
         enabled: true
         storageClass: "synology-iscsi-storage"
         accessMode: ReadWriteOnce
-        size: "5Gi"
+        size: "2Gi"

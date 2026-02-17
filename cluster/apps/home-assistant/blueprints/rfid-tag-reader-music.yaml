@@ -12,14 +12,8 @@ blueprint:
       selector:
         text:
 
-    music_assistant_player:
-      name: Player Music Assistant (pour parcourir la bibliothèque)
-      selector:
-        entity:
-          domain: media_player
-
     media_content:
-      name: Musique (Track / Album / Playlist)
+      name: Lecteur et média associé (Track / Album / Playlist)
       selector:
         media:
 
@@ -29,16 +23,30 @@ trigger:
   - platform: event
     event_type: rfid_card_scanned
 
+variables:
+  reader_id: "{{ trigger.event.data.device_id }}"
+  salon_reader: "{{ states('input_text.rfid_reader_salon') }}"
+  etage_reader: "{{ states('input_text.rfid_reader_etage') }}"
+
+  target_player: >
+    {% if reader_id == salon_reader %}
+      media_player.chromecast_hi_fi_2
+    {% elif reader_id == etage_reader %}
+      media_player.google_nest_palier_2
+    {% else %}
+      none
+    {% endif %}
+
 condition:
   - condition: template
     value_template: >
       {{ trigger.event.data.tag_id == !input tag_id
-         and trigger.event.data.player != 'none' }}
+         and target_player != 'none' }}
 
 action:
   - service: media_player.play_media
     target:
-      entity_id: "{{ trigger.event.data.player }}"
+      entity_id: "{{ target_player }}"
     data:
       media_content_id: "{{ !input media_content.media_content_id }}"
       media_content_type: "{{ !input media_content.media_content_type }}"

@@ -1,5 +1,5 @@
 blueprint:
-  name: RFID Card → Music Assistant (Proper Media Selector)
+  name: RFID Card → Music Assistant
   description: >
     Carte RFID individuelle.
     Sélection d’un média via le navigateur Music Assistant.

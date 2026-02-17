@@ -53,3 +53,5 @@ action:
     data:
       media_content_id: "{{ selected_media.media_content_id }}"
       media_content_type: "{{ selected_media.media_content_type }}"
+
+Message malformed: invalid template (TemplateSyntaxError: unexpected char '!' at 32) for dictionary value @ data['conditions'][0]['value_template']

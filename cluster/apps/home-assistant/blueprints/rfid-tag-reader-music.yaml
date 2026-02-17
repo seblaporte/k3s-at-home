@@ -28,6 +28,9 @@ variables:
   salon_reader: "{{ states('input_text.rfid_reader_salon') }}"
   etage_reader: "{{ states('input_text.rfid_reader_etage') }}"
 
+  selected_tag: !input tag_id
+  selected_media: !input media_content
+
   target_player: >
     {% if reader_id == salon_reader %}
       media_player.chromecast_hi_fi_2
@@ -48,5 +51,5 @@ action:
     target:
       entity_id: "{{ target_player }}"
     data:
-      media_content_id: "{{ !input media_content.media_content_id }}"
-      media_content_type: "{{ !input media_content.media_content_type }}"
+      media_content_id: "{{ selected_media.media_content_id }}"
+      media_content_type: "{{ selected_media.media_content_type }}"

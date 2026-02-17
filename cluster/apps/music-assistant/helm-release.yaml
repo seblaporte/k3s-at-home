@@ -16,8 +16,8 @@ spec:
         namespace: flux-system
       interval: 15m
   values:
-    hostNetwork: true
     defaultPodOptions:
+      hostNetwork: true
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

@@ -1,0 +1,40 @@
+blueprint:
+  name: RFID Card → Music Assistant
+  description: >
+    Une carte RFID individuelle.
+    Contient le tag et le média à jouer.
+
+  domain: automation
+
+  input:
+    tag_id:
+      name: Tag RFID
+      selector:
+        text:
+
+    media_entity:
+      name: Playlist / Album Music Assistant
+      selector:
+        entity:
+          domain: media_player
+
+mode: restart
+
+trigger:
+  - platform: event
+    event_type: rfid_card_scanned
+
+condition:
+  - condition: template
+    value_template: >
+      {{ trigger.event.data.tag_id == !input tag_id
+         and trigger.event.data.player != 'none' }}
+
+action:
+  - service: media_player.play_media
+    target:
+      entity_id: "{{ trigger.event.data.player }}"
+    data:
+      media_content_id: >
+        {{ state_attr(!input media_entity, 'media_content_id') }}
+      media_content_type: music

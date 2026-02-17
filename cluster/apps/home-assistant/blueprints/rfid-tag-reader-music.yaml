@@ -1,23 +1,25 @@
 blueprint:
-  name: RFID Card → Music Assistant
+  name: RFID Card → Music Assistant (Track Selector)
   description: >
     Une carte RFID individuelle.
-    Contient le tag et le média à jouer.
+    Permet de sélectionner une track / album / playlist Music Assistant
+    via une liste déroulante dans l’UI.
 
   domain: automation
 
   input:
     tag_id:
       name: Tag RFID
-      description: Sélectionne le tag RFID associé à cette carte
+      description: ID du tag RFID (copié depuis les outils développeur)
       selector:
-        tag:
+        text:
 
     media_entity:
-      name: Playlist / Album Music Assistant
+      name: Musique (Track / Album / Playlist)
+      description: Sélectionne un média depuis Music Assistant
       selector:
         entity:
-          domain: media_player
+          integration: music_assistant
 
 mode: restart
 
@@ -36,6 +38,5 @@ action:
     target:
       entity_id: "{{ trigger.event.data.player }}"
     data:
-      media_content_id: >
-        {{ state_attr(!input media_entity, 'media_content_id') }}
-      media_content_type: music
+      media_content_id: "{{ state_attr(!input media_entity, 'media_content_id') }}"
+      media_content_type: "{{ state_attr(!input media_entity, 'media_content_type') }}"

@@ -22,7 +22,6 @@ blueprint:
       name: Musique (Track / Album / Playlist)
       selector:
         media:
-          entity: !input music_assistant_player
 
 mode: restart
 

@@ -9,8 +9,9 @@ blueprint:
   input:
     tag_id:
       name: Tag RFID
+      description: Sélectionne le tag RFID associé à cette carte
       selector:
-        text:
+        tag:
 
     media_entity:
       name: Playlist / Album Music Assistant

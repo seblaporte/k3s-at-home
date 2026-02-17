@@ -43,7 +43,7 @@ variables:
 condition:
   - condition: template
     value_template: >
-      {{ trigger.event.data.tag_id == !input tag_id
+      {{ trigger.event.data.tag_id == selected_tag
          and target_player != 'none' }}
 
 action:

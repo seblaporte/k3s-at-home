@@ -20,8 +20,8 @@ blueprint:
 mode: restart
 
 trigger:
-  - platform: event
-    event_type: rfid_card_scanned
+  - platform: tag
+    tag_id: !input tag_id
 
 variables:
   reader_id: "{{ trigger.event.data.device_id }}"
@@ -43,8 +43,7 @@ variables:
 condition:
   - condition: template
     value_template: >
-      {{ trigger.event.data.tag_id == selected_tag
-         and target_player != 'none' }}
+      {{ target_player != 'none' }}
 
 action:
   - service: media_player.play_media

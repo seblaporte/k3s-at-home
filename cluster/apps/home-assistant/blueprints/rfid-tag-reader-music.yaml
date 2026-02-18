@@ -25,16 +25,16 @@ trigger:
 
 variables:
   reader_id: "{{ trigger.event.data.device_id }}"
-  salon_reader: "{{ states('input_text.rfid_reader_salon') }}"
-  etage_reader: "{{ states('input_text.rfid_reader_etage') }}"
+  salon_reader: "{{ states('input_text.lecteur_rfid_salon') }}"
+  etage_reader: "{{ states('input_text.lecteur_rfid_etage') }}"
 
   selected_tag: !input tag_id
   selected_media: !input media_content
 
   target_player: >
-    {% if reader_id == salon_reader %}
+    {% if reader_id == lecteur_cartes_musique_tagreader %}
       media_player.chromecast_hi_fi_2
-    {% elif reader_id == etage_reader %}
+    {% elif reader_id == lecteur_cartes_musique_etage_tagreader %}
       media_player.google_nest_palier_2
     {% else %}
       none

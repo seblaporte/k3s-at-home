@@ -1,8 +1,9 @@
 blueprint:
-  name: RFID Card → Music Assistant (Track Selector)
+  name: RFID Card → Music Assistant (Track Selector + Next on Rescan)
   description: >
     Carte RFID individuelle.
     Sélection d’un média via le navigateur Music Assistant.
+    Si playlist déjà en cours → passe au morceau suivant.
 
   domain: automation
 
@@ -35,15 +36,33 @@ variables:
       none
     {% endif %}
 
+  is_playlist: >
+    {{ selected_media.media_content_type == 'playlist' }}
+
+  same_playlist_playing: >
+    {{
+      is_playlist and
+      state_attr(target_player, 'media_content_id') == selected_media.media_content_id
+    }}
+
 condition:
   - condition: template
     value_template: >
       {{ target_player != 'none' }}
 
 action:
-  - service: media_player.play_media
-    target:
-      entity_id: "{{ target_player }}"
-    data:
-      media_content_id: "{{ selected_media.media_content_id }}"
-      media_content_type: "{{ selected_media.media_content_type }}"
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ same_playlist_playing }}"
+        sequence:
+          - service: media_player.media_next_track
+            target:
+              entity_id: "{{ target_player }}"
+    default:
+      - service: media_player.play_media
+        target:
+          entity_id: "{{ target_player }}"
+        data:
+          media_content_id: "{{ selected_media.media_content_id }}"
+          media_content_type: "{{ selected_media.media_content_type }}"

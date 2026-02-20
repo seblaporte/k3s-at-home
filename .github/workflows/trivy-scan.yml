@@ -36,8 +36,8 @@ jobs:
       - name: Extract updated image from diff
         id: image
         run: |
-          # Cherche le fichier helm-release modifié (yaml ou yml)
-          FILE=$(git diff --name-only origin/${{ github.base_ref }} | grep -E '^helm-release\.ya?ml$' | head -n1)
+          # Cherche le fichier helm-release modifié (yaml ou yml) dans tout le repo
+          FILE=$(git diff --name-only origin/${{ github.base_ref }} | grep -E '(^|/)helm-release\.ya?ml$' | head -n1)
 
           if [ -z "$FILE" ]; then
             echo "NO_IMAGE=true" >> $GITHUB_ENV

@@ -1,4 +1,4 @@
-name: Trivy Scan (Renovate PR Only)
+name: Trivy Scan
 
 on:
   pull_request:

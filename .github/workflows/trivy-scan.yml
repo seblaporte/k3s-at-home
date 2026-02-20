@@ -98,37 +98,44 @@ jobs:
           echo "- 🟡 Medium: $MEDIUM_TOTAL" >> report.md
           echo "- 🟢 Low: $LOW_TOTAL" >> report.md
           echo "" >> report.md
-          echo "---" >> report.md
 
-          echo "## 🐳 Image: $IMAGE" >> report.md
-          echo "" >> report.md
+          TOTAL_VULNS=$((CRIT_TOTAL + HIGH_TOTAL + MEDIUM_TOTAL + LOW_TOTAL))
 
-          for SEV in CRITICAL HIGH MEDIUM LOW; do
-            COUNT=$(jq "[.Results[].Vulnerabilities[]? | select(.Severity==\"$SEV\")] | length" result.json)
-            if [ "$COUNT" -gt 0 ]; then
-              echo "### $SEV ($COUNT)" >> report.md
+          if [ "$TOTAL_VULNS" -eq 0 ]; then
+            echo "✅ Aucune faille détectée pour cette image." >> report.md
+          else
+            echo "---" >> report.md
+            echo "" >> report.md
+            echo "## 🐳 Image: $IMAGE" >> report.md
+            echo "" >> report.md
 
-              # Récupère les vulnérabilités de cette sévérité
-              jq -r --arg SEV "$SEV" '
-                .Results[].Vulnerabilities[]? | select(.Severity==$SEV) |
-                "- **\(.PkgName)** \(.InstalledVersion) → \(.FixedVersion // "N/A") (`\(.VulnerabilityID)`) - \(.PrimaryURL // "no link")"
-              ' result.json > tmp_$SEV.txt
+            for SEV in CRITICAL HIGH MEDIUM LOW; do
+              COUNT=$(jq "[.Results[].Vulnerabilities[]? | select(.Severity==\"$SEV\")] | length" result.json)
+              if [ "$COUNT" -gt 0 ]; then
+                echo "### $SEV ($COUNT)" >> report.md
 
-              # Affiche les 3 premières
-              head -n3 tmp_$SEV.txt >> report.md
+                # Récupère les vulnérabilités de cette sévérité
+                jq -r --arg SEV "$SEV" '
+                  .Results[].Vulnerabilities[]? | select(.Severity==$SEV) |
+                  "- **\(.PkgName)** \(.InstalledVersion) → \(.FixedVersion // "N/A") (`\(.VulnerabilityID)`) - \(.PrimaryURL // "no link")"
+                ' result.json > tmp_$SEV.txt
 
-              # Si plus de 3, les replier sous <details>
-              TOTAL=$(wc -l < tmp_$SEV.txt)
-              if [ "$TOTAL" -gt 3 ]; then
-                echo -e "<details><summary>$((TOTAL-3)) autres...</summary>\n" >> report.md
-                tail -n+$((3+1)) tmp_$SEV.txt >> report.md
-                echo "</details>" >> report.md
+                # Affiche les 3 premières
+                head -n3 tmp_$SEV.txt >> report.md
+
+                # Si plus de 3, les replier sous <details>
+                TOTAL=$(wc -l < tmp_$SEV.txt)
+                if [ "$TOTAL" -gt 3 ]; then
+                  echo -e "<details><summary>$((TOTAL-3)) autres...</summary>\n" >> report.md
+                  tail -n+$((3+1)) tmp_$SEV.txt >> report.md
+                  echo "</details>" >> report.md
+                fi
+
+                echo "" >> report.md
+                rm tmp_$SEV.txt
               fi
-
-              echo "" >> report.md
-              rm tmp_$SEV.txt
-            fi
-          done
+            done
+          fi
 
       - name: Upsert PR Comment
         if: env.NO_IMAGE == 'false'

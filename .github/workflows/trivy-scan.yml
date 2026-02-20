@@ -99,14 +99,35 @@ jobs:
           echo "" >> report.md
           echo "---" >> report.md
 
-          # Détails pour l'image unique
           echo "## 🐳 Image: $IMAGE" >> report.md
           echo "" >> report.md
 
-          jq -r '
-            .Results[].Vulnerabilities[]? |
-            "- **\(.Severity)**: \(.PkgName) \(.InstalledVersion) → \(.FixedVersion // "N/A") (`\(.VulnerabilityID)`) - \(.PrimaryURL // "no link")"
-          ' result.json >> report.md || echo "Aucune vulnérabilité détectée" >> report.md
+          for SEV in CRITICAL HIGH MEDIUM LOW; do
+            COUNT=$(jq "[.Results[].Vulnerabilities[]? | select(.Severity==\"$SEV\")] | length" result.json)
+            if [ "$COUNT" -gt 0 ]; then
+              echo "### $SEV ($COUNT)" >> report.md
+
+              # Récupère les vulnérabilités de cette sévérité
+              jq -r --arg SEV "$SEV" '
+                .Results[].Vulnerabilities[]? | select(.Severity==$SEV) |
+                "- **\(.PkgName)** \(.InstalledVersion) → \(.FixedVersion // "N/A") (`\(.VulnerabilityID)`) - \(.PrimaryURL // "no link")"
+              ' result.json > tmp_$SEV.txt
+
+              # Affiche les 3 premières
+              head -n3 tmp_$SEV.txt >> report.md
+
+              # Si plus de 3, les replier sous <details>
+              TOTAL=$(wc -l < tmp_$SEV.txt)
+              if [ "$TOTAL" -gt 3 ]; then
+                echo "<details><summary>$((TOTAL-3)) autres...</summary>" >> report.md
+                tail -n+$((3+1)) tmp_$SEV.txt >> report.md
+                echo "</details>" >> report.md
+              fi
+
+              echo "" >> report.md
+              rm tmp_$SEV.txt
+            fi
+          done
 
       - name: Upsert PR Comment
         if: env.NO_IMAGE == 'false'

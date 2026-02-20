@@ -80,15 +80,33 @@ jobs:
       - name: Generate Markdown report
         if: env.NO_IMAGE == 'false'
         run: |
+          IMAGE="${{ env.IMAGE }}"
+
           echo "# 🔍 Trivy Scan Report" > report.md
           echo "" >> report.md
-          echo "## 🐳 $IMAGE" >> report.md
 
-          CRIT=$(jq '[.Results[].Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length' result.json)
-          HIGH=$(jq '[.Results[].Vulnerabilities[]? | select(.Severity=="HIGH")] | length' result.json)
+          # Résumé global
+          CRIT_TOTAL=$(jq '[.Results[].Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length' result.json)
+          HIGH_TOTAL=$(jq '[.Results[].Vulnerabilities[]? | select(.Severity=="HIGH")] | length' result.json)
+          MEDIUM_TOTAL=$(jq '[.Results[].Vulnerabilities[]? | select(.Severity=="MEDIUM")] | length' result.json)
+          LOW_TOTAL=$(jq '[.Results[].Vulnerabilities[]? | select(.Severity=="LOW")] | length' result.json)
 
-          echo "- 🔴 Critical: $CRIT" >> report.md
-          echo "- 🟠 High: $HIGH" >> report.md
+          echo "## 📊 Résumé" >> report.md
+          echo "- 🔴 Critical: $CRIT_TOTAL" >> report.md
+          echo "- 🔶 High: $HIGH_TOTAL" >> report.md
+          echo "- 🟡 Medium: $MEDIUM_TOTAL" >> report.md
+          echo "- 🟢 Low: $LOW_TOTAL" >> report.md
+          echo "" >> report.md
+          echo "---" >> report.md
+
+          # Détails pour l'image unique
+          echo "## 🐳 Image: $IMAGE" >> report.md
+          echo "" >> report.md
+
+          jq -r '
+            .Results[].Vulnerabilities[]? |
+            "- **\(.Severity)**: \(.PkgName) \(.InstalledVersion) → \(.FixedVersion // "N/A") (`\(.VulnerabilityID)`) - \(.PrimaryURL // "no link")"
+          ' result.json >> report.md || echo "Aucune vulnérabilité détectée" >> report.md
 
       - name: Upsert PR Comment
         if: env.NO_IMAGE == 'false'

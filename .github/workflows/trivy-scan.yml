@@ -36,21 +36,14 @@ jobs:
       - name: Extract updated image from diff
         id: image
         run: |
-          git diff origin/${{ github.base_ref }} > diff.txt
-
-          # Trouve le fichier modifié
           FILE=$(git diff --name-only origin/${{ github.base_ref }} | head -n1)
+          echo "Processing file: $FILE"
 
-          # Utilise yq pour reconstruire l'image repository:tag proprement
+          # Utilise yq pour trouver image.repository + image.tag dans tout le YAML
           IMAGE=$(yq eval '
-            .. | select(has("repository") and has("tag")) | 
+            .. | select(has("repository") and has("tag")) |
             .repository + ":" + .tag
           ' "$FILE" 2>/dev/null | head -n1)
-
-          # fallback simple si image: est directement sur la ligne
-          if [ -z "$IMAGE" ]; then
-            IMAGE=$(grep '^+.*image:' diff.txt | sed 's/^+//' | awk '{print $2}' | tr -d '"')
-          fi
 
           if [ -z "$IMAGE" ]; then
             echo "NO_IMAGE=true" >> $GITHUB_ENV

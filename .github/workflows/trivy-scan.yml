@@ -1,0 +1,123 @@
+name: Trivy Scan (Renovate PR Only)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  trivy:
+    if: github.actor == 'renovate[bot]'
+    runs-on: ubuntu-latest
+
+    env:
+      TRIVY_CACHE_DIR: .trivycache
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }}
+
+      # 🔥 Cache Trivy DB
+      - name: Cache Trivy DB
+        uses: actions/cache@v4
+        with:
+          path: .trivycache
+          key: trivy-cache-${{ runner.os }}
+          restore-keys: |
+            trivy-cache-
+
+      - name: Extract updated image from diff
+        id: image
+        run: |
+          git diff origin/${{ github.base_ref }} > diff.txt
+
+          # Cherche ligne ajoutée contenant image:
+          IMAGE=$(grep '^+.*image:' diff.txt | sed 's/^+//' | awk '{print $2}' | head -n1)
+
+          # fallback si format repository/tag
+          if [ -z "$IMAGE" ]; then
+            FILE=$(git diff --name-only origin/${{ github.base_ref }} | head -n1)
+            REPO=$(grep -E 'repository:' $FILE | awk '{print $2}')
+            TAG=$(grep -E 'tag:' $FILE | awk '{print $2}')
+            IMAGE="$REPO:$TAG"
+          fi
+
+          if [ -z "$IMAGE" ]; then
+            echo "NO_IMAGE=true" >> $GITHUB_ENV
+            echo "No image detected, skipping scan."
+          else
+            echo "NO_IMAGE=false" >> $GITHUB_ENV
+            echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+            echo "Detected image: $IMAGE"
+          fi
+
+      - name: Stop if no image changes
+        if: env.NO_IMAGE == 'true'
+        run: echo "No image changes detected. Skipping scan."
+
+      - name: Setup & Scan with Trivy
+        if: env.NO_IMAGE == 'false'
+        uses: aquasecurity/trivy-action@0.34.0
+        with:
+          scan-type: 'image'
+          image-ref: ${{ env.IMAGE }}
+          format: 'json'
+          output: 'result.json'
+          severity: 'HIGH,CRITICAL'
+          cache-dir: ${{ env.TRIVY_CACHE_DIR }}
+        continue-on-error: true
+
+      - name: Generate Markdown report
+        if: env.NO_IMAGE == 'false'
+        run: |
+          echo "# 🔍 Trivy Scan Report" > report.md
+          echo "" >> report.md
+          echo "## 🐳 $IMAGE" >> report.md
+
+          CRIT=$(jq '[.Results[].Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length' result.json)
+          HIGH=$(jq '[.Results[].Vulnerabilities[]? | select(.Severity=="HIGH")] | length' result.json)
+
+          echo "- 🔴 Critical: $CRIT" >> report.md
+          echo "- 🟠 High: $HIGH" >> report.md
+
+      - name: Upsert PR Comment
+        if: env.NO_IMAGE == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('report.md', 'utf8');
+            const marker = '<!-- trivy-report -->';
+            const finalBody = marker + '\n' + body;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c => c.body.startsWith(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: finalBody
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: finalBody
+              });
+            }

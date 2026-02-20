@@ -36,10 +36,18 @@ jobs:
       - name: Extract updated image from diff
         id: image
         run: |
-          FILE=$(git diff --name-only origin/${{ github.base_ref }} | head -n1)
+          # Cherche le fichier helm-release modifié (yaml ou yml)
+          FILE=$(git diff --name-only origin/${{ github.base_ref }} | grep -E '^helm-release\.ya?ml$' | head -n1)
+
+          if [ -z "$FILE" ]; then
+            echo "NO_IMAGE=true" >> $GITHUB_ENV
+            echo "No helm-release YAML file detected. Skipping scan."
+            exit 0
+          fi
+
           echo "Processing file: $FILE"
 
-          # Utilise yq pour trouver image.repository + image.tag dans tout le YAML
+          # Utilise yq pour extraire repository + tag
           IMAGE=$(yq eval '
             .. | select(has("repository") and has("tag")) |
             .repository + ":" + .tag
@@ -47,7 +55,7 @@ jobs:
 
           if [ -z "$IMAGE" ]; then
             echo "NO_IMAGE=true" >> $GITHUB_ENV
-            echo "No image detected, skipping scan."
+            echo "No image found in $FILE. Skipping scan."
           else
             echo "NO_IMAGE=false" >> $GITHUB_ENV
             echo "IMAGE=$IMAGE" >> $GITHUB_ENV

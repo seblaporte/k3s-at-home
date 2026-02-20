@@ -38,26 +38,27 @@ jobs:
         run: |
           git diff origin/${{ github.base_ref }} > diff.txt
 
-          # Cherche ligne ajoutée contenant image:
-          IMAGE=$(grep '^+.*image:' diff.txt | sed 's/^+//' | awk '{print $2}' | head -n1)
+          # Trouve le fichier modifié
+          FILE=$(git diff --name-only origin/${{ github.base_ref }} | head -n1)
 
-          # fallback si format repository/tag
+          # Utilise yq pour reconstruire l'image repository:tag proprement
+          IMAGE=$(yq eval '
+            .. | select(has("repository") and has("tag")) | 
+            .repository + ":" + .tag
+          ' "$FILE" 2>/dev/null | head -n1)
+
+          # fallback simple si image: est directement sur la ligne
           if [ -z "$IMAGE" ]; then
-            FILE=$(git diff --name-only origin/${{ github.base_ref }} | head -n1)
-            REPO=$(grep -E 'repository:' $FILE | awk '{print $2}')
-            TAG=$(grep -E 'tag:' $FILE | awk '{print $2}')
-            IMAGE="$REPO:$TAG"
+            IMAGE=$(grep '^+.*image:' diff.txt | sed 's/^+//' | awk '{print $2}' | tr -d '"')
           fi
 
           if [ -z "$IMAGE" ]; then
             echo "NO_IMAGE=true" >> $GITHUB_ENV
             echo "No image detected, skipping scan."
           else
-            # Supprimer les quotes
-            IMAGE_CLEAN=$(echo "$IMAGE" | sed 's/^"//;s/"$//')
             echo "NO_IMAGE=false" >> $GITHUB_ENV
-            echo "IMAGE=$IMAGE_CLEAN" >> $GITHUB_ENV
-            echo "Detected image: $IMAGE_CLEAN"
+            echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+            echo "Detected image: $IMAGE"
           fi
 
       - name: Stop if no image changes

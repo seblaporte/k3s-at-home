@@ -53,9 +53,11 @@ jobs:
             echo "NO_IMAGE=true" >> $GITHUB_ENV
             echo "No image detected, skipping scan."
           else
+            # Supprimer les quotes
+            IMAGE_CLEAN=$(echo "$IMAGE" | sed 's/^"//;s/"$//')
             echo "NO_IMAGE=false" >> $GITHUB_ENV
-            echo "IMAGE=$IMAGE" >> $GITHUB_ENV
-            echo "Detected image: $IMAGE"
+            echo "IMAGE=$IMAGE_CLEAN" >> $GITHUB_ENV
+            echo "Detected image: $IMAGE_CLEAN"
           fi
 
       - name: Stop if no image changes

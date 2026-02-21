@@ -100,7 +100,7 @@ action:
                   - service: music_assistant.play_announcement
                     data:
                       entity_id: "{{ target_player }}"
-                      media_id: "/local/sounds/magic-chime.mp3"
+                      url: "http://192.168.1.32/local/sounds/magic-chime.mp3"
                   - service: media_player.media_next_track
                     target:
                       entity_id: "{{ target_player }}"
@@ -114,7 +114,7 @@ action:
       - service: music_assistant.play_announcement
         data:
           entity_id: "{{ target_player }}"
-          media_id: "/local/sounds/magic-chime.mp3"
+          url: "http://192.168.1.32/local/sounds/magic-chime.mp3"
 
       # ▶️ Lecture du média
       - service: media_player.play_media

@@ -74,7 +74,7 @@ action:
               # 🎵 Si c'était une musique → ne rien faire
               - conditions:
                   - condition: template
-                    value_template: "{{ last_type == 'music' or last_type == 'track' }}"
+                    value_template: "{{ last_type in ['music','track'] }}"
                 sequence: []
 
               # 📀 Si c'était une playlist → suivant
@@ -86,53 +86,51 @@ action:
                     target:
                       entity_id: "{{ target_player }}"
 
-      ##########################################################
-      # 🆕 NOUVELLE CARTE
-      ##########################################################
-      default:
+    ##########################################################
+    # 🆕 NOUVELLE CARTE
+    ##########################################################
+    default:
 
-        # ▶️ Lecture du média
-        - service: media_player.play_media
-          target:
-            entity_id: "{{ target_player }}"
-          data:
-            media_content_id: "{{ selected_media.media_content_id }}"
-            media_content_type: "{{ selected_media.media_content_type }}"
+      # ▶️ Lecture du média
+      - service: media_player.play_media
+        target:
+          entity_id: "{{ target_player }}"
+        data:
+          media_content_id: "{{ selected_media.media_content_id }}"
+          media_content_type: "{{ selected_media.media_content_type }}"
 
-        # 🎲 Si playlist → activer shuffle
-        - choose:
-            - conditions:
-                - condition: template
-                  value_template: "{{ media_type == 'playlist' }}"
-              sequence:
-                - service: media_player.shuffle_set
-                  target:
-                    entity_id: "{{ target_player }}"
-                  data:
-                    shuffle: true
+      # 🎲 Si playlist → activer shuffle
+      - if:
+          - condition: template
+            value_template: "{{ media_type == 'playlist' }}"
+        then:
+          - service: media_player.shuffle_set
+            target:
+              entity_id: "{{ target_player }}"
+            data:
+              shuffle: true
 
-        # 🎵 Si track → désactiver shuffle
-        - choose:
-            - conditions:
-                - condition: template
-                  value_template: "{{ media_type == 'music' or media_type == 'track' }}"
-              sequence:
-                - service: media_player.shuffle_set
-                  target:
-                    entity_id: "{{ target_player }}"
-                  data:
-                    shuffle: false
+      # 🎵 Si musique → désactiver shuffle
+      - if:
+          - condition: template
+            value_template: "{{ media_type in ['music','track'] }}"
+        then:
+          - service: media_player.shuffle_set
+            target:
+              entity_id: "{{ target_player }}"
+            data:
+              shuffle: false
 
-        # 💾 Sauvegarde UID
-        - service: input_text.set_value
-          target:
-            entity_id: "{{ last_uid_helper }}"
-          data:
-            value: "{{ current_uid }}"
+      # 💾 Sauvegarde UID
+      - service: input_text.set_value
+        target:
+          entity_id: "{{ last_uid_helper }}"
+        data:
+          value: "{{ current_uid }}"
 
-        # 💾 Sauvegarde type
-        - service: input_text.set_value
-          target:
-            entity_id: "{{ last_type_helper }}"
-          data:
-            value: "{{ media_type }}"
+      # 💾 Sauvegarde type
+      - service: input_text.set_value
+        target:
+          entity_id: "{{ last_type_helper }}"
+        data:
+          value: "{{ media_type }}"

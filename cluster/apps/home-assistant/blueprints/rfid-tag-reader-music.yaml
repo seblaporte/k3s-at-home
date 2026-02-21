@@ -26,6 +26,8 @@ trigger:
 variables:
   selected_media: !input media_content
 
+  current_uid: "{{ trigger.event.data.tag_id }}"
+
   target_player: >
     {% if trigger.event.data.device_id == states('input_text.lecteur_rfid_salon') %}
       media_player.chromecast_hi_fi_2
@@ -44,9 +46,9 @@ variables:
 
   last_type_helper: >
     {% if target_player == 'media_player.chromecast_hi_fi_2' %}
-      input_text.lecteur_rfid_salon_derniere_type_media
+      input_text.lecteur_rfid_salon_dernier_type_media
     {% elif target_player == 'media_player.google_nest_palier_2' %}
-      input_text.lecteur_rfid_etage_derniere_type_media
+      input_text.lecteur_rfid_etage_dernier_type_media
     {% endif %}
 
   last_uid: "{{ states(last_uid_helper) }}"

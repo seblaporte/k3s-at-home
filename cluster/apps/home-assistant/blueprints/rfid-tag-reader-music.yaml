@@ -35,15 +35,104 @@ variables:
       none
     {% endif %}
 
+  last_uid_helper: >
+    {% if target_player == 'media_player.chromecast_hi_fi_2' %}
+      input_text.lecteur_rfid_salon_derniere_carte_scannee
+    {% elif target_player == 'media_player.google_nest_palier_2' %}
+      input_text.lecteur_rfid_etage_derniere_carte_scannee
+    {% endif %}
+
+  last_type_helper: >
+    {% if target_player == 'media_player.chromecast_hi_fi_2' %}
+      input_text.input_text.lecteur_rfid_salon_derniere_type_media
+    {% elif target_player == 'media_player.google_nest_palier_2' %}
+      input_text.input_text.lecteur_rfid_etage_derniere_type_media
+    {% endif %}
+
+  last_uid: "{{ states(last_uid_helper) }}"
+  last_type: "{{ states(last_type_helper) }}"
+  media_type: "{{ selected_media.media_content_type }}"
+
 condition:
   - condition: template
     value_template: >
       {{ target_player != 'none' }}
 
 action:
-  - service: media_player.play_media
-    target:
-      entity_id: "{{ target_player }}"
-    data:
-      media_content_id: "{{ selected_media.media_content_id }}"
-      media_content_type: "{{ selected_media.media_content_type }}"
+  - choose:
+
+      ##########################################################
+      # 🔁 RESCAN MÊME CARTE
+      ##########################################################
+      - conditions:
+          - condition: template
+            value_template: "{{ current_uid == last_uid }}"
+        sequence:
+
+          - choose:
+
+              # 🎵 Si c'était une musique → ne rien faire
+              - conditions:
+                  - condition: template
+                    value_template: "{{ last_type == 'music' or last_type == 'track' }}"
+                sequence: []
+
+              # 📀 Si c'était une playlist → suivant
+              - conditions:
+                  - condition: template
+                    value_template: "{{ last_type == 'playlist' }}"
+                sequence:
+                  - service: media_player.media_next_track
+                    target:
+                      entity_id: "{{ target_player }}"
+
+      ##########################################################
+      # 🆕 NOUVELLE CARTE
+      ##########################################################
+      default:
+
+        # ▶️ Lecture du média
+        - service: media_player.play_media
+          target:
+            entity_id: "{{ target_player }}"
+          data:
+            media_content_id: "{{ selected_media.media_content_id }}"
+            media_content_type: "{{ selected_media.media_content_type }}"
+
+        # 🎲 Si playlist → activer shuffle
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ media_type == 'playlist' }}"
+              sequence:
+                - service: media_player.shuffle_set
+                  target:
+                    entity_id: "{{ target_player }}"
+                  data:
+                    shuffle: true
+
+        # 🎵 Si track → désactiver shuffle
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ media_type == 'music' or media_type == 'track' }}"
+              sequence:
+                - service: media_player.shuffle_set
+                  target:
+                    entity_id: "{{ target_player }}"
+                  data:
+                    shuffle: false
+
+        # 💾 Sauvegarde UID
+        - service: input_text.set_value
+          target:
+            entity_id: "{{ last_uid_helper }}"
+          data:
+            value: "{{ current_uid }}"
+
+        # 💾 Sauvegarde type
+        - service: input_text.set_value
+          target:
+            entity_id: "{{ last_type_helper }}"
+          data:
+            value: "{{ media_type }}"

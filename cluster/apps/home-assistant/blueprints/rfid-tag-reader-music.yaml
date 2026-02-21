@@ -68,7 +68,9 @@ action:
       ##########################################################
       - conditions:
           - condition: template
-            value_template: "{{ current_uid == last_uid }}"
+            value_template: >
+              {{ current_uid == last_uid
+                 and media_type == last_type }}
         sequence:
 
           - choose:

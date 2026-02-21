@@ -97,6 +97,10 @@ action:
                   - condition: template
                     value_template: "{{ last_type == 'playlist' }}"
                 sequence:
+                  - service: music_assistant.play_announcement
+                    data:
+                      entity_id: "{{ target_player }}"
+                      media_id: "/local/sounds/magic-chime.mp3"
                   - service: media_player.media_next_track
                     target:
                       entity_id: "{{ target_player }}"
@@ -105,6 +109,12 @@ action:
     # 🆕 NOUVELLE CARTE
     ##########################################################
     default:
+
+      # 🔔 Son d’acquittement
+      - service: music_assistant.play_announcement
+        data:
+          entity_id: "{{ target_player }}"
+          media_id: "/local/sounds/magic-chime.mp3"
 
       # ▶️ Lecture du média
       - service: media_player.play_media

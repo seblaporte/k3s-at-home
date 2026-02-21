@@ -68,7 +68,7 @@ jobs:
 
       - name: Setup & Scan with Trivy
         if: env.NO_IMAGE == 'false'
-        uses: aquasecurity/trivy-action@0.34.0
+        uses: aquasecurity/trivy-action@0.34.1
         with:
           scan-type: 'image'
           image-ref: ${{ env.IMAGE }}

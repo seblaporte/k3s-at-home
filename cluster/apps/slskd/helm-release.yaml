@@ -29,9 +29,15 @@ spec:
     controllers:
       main:
         initContainers:
-          set-perms:
-            image: busybox
-            command: [ "sh", "-c", "mkdir -p /data && chown -R 1000:1000 /data" ]
+          init-config:
+            image:
+              repository: public.ecr.aws/docker/library/busybox
+              tag: latest@sha256:d82f458899c9696cb26a7c02d5568f81c8c8223f8661bb2a7988b269c8b9051e
+              pullPolicy: IfNotPresent
+            command:
+              - "/bin/sh"
+              - "-c"
+              - "mkdir -p /data && chown -R 1000:1000 /data"
             volumeMounts:
               - name: data
                 mountPath: /data

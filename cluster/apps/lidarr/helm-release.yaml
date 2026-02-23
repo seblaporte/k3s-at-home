@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: ghcr.io/linuxserver/lidarr
-              tag: "3.1.2-nightly"
+              tag: "nightly-version-3.1.2.4914"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

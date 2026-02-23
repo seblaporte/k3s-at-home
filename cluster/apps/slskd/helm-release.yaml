@@ -98,9 +98,9 @@ spec:
     persistence:
       app:
         enabled: true
-        storageClass: "synology-iscsi-storage"
+        storageClass: "nfs-client"
         accessMode: "ReadWriteOnce"
-        size: "5Gi"
+        size: "1Gi"
       music:
         type: nfs
         server: 192.168.1.10

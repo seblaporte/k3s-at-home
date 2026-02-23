@@ -28,6 +28,13 @@ spec:
                 - "true"
     controllers:
       main:
+        initContainers:
+          fix-perms:
+            image: busybox
+            command: [ "sh", "-c", "chown -R 1000:1000 /app" ]
+            volumeMounts:
+              - name: app
+                mountPath: /app
         containers:
           main:
             image:

@@ -28,6 +28,13 @@ spec:
                 - "true"
     controllers:
       main:
+        initContainers:
+          set-perms:
+            image: busybox
+            command: [ "sh", "-c", "mkdir -p /data && chown -R 1000:1000 /data" ]
+            volumeMounts:
+              - name: data
+                mountPath: /data
         containers:
           main:
             image:
@@ -101,6 +108,11 @@ spec:
         storageClass: "nfs-client"
         accessMode: "ReadWriteOnce"
         size: "1Gi"
+      data:
+        enabled: true
+        storageClass: "synology-iscsi-storage"
+        accessMode: "ReadWriteOnce"
+        size: "5Gi"
       music:
         type: nfs
         server: 192.168.1.10

@@ -21,8 +21,8 @@ spec:
         containers:
           main:
             image:
-              repository: elestio/uptime-kuma
-              tag: "1.23.15"
+              repository: louislam/uptime-kuma
+              tag: "2.1.3"
               pullPolicy: IfNotPresent
             env:
               ADMIN_EMAIL: ${SECRET_UPTIME_KUMA_ADMIN_EMAIL}

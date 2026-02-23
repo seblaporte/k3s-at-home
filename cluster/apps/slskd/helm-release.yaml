@@ -65,6 +65,13 @@ spec:
             enabled: true
             port: 5030
             protocol: HTTP
+      shared:
+        enabled: true
+        controller: main
+        type: LoadBalancer
+        loadBalancerIP: "${SVC_SLSKD_ADDR}"
+        externalTrafficPolicy: Local
+        ports:
           soulseek:
             enabled: true
             port: 50300

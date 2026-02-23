@@ -37,10 +37,10 @@ spec:
             command:
               - "/bin/sh"
               - "-c"
-              - "mkdir -p /data && chown -R 1000:1000 /data"
+              - "mkdir -p /app && chown -R 1000:1000 /app"
             volumeMounts:
-              - name: data
-                mountPath: /data
+              - name: app
+                mountPath: /app
         containers:
           main:
             image:
@@ -110,11 +110,6 @@ spec:
             secretName: slskd-tls-secret
     persistence:
       app:
-        enabled: true
-        storageClass: "nfs-client"
-        accessMode: "ReadWriteOnce"
-        size: "1Gi"
-      data:
         enabled: true
         storageClass: "synology-iscsi-storage"
         accessMode: "ReadWriteOnce"

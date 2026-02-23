@@ -92,7 +92,7 @@ spec:
         enabled: true
         storageClass: "synology-iscsi-storage"
         accessMode: "ReadWriteOnce"
-        size: "2Gi"
+        size: "5Gi"
       music:
         type: nfs
         server: 192.168.1.10

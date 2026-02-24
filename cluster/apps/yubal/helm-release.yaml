@@ -53,6 +53,8 @@ spec:
               YUBAL_CONFIG: /config
               YUBAL_DATA: /data
               YUBAL_PORT: "8000"
+              YUBAL_DOWNLOAD_UGC: "true"
+              YUBAL_LOG_LEVEL: WARNING
             securityContext:
               runAsUser: 1000
               runAsGroup: 1000

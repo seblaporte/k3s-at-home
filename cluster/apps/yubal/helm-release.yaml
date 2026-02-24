@@ -45,13 +45,14 @@ spec:
           main:
             image:
               repository: ghcr.io/guillevc/yubal
-              tag: "0.6.1"
+              tag: "0.6.2"
               pullPolicy: IfNotPresent
             env:
               YUBAL_TZ: Europe/Paris
               YUBAL_FETCH_LYRICS: false
               YUBAL_CONFIG: /config
               YUBAL_DATA: /data
+              YUBAL_PORT: "8000"
             securityContext:
               runAsUser: 1000
               runAsGroup: 1000

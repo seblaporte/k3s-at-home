@@ -26,7 +26,7 @@ jobs:
 
       # 🔥 Cache Trivy DB
       - name: Cache Trivy DB
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .trivycache
           key: trivy-cache-${{ runner.os }}

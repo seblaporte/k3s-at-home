@@ -21,18 +21,18 @@ spec:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-            - matchExpressions:
-              - key: node-role.kubernetes.io/master
-                operator: NotIn
-                values:
-                - "true"
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: NotIn
+                    values:
+                      - "true"
     controllers:
       main:
         containers:
           main:
             image:
               repository: ghcr.io/seblaporte/shopping-cards
-              tag: "0.0.1"
+              tag: "latest"
               pullPolicy: IfNotPresent
             resources:
               requests:

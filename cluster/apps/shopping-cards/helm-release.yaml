@@ -34,7 +34,7 @@ spec:
           main:
             image:
               repository: ghcr.io/seblaporte/shopping-cards
-              tag: "sha-8791196"
+              tag: "sha-81b4c57"
               pullPolicy: IfNotPresent
             resources:
               requests:

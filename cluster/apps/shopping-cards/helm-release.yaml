@@ -17,6 +17,8 @@ spec:
       interval: 15m
   values:
     defaultPodOptions:
+      imagePullSecrets:
+        - name: ghcr-pull-secret
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

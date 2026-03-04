@@ -92,7 +92,7 @@ action:
                     value_template: "{{ last_type in ['music','track'] }}"
                 sequence: []
 
-              # 📀 Si c'était une playlist → suivant
+              # 📀 Si c'était une playlist → suivant ou relance si terminée
               - conditions:
                   - condition: template
                     value_template: "{{ last_type == 'playlist' }}"
@@ -101,9 +101,28 @@ action:
                     data:
                       entity_id: "{{ target_player }}"
                       url: "http://192.168.1.32/local/sounds/magic-chime.mp3"
-                  - service: media_player.media_next_track
-                    target:
-                      entity_id: "{{ target_player }}"
+                  - choose:
+                      # 🔄 Playlist terminée (idle/off) → relancer depuis le début
+                      - conditions:
+                          - condition: template
+                            value_template: "{{ states(target_player) in ['idle', 'off'] }}"
+                        sequence:
+                          - service: media_player.play_media
+                            target:
+                              entity_id: "{{ target_player }}"
+                            data:
+                              media_content_id: "{{ selected_media.media_content_id }}"
+                              media_content_type: "{{ selected_media.media_content_type }}"
+                          - service: media_player.shuffle_set
+                            target:
+                              entity_id: "{{ target_player }}"
+                            data:
+                              shuffle: true
+                    # ⏭️ Playlist en cours → piste suivante
+                    default:
+                      - service: media_player.media_next_track
+                        target:
+                          entity_id: "{{ target_player }}"
 
     ##########################################################
     # 🆕 NOUVELLE CARTE

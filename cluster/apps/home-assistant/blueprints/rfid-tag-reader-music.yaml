@@ -97,10 +97,6 @@ action:
                   - condition: template
                     value_template: "{{ last_type == 'playlist' }}"
                 sequence:
-                  - service: music_assistant.play_announcement
-                    data:
-                      entity_id: "{{ target_player }}"
-                      url: "http://192.168.1.32/local/sounds/magic-chime.mp3"
                   - choose:
                       # 🔄 Playlist terminée (idle/off) → relancer depuis le début
                       - conditions:
@@ -113,6 +109,9 @@ action:
                             data:
                               media_content_id: "{{ selected_media.media_content_id }}"
                               media_content_type: "{{ selected_media.media_content_type }}"
+                          - wait_template: "{{ is_state(target_player, 'playing') }}"
+                            timeout: "00:00:15"
+                            continue_on_timeout: true
                           - service: media_player.shuffle_set
                             target:
                               entity_id: "{{ target_player }}"
@@ -129,12 +128,6 @@ action:
     ##########################################################
     default:
 
-      # 🔔 Son d’acquittement
-      - service: music_assistant.play_announcement
-        data:
-          entity_id: "{{ target_player }}"
-          url: "http://192.168.1.32/local/sounds/magic-chime.mp3"
-
       # ▶️ Lecture du média
       - service: media_player.play_media
         target:
@@ -142,6 +135,11 @@ action:
         data:
           media_content_id: "{{ selected_media.media_content_id }}"
           media_content_type: "{{ selected_media.media_content_type }}"
+
+      # ⏳ Attendre que la lecture démarre (max 15s)
+      - wait_template: "{{ is_state(target_player, 'playing') }}"
+        timeout: "00:00:15"
+        continue_on_timeout: true
 
       # 🎲 Si playlist → activer shuffle
       - if:

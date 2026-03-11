@@ -45,7 +45,7 @@ spec:
           main:
             image:
               repository: slskd/slskd
-              tag: "0.24.4"
+              tag: "0.24.5"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

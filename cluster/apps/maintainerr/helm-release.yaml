@@ -2,8 +2,8 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: joal
-  namespace: joal
+  name: maintainerr
+  namespace: maintainerr
 spec:
   interval: 5m
   chart:
@@ -21,56 +21,61 @@ spec:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-              - matchExpressions:
-                  - key: node-role.kubernetes.io/master
-                    operator: NotIn
-                    values:
-                      - "true"
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                - "true"
     controllers:
       main:
+        initContainers:
+          init-config:
+            image:
+              repository: public.ecr.aws/docker/library/busybox
+              tag: latest@sha256:d82f458899c9696cb26a7c02d5568f81c8c8223f8661bb2a7988b269c8b9051e
+              pullPolicy: IfNotPresent
+            command:
+              - "/bin/sh"
+              - "-c"
+              - "mkdir -p /data && chown -R 1000:1000 /data"
+            volumeMounts:
+              - name: data
+                mountPath: /data
         containers:
           main:
             image:
-              repository: anthonyraymond/joal
-              tag: "2.1.37"
+              repository: ghcr.io/maintainerr/maintainerr
+              tag: "3.1.0"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris
-            args:
-              [
-                "--joal-conf=/config",
-                "--spring.main.web-environment=true",
-                "--server.port=8090",
-                "--joal.ui.path.prefix=nastiness",
-                "--joal.ui.secret-token=${SECRET_JOAL_TOKEN}",
-              ]
+            securityContext:
+              runAsUser: 1000
+              runAsGroup: 1000
+              fsGroup: 1000
             resources:
               requests:
-                memory: 420Mi
-                cpu: 20m
+                memory: 190Mi
+                cpu: 150m
               limits:
-                memory: 510Mi
-                cpu: 100m
+                memory: 265Mi
+                cpu: 250m
             probes:
               startup:
                 spec:
                   initialDelaySeconds: 0
                   timeoutSeconds: 1
-                  ## This means it has a maximum of 8*60=480 seconds to start up before it fails
-                  periodSeconds: 8
+                  periodSeconds: 5
                   failureThreshold: 60
     service:
       main:
         enabled: true
         controller: main
-        type: LoadBalancer
-        loadBalancerIP: "${SVC_JOAL_ADDR}"
-        externalTrafficPolicy: Local
         ports:
           http:
             enabled: true
-            port: 8090
-            protocol: TCP
+            port: 6246
+            protocol: HTTP
     ingress:
       main:
         enabled: true
@@ -80,7 +85,7 @@ spec:
           traefik.ingress.kubernetes.io/router.middlewares: networking-forwardauth-authelia@kubernetescrd
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - host: "joal.${SECRET_DOMAIN}"
+          - host: "maintainerr.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
@@ -88,11 +93,13 @@ spec:
                   name: main
         tls:
           - hosts:
-              - "joal.${SECRET_DOMAIN}"
-            secretName: joal-tls-secret
+              - "maintainerr.${SECRET_DOMAIN}"
+            secretName: maintainerr-tls-secret
     persistence:
-      config:
+      app:
         enabled: true
-        storageClass: "nfs-client"
+        storageClass: "synology-iscsi-storage"
         accessMode: "ReadWriteOnce"
-        size: "1Gi"
+        size: "2Gi"
+        globalMounts:
+          - path: /opt/data

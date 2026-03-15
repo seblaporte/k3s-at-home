@@ -96,7 +96,7 @@ spec:
               - "maintainerr.${SECRET_DOMAIN}"
             secretName: maintainerr-tls-secret
     persistence:
-      app:
+      data:
         enabled: true
         storageClass: "synology-iscsi-storage"
         accessMode: "ReadWriteOnce"

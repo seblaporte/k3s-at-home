@@ -106,17 +106,11 @@ spec:
           moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
           version: v1.3.0
     livenessProbe:
-      httpGet:
-        path: /ping
-        port: 9000
       initialDelaySeconds: 10
       periodSeconds: 15
       failureThreshold: 3
       timeoutSeconds: 5
     readinessProbe:
-      httpGet:
-        path: /ping
-        port: 9000
       initialDelaySeconds: 10
       periodSeconds: 10
       failureThreshold: 2

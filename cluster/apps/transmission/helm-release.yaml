@@ -59,6 +59,15 @@ spec:
               SERVER_COUNTRIES: Belgium
               HEALTH_VPN_DURATION_INITIAL: 30s
               HEALTH_SUCCESS_WAIT_DURATION: 30s
+            livenessProbe:
+              exec:
+                command:
+                  - /gluetun-entrypoint
+                  - healthcheck
+              initialDelaySeconds: 30
+              periodSeconds: 30
+              failureThreshold: 3
+              timeoutSeconds: 10
             securityContext:
               privileged: true
               capabilities:

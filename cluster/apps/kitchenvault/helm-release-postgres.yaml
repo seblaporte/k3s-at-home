@@ -80,7 +80,7 @@ spec:
         enabled: true
         controller: main
         ports:
-          postgresql:
+          http:
             enabled: true
             port: 5432
             protocol: TCP

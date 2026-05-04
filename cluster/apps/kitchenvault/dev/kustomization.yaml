@@ -7,4 +7,10 @@ resources:
   - secret.sops.yaml
 patches:
   - path: patch-backend-ingress.yaml
+    target:
+      kind: HelmRelease
+      name: kitchenvault-backend
   - path: patch-frontend-ingress.yaml
+    target:
+      kind: HelmRelease
+      name: kitchenvault-frontend

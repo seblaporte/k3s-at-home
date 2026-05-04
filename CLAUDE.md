@@ -63,11 +63,43 @@ cluster/apps/<namespace>/<appname>/
 
 **LoadBalancer IPs**: All user-facing services use MetalLB with fixed IPs from pool `192.168.1.20–192.168.1.40`. Always add new services to `cluster-settings.yaml` with a unique IP in that range.
 
-**Helm charts**: Primary sources are `k8s-at-home`, `bjw-s` (app-template), `bitnami`, `jetstack`, and `traefik` repositories — all defined as `HelmRepository` objects in `cluster/base/flux-system/charts/`.
+**Helm charts**: Primary sources are `k8s-at-home`, `bjw-s` (app-template), `bitnami`, `jetstack`, and `traefik` repositories — all defined as `HelmRepository` objects in `cluster/base/flux-system/charts/`. Exact `sourceRef.name` values: `bjw-s-helm-charts` (app-template **v2.2.0** — current version across all apps), `bitnami-charts`.
 
 **SOPS encryption**: Only `data` and `stringData` fields are encrypted (per `.sops.yaml`). Files containing secrets must be named `*.sops.yaml`. Never commit unencrypted secrets.
 
-**Ingress**: Traefik is the ingress controller. TLS via cert-manager with Let's Encrypt (Cloudflare DNS-01 challenge). Use staging issuer for testing.
+**Ingress vs LoadBalancer**: Services exposed via Traefik Ingress only need a ClusterIP service — no MetalLB IP required. MetalLB IPs are only for services needing direct LAN access (MQTT, databases on NAS, etc.). Traefik itself is at `192.168.1.25` and handles all ingress traffic.
+
+**Ingress annotations** (exact values to use):
+
+```yaml
+ingressClassName: "traefik"
+annotations:
+  traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+  traefik.ingress.kubernetes.io/router.middlewares: networking-forwardauth-authelia@kubernetescrd
+  cert-manager.io/cluster-issuer: "letsencrypt-production"  # or letsencrypt-staging for testing
+```
+
+**Storage classes**:
+
+- `synology-iscsi-storage` — high-performance iSCSI on Synology NAS, use for databases
+- `nfs-client` — dynamic NFS provisioning, use for general config/media storage
+
+**Node affinity**: All app pods must exclude master nodes. Always include in `defaultPodOptions`:
+
+```yaml
+defaultPodOptions:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                  - "true"
+```
+
+**Multi-service apps**: Create one HelmRelease file per service (e.g. `helm-release-backend.yaml`, `helm-release-frontend.yaml`, `helm-release-postgres.yaml`). Do not use multiple controllers in a single HelmRelease.
 
 ## Adding a New Application
 

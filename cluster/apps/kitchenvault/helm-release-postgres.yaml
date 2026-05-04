@@ -1,0 +1,94 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kitchenvault-postgresql
+  namespace: kitchenvault
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: app-template
+      version: 2.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-helm-charts
+        namespace: flux-system
+      interval: 15m
+  values:
+    defaultPodOptions:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: NotIn
+                    values:
+                      - "true"
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: pgvector/pgvector
+              tag: "pg17"
+              pullPolicy: IfNotPresent
+            env:
+              POSTGRES_USER: "kitchenvault"
+              POSTGRES_DB: "kitchenvault"
+              # Subdirectory avoids permission issues when mounting a PVC at the parent path
+              PGDATA: "/var/lib/postgresql/data/pgdata"
+              POSTGRES_PASSWORD:
+                secretKeyRef:
+                  name: kitchenvault-secrets
+                  key: postgres-user-password
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - pg_isready
+                      - -U
+                      - kitchenvault
+                  initialDelaySeconds: 15
+                  periodSeconds: 10
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - pg_isready
+                      - -U
+                      - kitchenvault
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  failureThreshold: 3
+            resources:
+              requests:
+                memory: 256Mi
+                cpu: 100m
+              limits:
+                memory: 512Mi
+                cpu: 500m
+    service:
+      main:
+        enabled: true
+        controller: main
+        ports:
+          postgresql:
+            enabled: true
+            port: 5432
+            protocol: TCP
+    persistence:
+      data:
+        enabled: true
+        storageClass: "synology-iscsi-storage"
+        accessMode: ReadWriteOnce
+        size: 5Gi
+        globalMounts:
+          - path: /var/lib/postgresql/data

@@ -44,4 +44,5 @@ resources:
   - yubal
   - shopping-cards
   - maintainerr
-  - kitchenvault
+  - kitchenvault/production
+  - kitchenvault/dev

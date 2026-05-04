@@ -1,0 +1,20 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kitchenvault-frontend
+spec:
+  values:
+    ingress:
+      main:
+        hosts:
+          - host: "kitchenvault-dev.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
+        tls:
+          - hosts:
+              - "kitchenvault-dev.${SECRET_DOMAIN}"
+            secretName: kitchenvault-dev-tls-secret

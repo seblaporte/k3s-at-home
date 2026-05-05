@@ -11,16 +11,3 @@ spec:
           main:
             env:
               KITCHENVAULT_CORS_ALLOWED_ORIGINS: "https://kitchenvault-dev.${SECRET_DOMAIN}"
-    ingress:
-      main:
-        hosts:
-          - host: "kitchenvault-dev-api.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  name: main
-        tls:
-          - hosts:
-              - "kitchenvault-dev-api.${SECRET_DOMAIN}"
-            secretName: kitchenvault-dev-api-tls-secret

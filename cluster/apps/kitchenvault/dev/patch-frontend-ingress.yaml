@@ -5,12 +5,6 @@ metadata:
   name: kitchenvault-frontend
 spec:
   values:
-    controllers:
-      main:
-        containers:
-          main:
-            env:
-              API_URL: "https://kitchenvault-dev-api.${SECRET_DOMAIN}"
     ingress:
       main:
         hosts:

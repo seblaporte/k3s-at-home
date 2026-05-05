@@ -42,6 +42,10 @@ spec:
                 secretKeyRef:
                   name: kitchenvault-secrets
                   key: postgres-user-password
+              OVH_AI_ENDPOINTS_ACCESS_TOKEN:
+                secretKeyRef:
+                  name: kitchenvault-secrets
+                  key: ovh-ai-endpoints-access-token
               COOKIDOO_SERVICE_URL: "http://kitchenvault-cookidoo:8001"
             resources:
               requests:

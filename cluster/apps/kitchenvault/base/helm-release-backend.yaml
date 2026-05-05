@@ -35,6 +35,7 @@ spec:
               tag: "manual"
               pullPolicy: Always
             env:
+              KITCHENVAULT_CORS_ALLOWED_ORIGINS: "https://kitchenvault.${SECRET_DOMAIN}"
               SPRING_DATASOURCE_URL: "jdbc:postgresql://kitchenvault-postgresql:5432/kitchenvault"
               SPRING_DATASOURCE_USERNAME: "kitchenvault"
               SPRING_DATASOURCE_PASSWORD:

@@ -5,6 +5,12 @@ metadata:
   name: kitchenvault-backend
 spec:
   values:
+    controllers:
+      main:
+        containers:
+          main:
+            env:
+              KITCHENVAULT_CORS_ALLOWED_ORIGINS: "https://kitchenvault-dev.${SECRET_DOMAIN}"
     ingress:
       main:
         hosts:

@@ -8,6 +8,8 @@ data:
   go2rtc.yaml: |
     api:
       listen: ":1984"
+      username: "$${GO2RTC_USERNAME}"
+      password: "$${GO2RTC_PASSWORD}"
 
     webrtc:
       listen: ":8555/tcp"

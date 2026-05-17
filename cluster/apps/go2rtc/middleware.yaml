@@ -1,0 +1,10 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: go2rtc-inject-credentials
+  namespace: go2rtc
+spec:
+  headers:
+    customRequestHeaders:
+      Authorization: "${GO2RTC_BASIC_AUTH_HEADER}"

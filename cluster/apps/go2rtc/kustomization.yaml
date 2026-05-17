@@ -5,4 +5,5 @@ resources:
   - namespace.yaml
   - configmap.yaml
   - secret.sops.yaml
+  - middleware.yaml
   - helm-release.yaml

@@ -46,3 +46,4 @@ resources:
   - maintainerr
   - kitchenvault/production
   - kitchenvault/dev
+  - go2rtc

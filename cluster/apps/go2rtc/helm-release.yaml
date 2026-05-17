@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: ghcr.io/alexxit/go2rtc
-              tag: "v1.9.4"
+              tag: "1.9.14"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

@@ -70,6 +70,29 @@ spec:
         accessMode: "ReadWriteOnce"
         mountPath: /config
         size: "5Gi"
+    probes:
+      liveness:
+        enabled: true
+        custom: true
+        spec:
+          httpGet:
+            path: /alive
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 5
+      readiness:
+        enabled: true
+        custom: true
+        spec:
+          httpGet:
+            path: /alive
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
     resources:
       requests:
         cpu: 100m

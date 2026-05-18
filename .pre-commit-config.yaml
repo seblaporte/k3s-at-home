@@ -2,20 +2,20 @@
 fail_fast: false
 repos:
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.26.3
+    rev: v1.38.0
     hooks:
       - args:
           - --config-file
           - .github/lint/.yamllint.yaml
         id: yamllint
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: mixed-line-ending
   - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.1.10
+    rev: v1.5.6
     hooks:
       - id: remove-crlf
       - id: remove-tabs
@@ -27,3 +27,17 @@ repos:
     rev: v2.0.3
     hooks:
       - id: forbid-secrets
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+  - repo: https://github.com/yannh/kubeconform
+    rev: v0.7.0
+    hooks:
+      - id: kubeconform
+        args:
+          - --strict
+          - --ignore-missing-schemas
+          - --kubernetes-version
+          - "1.31.0"
+        files: cluster/.+\.yaml$

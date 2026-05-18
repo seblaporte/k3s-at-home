@@ -45,7 +45,7 @@ spec:
           main:
             image:
               repository: ghcr.io/guillevc/yubal
-              tag: "0.8.0"
+              tag: "0.8.1"
               pullPolicy: IfNotPresent
             env:
               YUBAL_TZ: Europe/Paris

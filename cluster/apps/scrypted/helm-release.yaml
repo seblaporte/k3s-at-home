@@ -36,6 +36,26 @@ spec:
           timeoutSeconds: 1
           periodSeconds: 5
           failureThreshold: 100
+      liveness:
+        enabled: true
+        custom: true
+        spec:
+          tcpSocket:
+            port: 11080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 5
+      readiness:
+        enabled: true
+        custom: true
+        spec:
+          tcpSocket:
+            port: 11080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

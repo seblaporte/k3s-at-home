@@ -53,7 +53,6 @@ spec:
       - "--entrypoints.web.http.middlewares=networking-bouncer@kubernetescrd"
       - "--entrypoints.websecure.http.middlewares=networking-redirectscheme@kubernetescrd, networking-bouncer@kubernetescrd"
       - "--entryPoints.lan.address=:8085"
-      - "--api.insecure=true"
       - "--serverstransport.insecureskipverify=true"
       - "--providers.kubernetesingress.ingressendpoint.ip=${SVC_TRAEFIK_ADDR}"
     providers:
@@ -71,7 +70,7 @@ spec:
     ports:
       traefik:
         expose:
-          default: true
+          default: false
       web:
         expose:
           default: true

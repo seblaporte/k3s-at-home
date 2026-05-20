@@ -65,12 +65,27 @@
         'docker',
       ],
       enabled: true,
+      pinDigests: true,
       commitMessageTopic: 'container image {{depName}}',
       commitMessageExtra: 'to {{#if isSingleVersion}}v{{{newVersion}}}{{else}}{{{newValue}}}{{/if}}',
       matchUpdateTypes: [
         'major',
         'minor',
         'patch',
+        'digest',
+      ],
+    },
+    {
+      matchDatasources: [
+        'docker',
+      ],
+      matchUpdateTypes: [
+        'pin',
+        'digest',
+      ],
+      labels: [
+        'renovate/image',
+        'dep/pin',
       ],
     },
     {

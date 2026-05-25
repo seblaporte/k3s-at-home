@@ -82,3 +82,11 @@ spec:
             enabled: true
             port: 8001
             protocol: TCP
+    persistence:
+      data:
+        enabled: true
+        storageClass: "synology-iscsi-storage"
+        accessMode: ReadWriteOnce
+        size: 1Gi
+        globalMounts:
+          - path: /data

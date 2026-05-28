@@ -20,6 +20,7 @@ spec:
     - name: cert-manager
       namespace: cert-manager
   values:
+    priorityClassName: homelab-critical
     deployment:
       kind: Deployment
       replicas: 2

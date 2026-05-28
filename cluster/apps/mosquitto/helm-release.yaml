@@ -17,6 +17,7 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    priorityClassName: homelab-critical
     image:
       repository: eclipse-mosquitto
       pullPolicy: IfNotPresent

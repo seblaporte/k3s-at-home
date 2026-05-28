@@ -17,6 +17,7 @@ spec:
       interval: 15m
   values:
     defaultPodOptions:
+      priorityClassName: homelab-critical
       enableServiceLinks: false
       affinity:
         nodeAffinity:

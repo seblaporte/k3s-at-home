@@ -17,6 +17,7 @@ spec:
       interval: 15m
   values:
     defaultPodOptions:
+      priorityClassName: homelab-medium
       hostNetwork: true
       affinity:
         nodeAffinity:

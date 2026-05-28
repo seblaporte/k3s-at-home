@@ -17,6 +17,7 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    priorityClassName: homelab-high
     image:
       repository: vaultwarden/server
       tag: 1.36.0

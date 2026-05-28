@@ -17,6 +17,7 @@ spec:
       interval: 15m
   values:
     defaultPodOptions:
+      priorityClassName: homelab-high
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

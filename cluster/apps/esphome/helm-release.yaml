@@ -17,6 +17,7 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    priorityClassName: homelab-medium
     image:
       repository: esphome/esphome
       tag: "2026.1.4"

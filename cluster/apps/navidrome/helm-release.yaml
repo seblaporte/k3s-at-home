@@ -17,6 +17,7 @@ spec:
       interval: 15m
   values:
     defaultPodOptions:
+      priorityClassName: homelab-medium
       nodeSelector:
         nodetype: hardware-gateway
       tolerations:

@@ -38,6 +38,7 @@ spec:
               cidr:
                 - "192.168.1.0/24"
     agent:
+      priorityClassName: homelab-critical
       metrics:
         enabled: true
         serviceMonitor:
@@ -61,6 +62,7 @@ spec:
           storageClassName: "nfs-client"
           size: 100Mi
     lapi:
+      priorityClassName: homelab-critical
       metrics:
         enabled: true
         serviceMonitor:

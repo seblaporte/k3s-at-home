@@ -13,6 +13,7 @@ image::doc/k3s-cluster.jpeg[k3s-cluster]
 * https://cert-manager.io/[cert-manager] - SSL certificates - with Cloudflare DNS challenge
 * https://traefik.io[traefik] - ingress controller
 * https://github.com/rancher/system-upgrade-controller[system-upgrade-controller] - upgrade k3s
+* https://github.com/kubereboot/kured[kured] - automatic node reboots when required by the OS
 * https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner[nfs-subdir-external-provisioner] - external cluster storage
 * https://github.com/prometheus/prometheus[Prometheus] - cluster monitoring
 * https://github.com/grafana/loki[Loki] - log management

@@ -1,0 +1,50 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kured
+  namespace: kured
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://kubereboot.github.io/charts
+      chart: kured
+      version: 5.12.0
+      sourceRef:
+        kind: HelmRepository
+        name: kubereboot-charts
+        namespace: flux-system
+  valuesFrom:
+    - kind: Secret
+      name: kured-secret
+      valuesKey: notifyUrl
+      targetPath: configuration.notifyUrl
+  values:
+    fullnameOverride: kured
+    priorityClassName: homelab-critical
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+    configuration:
+      rebootDays:
+        - sun
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+        - sat
+      startTime: "01:00"
+      endTime: "06:00"
+      timeZone: "Europe/Paris"
+      period: "1h"
+      concurrency: 1
+      prometheusUrl: "http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090"
+      alertFilterRegexp: "^(Watchdog|InfoAlert)$"
+      alertFiringOnly: true
+    metrics:
+      create: true
+      namespace: kured

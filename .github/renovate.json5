@@ -7,6 +7,21 @@
     'prIgnoreNotification',
   ],
   rebaseWhen: 'conflicted',
+  schedule: [
+    'before 9am on Monday',
+  ],
+  minimumReleaseAge: '3 days',
+  osvVulnerabilityAlerts: true,
+  vulnerabilityAlerts: {
+    labels: [
+      'security',
+    ],
+    automerge: true,
+    minimumReleaseAge: null,
+    schedule: [
+      'at any time',
+    ],
+  },
   'helm-values': {
     fileMatch: [
       'cluster/.+/helm-release\\.yaml$',
@@ -87,6 +102,37 @@
         'renovate/image',
         'dep/pin',
       ],
+    },
+    {
+      matchDatasources: [
+        'docker',
+        'helm',
+      ],
+      matchUpdateTypes: [
+        'patch',
+      ],
+      automerge: true,
+      minimumReleaseAge: '3 days',
+    },
+    {
+      matchDatasources: [
+        'docker',
+        'helm',
+      ],
+      matchUpdateTypes: [
+        'minor',
+      ],
+      minimumReleaseAge: '7 days',
+    },
+    {
+      matchDatasources: [
+        'docker',
+        'helm',
+      ],
+      matchUpdateTypes: [
+        'major',
+      ],
+      dependencyDashboardApproval: true,
     },
     {
       matchDatasources: [

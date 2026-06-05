@@ -21,7 +21,7 @@ spec:
     priorityClassName: homelab-critical
     image:
       repository: adguard/adguardhome
-      tag: "v0.107.75"
+      tag: "v0.107.77"
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

@@ -41,34 +41,6 @@ spec:
             volumeMounts:
               - name: app
                 mountPath: /app
-          init-migrate-config:
-            image:
-              repository: mikefarah/yq
-              tag: "4.44.3"
-              pullPolicy: IfNotPresent
-            command:
-              - "/bin/sh"
-              - "-c"
-              - |
-                CONFIG=/app/slskd.yml
-                if [ ! -f "$CONFIG" ]; then
-                  echo "No config file found, skipping migration"
-                  exit 0
-                fi
-                NEEDS_MIGRATION=$(yq 'has("global") or has("groups")' "$CONFIG")
-                if [ "$NEEDS_MIGRATION" = "true" ]; then
-                  echo "Migrating slskd config: moving global/groups under transfers key"
-                  yq -i '
-                    if has("global") then .transfers.global = .global | del(.global) else . end |
-                    if has("groups") then .transfers.groups = .groups | del(.groups) else . end
-                  ' "$CONFIG"
-                  echo "Migration complete"
-                else
-                  echo "Config already in correct format, skipping migration"
-                fi
-            volumeMounts:
-              - name: app
-                mountPath: /app
         containers:
           main:
             image:

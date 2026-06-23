@@ -56,6 +56,27 @@ spec:
         accessMode: "ReadWriteOnce"
         mountPath: /config
         size: "1Gi"
+    probes:
+      liveness:
+        enabled: true
+        custom: true
+        spec:
+          tcpSocket:
+            port: 6052
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 5
+      readiness:
+        enabled: true
+        custom: true
+        spec:
+          tcpSocket:
+            port: 6052
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
     resources:
       requests:
         memory: 250Mi

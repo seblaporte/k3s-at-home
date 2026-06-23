@@ -54,6 +54,29 @@ spec:
         accessMode: "ReadWriteOnce"
         mountPath: /data
         size: "2Gi"
+    probes:
+      liveness:
+        enabled: true
+        custom: true
+        spec:
+          httpGet:
+            path: /
+            port: 1880
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 5
+      readiness:
+        enabled: true
+        custom: true
+        spec:
+          httpGet:
+            path: /
+            port: 1880
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
     resources:
       requests:
         memory: 250Mi

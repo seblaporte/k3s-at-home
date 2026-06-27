@@ -52,13 +52,12 @@ spec:
               pullPolicy: Always
             env:
               TZ: Europe/Paris
+              VPN_TYPE: openvpn
               VPN_SERVICE_PROVIDER: cyberghost
               OPENVPN_USER: ${SECRET_VPN_USERNAME}
               OPENVPN_PASSWORD: ${SECRET_VPN_PASSWORD}
               UPDATER_PERIOD: 24h
-              SERVER_COUNTRIES: Belgium
-              HEALTH_VPN_DURATION_INITIAL: 30s
-              HEALTH_SUCCESS_WAIT_DURATION: 30s
+              SERVER_COUNTRIES: "Belgium,Netherlands"
             probes:
               liveness:
                 enabled: true
@@ -68,9 +67,9 @@ spec:
                     command:
                       - /gluetun-entrypoint
                       - healthcheck
-                  initialDelaySeconds: 30
+                  initialDelaySeconds: 120
                   periodSeconds: 30
-                  failureThreshold: 5
+                  failureThreshold: 10
                   timeoutSeconds: 10
             securityContext:
               privileged: true

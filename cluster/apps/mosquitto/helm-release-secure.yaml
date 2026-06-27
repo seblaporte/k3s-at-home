@@ -56,13 +56,20 @@ spec:
               repository: eclipse-mosquitto
               tag: "2.0.22"
               pullPolicy: IfNotPresent
+            command:
+              - /usr/sbin/mosquitto
+              - -c
+              - /mosquitto/config/mosquitto.conf
             probes:
               liveness:
                 enabled: true
                 custom: true
                 spec:
-                  tcpSocket:
-                    port: 8883
+                  exec:
+                    command:
+                      - /bin/sh
+                      - -c
+                      - "pgrep mosquitto"
                   initialDelaySeconds: 10
                   periodSeconds: 30
                   failureThreshold: 3
@@ -70,8 +77,11 @@ spec:
                 enabled: true
                 custom: true
                 spec:
-                  tcpSocket:
-                    port: 8883
+                  exec:
+                    command:
+                      - /bin/sh
+                      - -c
+                      - "pgrep mosquitto"
                   initialDelaySeconds: 5
                   periodSeconds: 10
                   failureThreshold: 3

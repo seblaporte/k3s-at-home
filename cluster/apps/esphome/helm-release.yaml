@@ -20,7 +20,7 @@ spec:
     priorityClassName: homelab-medium
     image:
       repository: esphome/esphome
-      tag: "2026.1.4"
+      tag: "2026.6.2"
     env:
       ESPHOME_DASHBOARD_USE_PING: true
     ingress:

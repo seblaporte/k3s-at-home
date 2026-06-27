@@ -1,0 +1,136 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mosquitto-secure
+  namespace: mosquitto
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: app-template
+      version: 2.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-helm-charts
+        namespace: flux-system
+      interval: 15m
+  values:
+    defaultPodOptions:
+      priorityClassName: homelab-critical
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: NotIn
+                    values:
+                      - "true"
+
+    controllers:
+      main:
+        initContainers:
+          gen-passwd:
+            image:
+              repository: eclipse-mosquitto
+              tag: "2.0.22"
+              pullPolicy: IfNotPresent
+            command:
+              - /bin/sh
+              - -c
+              - "mosquitto_passwd -c -b /mosquitto/passwd/passwd $MQTT_USERNAME $MQTT_PASSWORD"
+            env:
+              MQTT_USERNAME:
+                secretKeyRef:
+                  name: mosquitto-secure-secrets
+                  key: MQTT_USERNAME
+              MQTT_PASSWORD:
+                secretKeyRef:
+                  name: mosquitto-secure-secrets
+                  key: MQTT_PASSWORD
+
+        containers:
+          main:
+            image:
+              repository: eclipse-mosquitto
+              tag: "2.0.22"
+              pullPolicy: IfNotPresent
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 8883
+                  initialDelaySeconds: 10
+                  periodSeconds: 30
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 8883
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  failureThreshold: 3
+            resources:
+              requests:
+                memory: 20Mi
+                cpu: 100m
+              limits:
+                memory: 50Mi
+                cpu: 200m
+
+    service:
+      main:
+        enabled: true
+        controller: main
+        type: LoadBalancer
+        loadBalancerIP: "${SVC_MOSQUITTO_SECURE_ADDR}"
+        externalTrafficPolicy: Local
+        ports:
+          mqtts:
+            port: 8883
+            protocol: TCP
+
+    persistence:
+      config:
+        enabled: true
+        type: configMap
+        name: mosquitto-secure-config
+        advancedMounts:
+          main:
+            main:
+              - path: /mosquitto/config/mosquitto.conf
+                subPath: mosquitto.conf
+
+      tls:
+        enabled: true
+        type: secret
+        name: mosquitto-secure-tls
+        advancedMounts:
+          main:
+            main:
+              - path: /mosquitto/certs
+
+      passwd:
+        enabled: true
+        type: emptyDir
+        advancedMounts:
+          main:
+            gen-passwd:
+              - path: /mosquitto/passwd
+            main:
+              - path: /mosquitto/passwd
+
+      data:
+        enabled: true
+        storageClass: nfs-client
+        accessMode: ReadWriteOnce
+        size: 1Gi
+        advancedMounts:
+          main:
+            main:
+              - path: /mosquitto/data

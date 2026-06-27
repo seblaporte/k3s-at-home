@@ -3,4 +3,8 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - helm-release.yaml
+  - configmap-secure.yaml
+  - certificate.yaml
+  - secret.sops.yaml
+  - helm-release-secure.yaml
   

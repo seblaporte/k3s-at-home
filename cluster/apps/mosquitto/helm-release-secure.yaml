@@ -91,6 +91,8 @@ spec:
         loadBalancerIP: "${SVC_MOSQUITTO_SECURE_ADDR}"
         externalTrafficPolicy: Local
         ports:
+          http:
+            enabled: false
           mqtts:
             port: 8883
             protocol: TCP

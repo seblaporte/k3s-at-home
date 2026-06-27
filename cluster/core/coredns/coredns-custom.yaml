@@ -5,8 +5,10 @@ metadata:
   name: coredns-custom
   namespace: kube-system
 data:
-  mqtt-secure.override: |
-    hosts {
-        192.168.1.38 mqtt-secure.${SECRET_DOMAIN}
-        fallthrough
+  mqtt-secure.server: |
+    mqtt-secure.${SECRET_DOMAIN}:53 {
+        hosts {
+            192.168.1.38 mqtt-secure.${SECRET_DOMAIN}
+        }
+        cache 30
     }

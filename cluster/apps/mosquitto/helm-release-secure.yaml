@@ -18,6 +18,8 @@ spec:
   values:
     defaultPodOptions:
       priorityClassName: homelab-critical
+      securityContext:
+        fsGroup: 1883
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -39,7 +41,7 @@ spec:
             command:
               - /bin/sh
               - -c
-              - "mosquitto_passwd -c -b /mosquitto/passwd/passwd $MQTT_USERNAME $MQTT_PASSWORD"
+              - "mosquitto_passwd -c -b /mosquitto/passwd/passwd $MQTT_USERNAME $MQTT_PASSWORD && chmod 640 /mosquitto/passwd/passwd"
             env:
               MQTT_USERNAME:
                 secretKeyRef:

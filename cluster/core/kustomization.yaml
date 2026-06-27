@@ -10,3 +10,4 @@ resources:
   - log-management
   - monitoring
   - kured
+  - coredns

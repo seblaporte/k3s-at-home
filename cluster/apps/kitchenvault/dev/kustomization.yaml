@@ -14,3 +14,15 @@ patches:
     target:
       kind: HelmRelease
       name: kitchenvault-frontend
+  - path: patch-backend-tag.yaml
+    target:
+      kind: HelmRelease
+      name: kitchenvault-backend
+  - path: patch-frontend-tag.yaml
+    target:
+      kind: HelmRelease
+      name: kitchenvault-frontend
+  - path: patch-cookidoo-tag.yaml
+    target:
+      kind: HelmRelease
+      name: kitchenvault-cookidoo

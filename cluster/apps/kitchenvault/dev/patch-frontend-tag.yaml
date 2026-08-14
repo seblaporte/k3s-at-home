@@ -10,4 +10,4 @@ spec:
         containers:
           main:
             image:
-              tag: "manual"
+              tag: "2026.8.0"

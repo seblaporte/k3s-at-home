@@ -10,4 +10,4 @@ spec:
         containers:
           main:
             image:
-              tag: "2026.8.0"
+              tag: "2026.8.1"

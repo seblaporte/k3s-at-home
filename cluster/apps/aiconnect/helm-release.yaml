@@ -33,7 +33,7 @@ spec:
           main:
             image:
               repository: 1activegeek/airconnect
-              tag: "1.9.3"
+              tag: "1.11.1"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

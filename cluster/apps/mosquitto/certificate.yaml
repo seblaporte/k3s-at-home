@@ -5,7 +5,6 @@ metadata:
   name: mosquitto-secure-tls
   namespace: mosquitto
 spec:
-  preferredChain: "ISRG Root X1"
   secretName: mosquitto-secure-tls
   issuerRef:
     kind: ClusterIssuer

@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: ghcr.io/seblaporte/kitchenvault/frontend
-              tag: "manual"
+              tag: "2026.8.1"
               pullPolicy: Always
             env:
               BACKEND_URL: "http://kitchenvault-backend:8080"

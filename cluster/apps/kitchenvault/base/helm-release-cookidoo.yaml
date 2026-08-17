@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: ghcr.io/seblaporte/kitchenvault/cookidoo-service
-              tag: "manual"
+              tag: "2026.8.1"
               pullPolicy: Always
             env:
               COOKIDOO_COUNTRY_CODE: "fr"

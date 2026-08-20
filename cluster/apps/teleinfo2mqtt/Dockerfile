@@ -1,4 +1,4 @@
-FROM alpine:3.23
+FROM alpine:3.24
 RUN apk add nodejs npm python3 make gcc g++ linux-headers udev
 RUN mkdir /app
 ADD index.js /app

@@ -42,6 +42,20 @@ spec:
                   ## This means it has a maximum of 8*60=480 seconds to start up before it fails
                   periodSeconds: 8
                   failureThreshold: 60
+              liveness:
+                enabled: true
+                spec:
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                spec:
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  failureThreshold: 3
     service:
       main:
         enabled: true

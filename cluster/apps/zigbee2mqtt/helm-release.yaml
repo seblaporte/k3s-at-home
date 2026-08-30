@@ -46,6 +46,21 @@ spec:
             securityContext:
               # Privileged securityContext required by USB devices accessed directly through the host machine
               privileged: true
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                spec:
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  failureThreshold: 3
     service:
       main:
         enabled: true

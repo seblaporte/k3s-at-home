@@ -57,7 +57,7 @@ spec:
               OPENVPN_USER: ${SECRET_VPN_USERNAME}
               OPENVPN_PASSWORD: ${SECRET_VPN_PASSWORD}
               UPDATER_PERIOD: 24h
-              SERVER_COUNTRIES: "Belgium,Netherlands"
+              SERVER_COUNTRIES: "Algeria,Andorra"
             probes:
               liveness:
                 enabled: true

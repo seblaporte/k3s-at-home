@@ -77,11 +77,9 @@ spec:
     persistence:
       data:
         enabled: true
-        storageClass: "nfs-client"
-        accessMode: "ReadWriteOnce"
+        existingClaim: "zigbee2mqtt-data-iscsi"
         globalMounts:
           - path: /app/data
-        size: "1Gi"
       raspbee:
         enabled: true
         type: hostPath

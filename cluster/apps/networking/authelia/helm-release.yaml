@@ -34,7 +34,7 @@ spec:
           main:
             image:
               repository: ghcr.io/authelia/authelia
-              tag: "4.39.20"
+              tag: "4.39.23"
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

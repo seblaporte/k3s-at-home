@@ -29,6 +29,9 @@ spec:
                     operator: NotIn
                     values:
                       - "true"
+    service:
+      main:
+        enabled: false
     controllers:
       main:
         replicas: 2

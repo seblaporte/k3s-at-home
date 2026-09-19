@@ -66,10 +66,19 @@ spec:
                 pathType: Prefix
                 service:
                   name: main
+          - host: "uptime-kuma.${SECRET_APEX_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
         tls:
           - hosts:
               - "uptime-kuma.${SECRET_DOMAIN}"
             secretName: uptime-kuma-tls-secret
+          - hosts:
+              - "uptime-kuma.${SECRET_APEX_DOMAIN}"
+            secretName: uptime-kuma-flat-tls-secret
     persistence:
       data:
         enabled: true

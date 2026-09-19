@@ -56,6 +56,8 @@ spec:
       - "--entryPoints.lan.address=:8085"
       - "--serverstransport.insecureskipverify=true"
       - "--providers.kubernetesingress.ingressendpoint.ip=${SVC_TRAEFIK_ADDR}"
+      - "--entrypoints.web.forwardedHeaders.trustedIPs=10.42.0.0/16"
+      - "--entrypoints.websecure.forwardedHeaders.trustedIPs=10.42.0.0/16"
     providers:
       kubernetesCRD:
         enabled: true

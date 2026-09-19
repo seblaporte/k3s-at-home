@@ -77,10 +77,15 @@ matche gagne) :
 ingress:
   - hostname: "<APP>.${SECRET_APEX_DOMAIN}"
     originRequest:
-      matchSNItoHost: true     # PAS noTLSVerify — voir "Pièges connus" ci-dessous
+      noTLSVerify: true     # temporaire — voir "Pièges connus" (bootstrap du tout premier certificat)
     service: https://traefik.networking.svc.cluster.local:443
   # ... règles existantes des apps déjà migrées, puis le wildcard, puis le catch-all
 ```
+
+**`noTLSVerify: true` ici est volontaire et temporaire** (voir "Pièges connus" ci-dessous) — le
+premier certificat ne peut pas s'émettre avec `matchSNItoHost: true` tant qu'aucun certificat valide
+n'existe encore pour ce hostname. On rebascule sur `matchSNItoHost: true` à l'étape 5bis, une fois le
+certificat `READY`.
 
 ### 3. Committer, pousser, reconcilier
 
@@ -110,6 +115,27 @@ kubectl -n <NS> get certificate <APP>-flat-tls-secret -w
 
 Attendre `READY: True`. Si ça reste bloqué en `pending` plus de 2-3 minutes, voir "Pièges connus" ci-dessous
 (HTTP-01 via le tunnel, `sniStrict`).
+
+### 5bis. Basculer vers `matchSNItoHost` (Git)
+
+Une fois `READY: True` confirmé, repasser la règle du tunnel en vérification TLS stricte — ne jamais
+laisser `noTLSVerify: true` en état final :
+
+```yaml
+  - hostname: "<APP>.${SECRET_APEX_DOMAIN}"
+    originRequest:
+      matchSNItoHost: true
+    service: https://traefik.networking.svc.cluster.local:443
+```
+
+```bash
+git add cluster/apps/networking/cloudflared/configmap.yaml
+git commit -m "test(<APP>): enable strict TLS verification on the flat hostname"
+git push
+flux reconcile kustomization apps --with-source
+kubectl -n networking rollout restart deployment cloudflared
+kubectl -n networking rollout status deployment cloudflared --timeout=60s
+```
 
 ### 6. Ajouter la règle Authelia (⚠️ hors Git — voir avertissement)
 
@@ -168,9 +194,19 @@ kubectl -n networking logs -l app.kubernetes.io/name=traefik --since=1m --prefix
 - **`sniStrict` bloque uniquement la toute première émission d'un certificat**, pas les renouvellements. Déjà
   corrigé globalement (`sniStrict: false`) — ne pas le re-désactiver par erreur en pensant que c'est nécessaire
   à nouveau, il l'est déjà.
-- **`matchSNItoHost: true`, jamais `noTLSVerify: true`, sur les nouvelles règles.** `noTLSVerify` fonctionne
-  mais désactive toute vérification du certificat d'origine. `matchSNItoHost` a été testé avec succès et donne
-  une vraie vérification TLS de bout en bout — c'est le standard à utiliser pour toute nouvelle app migrée.
+- **`matchSNItoHost: true`, jamais `noTLSVerify: true`, en état final** sur les nouvelles règles. `noTLSVerify`
+  fonctionne mais désactive toute vérification du certificat d'origine. `matchSNItoHost` donne une vraie
+  vérification TLS de bout en bout — c'est le standard pour toute app migrée, une fois son certificat émis.
+- **Le tout premier certificat d'un hostname plat ne peut PAS s'émettre avec `matchSNItoHost: true` dès le
+  départ — c'est un problème d'œuf-et-poule.** Le challenge HTTP-01 passe par le tunnel jusqu'à Traefik en
+  HTTPS ; tant qu'aucun certificat n'existe pour ce hostname, Traefik répond avec son certificat interne
+  auto-généré (`*.traefik.default`), que `matchSNItoHost` rejette aussitôt (`x509: certificate is valid for
+  ...traefik.default, not <app>.<apex>`) — la commande cert-manager reste bloquée en `pending` indéfiniment.
+  Symptôme côté challenge : `Waiting for HTTP-01 challenge propagation: wrong status code '502'`. Solution :
+  démarrer avec `noTLSVerify: true` (étape 2), attendre `READY: True` (étape 5), puis rebasculer sur
+  `matchSNItoHost: true` (étape 5bis). C'est exactement ce qui a été fait pour `slskd` (voir son historique
+  git sur `cluster/apps/networking/cloudflared/configmap.yaml`) — cette étape de bootstrap avait été omise
+  dans une version précédente de ce cookbook.
 - **Le fichier de config Authelia n'est pas dans Git** (il vit sur un volume persistant). Toute règle ajoutée
   par ce cookbook doit être ré-appliquée si le pod Authelia est recréé sur un nouveau volume (rare, mais possible
   après une panne ou une migration de PV). Envisager, une fois plusieurs apps migrées, de faire un chantier

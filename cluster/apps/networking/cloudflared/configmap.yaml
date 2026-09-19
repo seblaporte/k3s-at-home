@@ -12,7 +12,7 @@ data:
     ingress:
       - hostname: "slskd.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "*.${SECRET_DOMAIN}"
         originRequest:

@@ -10,6 +10,10 @@ data:
     credentials-file: /etc/cloudflared/creds/credentials.json
     metrics: 0.0.0.0:2000
     ingress:
+      - hostname: "slskd.${SECRET_APEX_DOMAIN}"
+        originRequest:
+          noTLSVerify: true
+        service: https://traefik.networking.svc.cluster.local:443
       - hostname: "*.${SECRET_DOMAIN}"
         originRequest:
           noTLSVerify: true

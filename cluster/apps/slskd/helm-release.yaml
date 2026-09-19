@@ -104,10 +104,19 @@ spec:
                 pathType: Prefix
                 service:
                   name: main
+          - host: "slskd.${SECRET_APEX_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
         tls:
           - hosts:
               - "slskd.${SECRET_DOMAIN}"
             secretName: slskd-tls-secret
+          - hosts:
+              - "slskd.${SECRET_APEX_DOMAIN}"
+            secretName: slskd-flat-tls-secret
     persistence:
       app:
         enabled: true

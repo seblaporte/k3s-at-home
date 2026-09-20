@@ -125,6 +125,26 @@ sops -d cluster/apps/<ns>/<app>/secret.sops.yaml
 
 SOPS uses the GnuPG keys defined in `.sops.yaml`. Two key fingerprints are configured (primary + backup).
 
+**⚠️ Never let a full decrypted secrets file reach your output.** When you only need one value
+(e.g. `SECRET_APEX_DOMAIN`), pipe directly and only that one way:
+
+```bash
+sops -d cluster/base/cluster-secrets.sops.yaml | grep SECRET_APEX_DOMAIN
+```
+
+- Never add `2>&1`, `1>/dev/null`, or any other stream redirection/swap to a `sops -d` command to
+  "debug" why the pipe returned nothing — that class of redirection can route the full decrypted
+  YAML to a visible channel instead of suppressing it, dumping every secret in the file into your
+  output/context. This has happened before.
+- Never redirect `sops -d` output to a file (including scratch/temp paths) — that materializes
+  plaintext secrets on disk.
+- If `sops -d ... | grep <KEY>` returns nothing (e.g. because the GPG passphrase prompt can't be
+  answered non-interactively), do **not** retry with a different redirection to see what went
+  wrong. Stop and ask the user to paste the specific value directly instead.
+- If a full decrypted file ever does end up in your output despite these rules, stop immediately,
+  tell the user exactly which keys were exposed (not their values, to avoid repeating them), and
+  recommend rotating every exposed credential.
+
 ## Dependency Updates
 
 Renovate bot automatically opens PRs for Helm chart and container image updates. Labels: `renovate/image`, `renovate/helm`, `dep/major`, `dep/minor`, `dep/patch`. No manual update process needed for tracked dependencies.

@@ -65,9 +65,16 @@ spec:
         ingressClassName: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: networking-forwardauth-authelia@kubernetescrd
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
           - host: "tesla-fleet.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
+          - host: "tesla-fleet.${SECRET_APEX_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
@@ -77,6 +84,9 @@ spec:
           - hosts:
               - "tesla-fleet.${SECRET_DOMAIN}"
             secretName: tesla-fleet-tls-secret
+          - hosts:
+              - "tesla-fleet.${SECRET_APEX_DOMAIN}"
+            secretName: tesla-fleet-flat-tls-secret
     persistence:
       config:
         enabled: true

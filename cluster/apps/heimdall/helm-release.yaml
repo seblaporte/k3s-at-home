@@ -30,10 +30,17 @@ spec:
             paths:
               - path: /
                 pathType: Prefix
+          - host: "heimdall.${SECRET_APEX_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
         tls:
           - hosts:
               - "heimdall.${SECRET_DOMAIN}"
             secretName: heimdall-tls-secret
+          - hosts:
+              - "heimdall.${SECRET_APEX_DOMAIN}"
+            secretName: heimdall-flat-tls-secret
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

@@ -67,7 +67,16 @@ spec:
                 pathType: Prefix
                 service:
                   name: main
+          - host: "kitchenvault.${SECRET_APEX_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
         tls:
           - hosts:
               - "kitchenvault.${SECRET_DOMAIN}"
             secretName: kitchenvault-tls-secret
+          - hosts:
+              - "kitchenvault.${SECRET_APEX_DOMAIN}"
+            secretName: kitchenvault-flat-tls-secret

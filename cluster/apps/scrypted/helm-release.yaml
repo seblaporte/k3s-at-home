@@ -69,10 +69,17 @@ spec:
             paths:
               - path: /
                 pathType: Prefix
+          - host: "scrypted.${SECRET_APEX_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
         tls:
           - hosts:
               - "scrypted.${SECRET_DOMAIN}"
             secretName: scrypted-tls-secret
+          - hosts:
+              - "scrypted.${SECRET_APEX_DOMAIN}"
+            secretName: scrypted-flat-tls-secret
     persistence:
       config:
         enabled: true

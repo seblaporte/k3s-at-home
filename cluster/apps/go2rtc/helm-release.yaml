@@ -117,10 +117,19 @@ spec:
                 pathType: Prefix
                 service:
                   name: main
+          - host: "go2rtc.${SECRET_APEX_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
         tls:
           - hosts:
               - "go2rtc.${SECRET_DOMAIN}"
             secretName: go2rtc-tls-secret
+          - hosts:
+              - "go2rtc.${SECRET_APEX_DOMAIN}"
+            secretName: go2rtc-flat-tls-secret
     persistence:
       config:
         enabled: true

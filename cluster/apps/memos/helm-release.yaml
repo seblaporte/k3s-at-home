@@ -76,7 +76,16 @@ spec:
                 pathType: Prefix
                 service:
                   name: main
+          - host: "memos.${SECRET_APEX_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
         tls:
           - hosts:
               - "memos.${SECRET_DOMAIN}"
             secretName: memos-tls-secret
+          - hosts:
+              - "memos.${SECRET_APEX_DOMAIN}"
+            secretName: memos-flat-tls-secret

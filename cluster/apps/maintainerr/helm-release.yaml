@@ -91,10 +91,19 @@ spec:
                 pathType: Prefix
                 service:
                   name: main
+          - host: "maintainerr.${SECRET_APEX_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
         tls:
           - hosts:
               - "maintainerr.${SECRET_DOMAIN}"
             secretName: maintainerr-tls-secret
+          - hosts:
+              - "maintainerr.${SECRET_APEX_DOMAIN}"
+            secretName: maintainerr-flat-tls-secret
     persistence:
       data:
         enabled: true

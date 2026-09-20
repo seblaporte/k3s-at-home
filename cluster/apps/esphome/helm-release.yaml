@@ -36,10 +36,17 @@ spec:
             paths:
               - path: /
                 pathType: Prefix
+          - host: "esphome.${SECRET_APEX_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
         tls:
           - hosts:
               - "esphome.${SECRET_DOMAIN}"
             secretName: esphome-tls-secret
+          - hosts:
+              - "esphome.${SECRET_APEX_DOMAIN}"
+            secretName: esphome-flat-tls-secret
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

@@ -61,9 +61,16 @@ spec:
         ingressClassName: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: networking-forwardauth-authelia@kubernetescrd
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
           - host: "music-assistant.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
+          - host: "music-assistant.${SECRET_APEX_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
@@ -73,6 +80,9 @@ spec:
           - hosts:
               - "music-assistant.${SECRET_DOMAIN}"
             secretName: music-assistant-tls-secret
+          - hosts:
+              - "music-assistant.${SECRET_APEX_DOMAIN}"
+            secretName: music-assistant-flat-tls-secret
     persistence:
       data:
         enabled: true

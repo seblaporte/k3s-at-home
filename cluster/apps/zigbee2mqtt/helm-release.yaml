@@ -70,10 +70,19 @@ spec:
                 pathType: Prefix
                 service:
                   name: main
+          - host: "zigbee2mqtt.${SECRET_APEX_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
         tls:
           - hosts:
               - "zigbee2mqtt.${SECRET_DOMAIN}"
             secretName: zigbee2mqtt-tls-secret
+          - hosts:
+              - "zigbee2mqtt.${SECRET_APEX_DOMAIN}"
+            secretName: zigbee2mqtt-flat-tls-secret
     persistence:
       data:
         enabled: true

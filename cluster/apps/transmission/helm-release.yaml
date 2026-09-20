@@ -110,10 +110,19 @@ spec:
                 pathType: Prefix
                 service:
                   name: main
+          - host: "transmission.${SECRET_APEX_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
         tls:
           - hosts:
               - "transmission.${SECRET_DOMAIN}"
             secretName: transmission-tls-secret
+          - hosts:
+              - "transmission.${SECRET_APEX_DOMAIN}"
+            secretName: transmission-flat-tls-secret
     persistence:
       config:
         enabled: true

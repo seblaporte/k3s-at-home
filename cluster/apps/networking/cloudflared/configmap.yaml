@@ -40,91 +40,91 @@ data:
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "tesla-fleet.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "music-assistant.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "obsidian-couchdb.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "jellyfin.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "home-assistant.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "navidrome.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "memos.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "jellyseerr.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "scrypted.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "bitwarden.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "backrest.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "esphome.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "go2rtc.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "heimdall.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "joal.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "kitchenvault.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "maintainerr.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "node-red.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "shopping-cards.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "transmission.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "yubal.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "zigbee2mqtt.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "*.${SECRET_DOMAIN}"
         originRequest:

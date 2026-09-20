@@ -76,10 +76,19 @@ spec:
                 pathType: Prefix
                 service:
                   name: main
+          - host: "auth.${SECRET_APEX_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
         tls:
           - hosts:
               - "auth.${SECRET_DOMAIN}"
             secretName: auth-tls-secret
+          - hosts:
+              - "auth.${SECRET_APEX_DOMAIN}"
+            secretName: auth-flat-tls-secret
     persistence:
       config:
         enabled: true

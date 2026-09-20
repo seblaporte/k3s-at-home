@@ -126,6 +126,10 @@ data:
         originRequest:
           matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
+      - hostname: "auth.${SECRET_APEX_DOMAIN}"
+        originRequest:
+          noTLSVerify: true
+        service: https://traefik.networking.svc.cluster.local:443
       - hostname: "*.${SECRET_DOMAIN}"
         originRequest:
           noTLSVerify: true

@@ -111,12 +111,6 @@ spec:
           traefik.ingress.kubernetes.io/router.middlewares: "networking-forwardauth-authelia@kubernetescrd,go2rtc-go2rtc-inject-credentials@kubernetescrd"
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - host: "go2rtc.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  name: main
           - host: "go2rtc.${SECRET_APEX_DOMAIN}"
             paths:
               - path: /
@@ -124,9 +118,6 @@ spec:
                 service:
                   name: main
         tls:
-          - hosts:
-              - "go2rtc.${SECRET_DOMAIN}"
-            secretName: go2rtc-tls-secret
           - hosts:
               - "go2rtc.${SECRET_APEX_DOMAIN}"
             secretName: go2rtc-flat-tls-secret

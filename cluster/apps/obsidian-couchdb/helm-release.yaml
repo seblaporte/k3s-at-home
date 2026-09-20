@@ -69,12 +69,6 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - host: "obsidian-couchdb.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  name: main
           - host: "obsidian-couchdb.${SECRET_APEX_DOMAIN}"
             paths:
               - path: /
@@ -82,9 +76,6 @@ spec:
                 service:
                   name: main
         tls:
-          - hosts:
-              - "obsidian-couchdb.${SECRET_DOMAIN}"
-            secretName: obsidian-couchdb-tls-secret
           - hosts:
               - "obsidian-couchdb.${SECRET_APEX_DOMAIN}"
             secretName: obsidian-couchdb-flat-tls-secret

@@ -91,12 +91,6 @@ spec:
           traefik.ingress.kubernetes.io/router.middlewares: networking-forwardauth-authelia@kubernetescrd
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - host: "yubal.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  name: main
           - host: "yubal.${SECRET_APEX_DOMAIN}"
             paths:
               - path: /
@@ -104,9 +98,6 @@ spec:
                 service:
                   name: main
         tls:
-          - hosts:
-              - "yubal.${SECRET_DOMAIN}"
-            secretName: yubal-tls-secret
           - hosts:
               - "yubal.${SECRET_APEX_DOMAIN}"
             secretName: yubal-flat-tls-secret

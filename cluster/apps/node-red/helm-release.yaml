@@ -39,18 +39,11 @@ spec:
           traefik.ingress.kubernetes.io/router.middlewares: networking-forwardauth-authelia@kubernetescrd
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - host: "node-red.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
           - host: "node-red.${SECRET_APEX_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
         tls:
-          - hosts:
-              - "node-red.${SECRET_DOMAIN}"
-            secretName: node-red-tls-secret
           - hosts:
               - "node-red.${SECRET_APEX_DOMAIN}"
             secretName: node-red-flat-tls-secret

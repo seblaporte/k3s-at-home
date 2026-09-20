@@ -78,12 +78,6 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - host: "jellyfin.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  name: main
           - host: "jellyfin.${SECRET_APEX_DOMAIN}"
             paths:
               - path: /
@@ -91,9 +85,6 @@ spec:
                 service:
                   name: main
         tls:
-          - hosts:
-              - "jellyfin.${SECRET_DOMAIN}"
-            secretName: jellyfin-tls-secret
           - hosts:
               - "jellyfin.${SECRET_APEX_DOMAIN}"
             secretName: jellyfin-flat-tls-secret

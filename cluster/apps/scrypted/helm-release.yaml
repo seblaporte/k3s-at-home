@@ -65,18 +65,11 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - host: "scrypted.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
           - host: "scrypted.${SECRET_APEX_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
         tls:
-          - hosts:
-              - "scrypted.${SECRET_DOMAIN}"
-            secretName: scrypted-tls-secret
           - hosts:
               - "scrypted.${SECRET_APEX_DOMAIN}"
             secretName: scrypted-flat-tls-secret

@@ -79,18 +79,11 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - host: "home-assistant.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
           - host: "home-assistant.${SECRET_APEX_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
         tls:
-          - hosts:
-              - "home-assistant.${SECRET_DOMAIN}"
-            secretName: home-assistant-tls-secret
           - hosts:
               - "home-assistant.${SECRET_APEX_DOMAIN}"
             secretName: home-assistant-flat-tls-secret

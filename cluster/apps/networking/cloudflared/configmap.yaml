@@ -138,8 +138,4 @@ data:
         originRequest:
           matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
-      - hostname: "*.${SECRET_DOMAIN}"
-        originRequest:
-          noTLSVerify: true
-        service: https://traefik.networking.svc.cluster.local:443
       - service: http_status:404

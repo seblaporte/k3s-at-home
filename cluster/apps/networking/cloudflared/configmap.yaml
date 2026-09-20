@@ -18,6 +18,26 @@ data:
         originRequest:
           matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
+      - hostname: "sonarr.${SECRET_APEX_DOMAIN}"
+        originRequest:
+          noTLSVerify: true
+        service: https://traefik.networking.svc.cluster.local:443
+      - hostname: "radarr.${SECRET_APEX_DOMAIN}"
+        originRequest:
+          noTLSVerify: true
+        service: https://traefik.networking.svc.cluster.local:443
+      - hostname: "lidarr.${SECRET_APEX_DOMAIN}"
+        originRequest:
+          noTLSVerify: true
+        service: https://traefik.networking.svc.cluster.local:443
+      - hostname: "prowlarr.${SECRET_APEX_DOMAIN}"
+        originRequest:
+          noTLSVerify: true
+        service: https://traefik.networking.svc.cluster.local:443
+      - hostname: "minio.${SECRET_APEX_DOMAIN}"
+        originRequest:
+          noTLSVerify: true
+        service: https://traefik.networking.svc.cluster.local:443
       - hostname: "*.${SECRET_DOMAIN}"
         originRequest:
           noTLSVerify: true

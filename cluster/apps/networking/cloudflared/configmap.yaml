@@ -108,7 +108,7 @@ data:
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "logs.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true # temporaire, bootstrap du premier certificat — voir doc/cloudflare-tunnel-migration-cookbook.md
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "maintainerr.${SECRET_APEX_DOMAIN}"
         originRequest:

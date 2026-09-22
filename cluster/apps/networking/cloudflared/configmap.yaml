@@ -104,7 +104,7 @@ data:
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "kitchenvault-dev.${SECRET_APEX_DOMAIN}"
         originRequest:
-          matchSNItoHost: true
+          noTLSVerify: true # temporaire, bootstrap du premier certificat — voir doc/cloudflare-tunnel-migration-cookbook.md
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "maintainerr.${SECRET_APEX_DOMAIN}"
         originRequest:

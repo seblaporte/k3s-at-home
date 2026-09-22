@@ -102,6 +102,10 @@ data:
         originRequest:
           matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
+      - hostname: "kitchenvault-dev.${SECRET_APEX_DOMAIN}"
+        originRequest:
+          matchSNItoHost: true
+        service: https://traefik.networking.svc.cluster.local:443
       - hostname: "maintainerr.${SECRET_APEX_DOMAIN}"
         originRequest:
           matchSNItoHost: true

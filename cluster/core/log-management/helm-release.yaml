@@ -106,7 +106,11 @@ spec:
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
           - "logs.${SECRET_DOMAIN}"
+          - "logs.${SECRET_APEX_DOMAIN}"
         tls:
           - secretName: logs-tls-secret
             hosts:
               - "logs.${SECRET_DOMAIN}"
+          - secretName: logs-flat-tls-secret
+            hosts:
+              - "logs.${SECRET_APEX_DOMAIN}"

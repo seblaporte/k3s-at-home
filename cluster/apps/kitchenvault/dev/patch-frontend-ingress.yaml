@@ -17,4 +17,4 @@ spec:
         tls:
           - hosts:
               - "kitchenvault-dev.${SECRET_APEX_DOMAIN}"
-            secretName: kitchenvault-dev-tls-secret
+            secretName: kitchenvault-dev-flat-tls-secret

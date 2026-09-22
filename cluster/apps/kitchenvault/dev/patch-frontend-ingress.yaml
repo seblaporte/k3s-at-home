@@ -8,7 +8,7 @@ spec:
     ingress:
       main:
         hosts:
-          - host: "kitchenvault-dev.${SECRET_DOMAIN}"
+          - host: "kitchenvault-dev.${SECRET_APEX_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
@@ -16,5 +16,5 @@ spec:
                   name: main
         tls:
           - hosts:
-              - "kitchenvault-dev.${SECRET_DOMAIN}"
+              - "kitchenvault-dev.${SECRET_APEX_DOMAIN}"
             secretName: kitchenvault-dev-tls-secret

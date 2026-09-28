@@ -39,7 +39,7 @@ spec:
           main:
             image:
               repository: cloudflare/cloudflared
-              tag: "2026.9.1"
+              tag: "2026.9.3"
               pullPolicy: IfNotPresent
             args:
               - "tunnel"

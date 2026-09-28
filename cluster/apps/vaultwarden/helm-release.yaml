@@ -20,7 +20,7 @@ spec:
     priorityClassName: homelab-high
     image:
       repository: vaultwarden/server
-      tag: 1.37.2
+      tag: 1.37.3
       pullPolicy: IfNotPresent
     env:
       DATA_FOLDER: "config"

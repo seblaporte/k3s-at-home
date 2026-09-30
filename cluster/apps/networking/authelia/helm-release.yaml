@@ -30,14 +30,22 @@ spec:
                 - "true"
     controllers:
       main:
+        annotations:
+          reloader.stakater.com/auto: "true"
         containers:
           main:
             image:
               repository: ghcr.io/authelia/authelia
               tag: "4.39.23"
               pullPolicy: IfNotPresent
+            args:
+              - --config
+              - /etc/authelia/configuration.yml
             env:
               TZ: Europe/Paris
+              AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE: /secrets/JWT_SECRET
+              AUTHELIA_SESSION_SECRET_FILE: /secrets/SESSION_SECRET
+              AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE: /secrets/STORAGE_ENCRYPTION_KEY
             resources:
               requests:
                 memory: 1024Mi
@@ -81,6 +89,20 @@ spec:
               - "auth.${SECRET_APEX_DOMAIN}"
             secretName: auth-flat-tls-secret
     persistence:
+      config-file:
+        enabled: true
+        type: configMap
+        name: authelia-config
+        globalMounts:
+          - path: /etc/authelia
+            readOnly: true
+      secrets:
+        enabled: true
+        type: secret
+        name: authelia-secrets
+        globalMounts:
+          - path: /secrets
+            readOnly: true
       config:
         enabled: true
         storageClass: "nfs-client"

@@ -1,0 +1,117 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: authelia-config
+  namespace: networking
+data:
+  configuration.yml: |
+    ###############################################################
+    #                   Authelia configuration                    #
+    ###############################################################
+    # Secrets (jwt_secret, session.secret, storage.encryption_key) are
+    # injected from the authelia-secrets Secret via AUTHELIA_*_FILE env vars.
+
+    server:
+      address: 'tcp://:9091'
+
+    log:
+      level: 'error'
+
+    totp:
+      issuer: 'authelia.com'
+      algorithm: 'sha512'
+      digits: 6
+      period: 30
+      skew: 1
+      secret_size: 32
+      allowed_algorithms:
+        - 'SHA512'
+      allowed_digits:
+        - 6
+      allowed_periods:
+        - 30
+      disable_reuse_security_policy: false
+
+    theme: dark
+
+    authentication_backend:
+      file:
+        path: '/secrets/users_database.yml'
+
+    access_control:
+      default_policy: 'deny'
+      rules:
+        - domain: 'slskd.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'uptime-kuma.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'sonarr.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'radarr.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'lidarr.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'prowlarr.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'minio.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'tesla-fleet.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'music-assistant.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'backrest.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'esphome.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'go2rtc.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'heimdall.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'joal.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'kitchenvault.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'kitchenvault-dev.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'logs.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'maintainerr.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'node-red.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'shopping-cards.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'transmission.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'yubal.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'zigbee2mqtt.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'teslamate.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+        - domain: 'teslamate-grafana.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+
+    session:
+      cookies:
+        - name: 'authelia_session'
+          domain: '${SECRET_APEX_DOMAIN}'
+          authelia_url: 'https://auth.${SECRET_APEX_DOMAIN}'
+          default_redirection_url: 'https://heimdall.${SECRET_APEX_DOMAIN}'
+          inactivity: '1 day'
+          expiration: '1 week'
+          remember_me: '1 month'
+
+    regulation:
+      max_retries: 3
+      find_time: '2 minutes'
+      ban_time: '5 minutes'
+
+    storage:
+      local:
+        path: '/config/db.sqlite3'
+
+    notifier:
+      filesystem:
+        filename: '/config/notification.txt'

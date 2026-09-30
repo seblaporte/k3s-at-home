@@ -109,6 +109,7 @@ defaultPodOptions:
 3. If the app needs a LoadBalancer IP, add `SVC_APPNAME_ADDR` to `cluster/base/cluster-settings.yaml`
 4. If the app needs secrets, create `secret.sops.yaml` (encrypt with `sops -e -i`)
 5. Add the app kustomization to `cluster/apps/kustomization.yaml`
+6. If the app is protected by Authelia (`networking-forwardauth-authelia` middleware), add an `access_control` rule for `<app>.${SECRET_APEX_DOMAIN}` in `cluster/apps/networking/authelia/configmap.yaml` — Reloader restarts Authelia automatically. Authelia secrets (JWT/session/storage keys, `users_database.yml`) live in `cluster/apps/networking/authelia/secret.sops.yaml`.
 
 ## Secrets Management
 

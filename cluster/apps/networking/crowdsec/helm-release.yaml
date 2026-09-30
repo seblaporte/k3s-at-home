@@ -6,10 +6,14 @@ metadata:
   namespace: networking
 spec:
   interval: 5m
+  timeout: 15m
+  upgrade:
+    cleanupOnFail: true
   chart:
     spec:
+      # renovate: registryUrl=https://crowdsecurity.github.io/helm-charts
       chart: crowdsec
-      version: 0.13.0
+      version: 0.24.2
       sourceRef:
         kind: HelmRepository
         name: crowdsec-charts
@@ -24,6 +28,10 @@ spec:
     container_runtime: containerd
     tls:
       enabled: true
+      certManager:
+        issuerRef:
+          name: crowdsec-ca-issuer-local
+          kind: Issuer
     config:
       capi_whitelists.yaml: |
         cidrs:
@@ -39,6 +47,15 @@ spec:
                 - "192.168.1.0/24"
     agent:
       priorityClassName: homelab-critical
+      daemonsetAnnotations:
+        secret.reloader.stakater.com/reload: "crowdsec-agent-tls"
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 256Mi
       metrics:
         enabled: true
         serviceMonitor:
@@ -52,17 +69,10 @@ spec:
           value: "crowdsecurity/cri-logs"
         - name: COLLECTIONS
           value: "crowdsecurity/traefik"
-      persistentVolume:
-        data:
-          enabled: true
-          storageClassName: "nfs-client"
-          size: 1Gi
-        config:
-          enabled: true
-          storageClassName: "nfs-client"
-          size: 100Mi
     lapi:
       priorityClassName: homelab-critical
+      deployAnnotations:
+        secret.reloader.stakater.com/reload: "crowdsec-lapi-tls"
       metrics:
         enabled: true
         serviceMonitor:
@@ -71,7 +81,7 @@ spec:
         enabled: false
       resources:
         limits:
-          memory: 150Mi
+          memory: 256Mi
           cpu: 500m
         requests:
           cpu: 50m

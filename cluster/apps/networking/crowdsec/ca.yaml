@@ -1,0 +1,39 @@
+---
+# Long-lived CA for CrowdSec mTLS (LAPI, agents, Traefik bouncer).
+# Replaces the chart-generated CA that rotated its key every 60 days and
+# broke the trust chain between components until they were restarted.
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: crowdsec-selfsigned
+  namespace: networking
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: crowdsec-ca-local
+  namespace: networking
+spec:
+  isCA: true
+  commonName: crowdsec-ca-local
+  secretName: crowdsec-ca-local
+  duration: 87600h # 10 years
+  renewBefore: 720h
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Never # renewals keep the same key: existing chains stay valid
+  issuerRef:
+    name: crowdsec-selfsigned
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: crowdsec-ca-issuer-local
+  namespace: networking
+spec:
+  ca:
+    secretName: crowdsec-ca-local

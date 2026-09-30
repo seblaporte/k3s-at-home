@@ -146,4 +146,8 @@ data:
         originRequest:
           matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
+      - hostname: "monitoring.${SECRET_APEX_DOMAIN}"
+        originRequest:
+          matchSNItoHost: true
+        service: https://traefik.networking.svc.cluster.local:443
       - service: http_status:404

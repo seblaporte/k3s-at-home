@@ -13,3 +13,11 @@ spec:
       crowdsecLapiTLSCertificateAuthorityFile: /etc/traefik/crowdsec-certs/ca.crt
       crowdsecLapiTLSCertificateBouncerFile: /etc/traefik/crowdsec-certs/tls.crt
       crowdsecLapiTLSCertificateBouncerKeyFile: /etc/traefik/crowdsec-certs/tls.key
+      # Behind Cloudflare Tunnel every request comes from the cloudflared pod:
+      # read the real client IP from Cf-Connecting-IP, only when sent by a pod.
+      forwardedHeadersCustomName: Cf-Connecting-IP
+      forwardedHeadersTrustedIPs:
+        - 10.42.0.0/16
+      # Never block the LAN
+      clientTrustedIPs:
+        - 192.168.1.0/24

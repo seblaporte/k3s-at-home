@@ -8,3 +8,4 @@ resources:
   - monitoring/servicemonitor.yaml
   - https-redirect.yaml
   - lan-only-middleware.yaml
+  - security-headers.yaml

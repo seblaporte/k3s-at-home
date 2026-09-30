@@ -52,16 +52,15 @@ spec:
         enabled: false
     additionalArguments:
       - "--entrypoints.web.http.middlewares=networking-bouncer@kubernetescrd"
-      - "--entrypoints.websecure.http.middlewares=networking-redirectscheme@kubernetescrd, networking-bouncer@kubernetescrd"
+      - "--entrypoints.websecure.http.middlewares=networking-redirectscheme@kubernetescrd, networking-bouncer@kubernetescrd, networking-security-headers@kubernetescrd"
       - "--entryPoints.lan.address=:8085"
-      - "--serverstransport.insecureskipverify=true"
       - "--providers.kubernetesingress.ingressendpoint.ip=${SVC_TRAEFIK_ADDR}"
       - "--entrypoints.web.forwardedHeaders.trustedIPs=10.42.0.0/16"
       - "--entrypoints.websecure.forwardedHeaders.trustedIPs=10.42.0.0/16"
     providers:
       kubernetesCRD:
         enabled: true
-        allowExternalNameServices: true
+        allowExternalNameServices: false
         allowCrossNamespace: true
       kubernetesIngress:
         enabled: true
@@ -94,9 +93,14 @@ spec:
         protocol: TCP
       metrics:
         port: 8082
+        # Not exposed on the LAN LoadBalancer, scraped through the traefik-metrics ClusterIP service
         expose:
-          default: true
+          default: false
         exposedPort: 8082
+    metrics:
+      prometheus:
+        service:
+          enabled: true
     tlsOptions:
       default:
         minVersion: VersionTLS12

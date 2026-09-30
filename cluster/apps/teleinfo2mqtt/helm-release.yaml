@@ -30,8 +30,8 @@ spec:
           main:
             image:
               repository: ghcr.io/seblaporte/teleinfo2mqtt
-              tag: latest
-              pullPolicy: Always
+              tag: latest@sha256:7bf7ccca55f5c52a305472ea3d14e631ace0e2d2d6d7ac44ac3667cb1739414a
+              pullPolicy: IfNotPresent
             resources:
               requests:
                 memory: 64Mi

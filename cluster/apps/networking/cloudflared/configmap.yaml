@@ -148,6 +148,6 @@ data:
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "monitoring.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true     # temporary: bootstrap of the first certificate, back to matchSNItoHost once READY
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - service: http_status:404

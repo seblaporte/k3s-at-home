@@ -5,3 +5,4 @@ resources:
   - kured.yaml
   - metallb-system.yaml
   - networking.yaml
+  - reloader.yaml

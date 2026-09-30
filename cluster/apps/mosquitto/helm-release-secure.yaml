@@ -18,6 +18,8 @@ spec:
   values:
     defaultPodOptions:
       priorityClassName: homelab-critical
+      annotations:
+        reloader.stakater.com/auto: "true"
       securityContext:
         fsGroup: 1883
       affinity:

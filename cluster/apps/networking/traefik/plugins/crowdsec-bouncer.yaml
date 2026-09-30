@@ -8,6 +8,10 @@ spec:
     bouncer:
       enabled: true
       crowdsecMode: stream
+      # Keep serving with the last known ban list if LAPI is unreachable
+      # (default 0 = block ALL traffic after the first failed pull)
+      updateMaxFailure: -1
+      httpTimeoutSeconds: 15
       crowdsecLapiScheme: https
       crowdsecLapiHost: crowdsec-service.networking:8080
       crowdsecLapiTLSCertificateAuthorityFile: /etc/traefik/crowdsec-certs/ca.crt

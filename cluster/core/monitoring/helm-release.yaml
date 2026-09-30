@@ -126,10 +126,15 @@ spec:
         ingressClassName: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: networking-forwardauth-authelia@kubernetescrd
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
           - "monitoring.${SECRET_DOMAIN}"
+          - "monitoring.${SECRET_APEX_DOMAIN}"
         tls:
           - secretName: monitoring-tls-secret
             hosts:
               - "monitoring.${SECRET_DOMAIN}"
+          - secretName: monitoring-flat-tls-secret
+            hosts:
+              - "monitoring.${SECRET_APEX_DOMAIN}"

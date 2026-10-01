@@ -10,7 +10,6 @@ data:
     restic --host k3s --tag vaultwarden             backup /k3s/vaultwarden*
     restic --host k3s --tag tvheadend               backup /k3s/tvheadend-tvheadend-config*
     restic --host k3s --tag teslamate               backup /k3s/teslamate*
-    restic --host k3s --tag node-red                backup /k3s/node-red*
     restic --host k3s --tag crowdsec                backup /k3s/networking-crowdsec*
     restic --host k3s --tag mosquitto               backup /k3s/mosquitto*
     restic --host k3s --tag prometheus-grafana      backup /k3s/monitoring-kube-prometheus-stack-grafana*
@@ -27,5 +26,4 @@ data:
     restic --host k3s --tag transmission            backup /k3s/transmission*
     restic --host k3s --tag jellyfin                backup /k3s/jellyfin-jellyfin-config*
     restic --host k3s --tag jellyseerr              backup /k3s/jellyseerr*
-    restic --host k3s --tag obsidian-couchdb        backup /k3s/obsidian-couchdb*
     curl -fsS -m 10 --retry 5 -o /dev/null https://hc-ping.com/$HEALTH_CHECK_UUID

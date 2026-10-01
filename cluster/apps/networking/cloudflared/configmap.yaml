@@ -46,10 +46,6 @@ data:
         originRequest:
           matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
-      - hostname: "obsidian-couchdb.${SECRET_APEX_DOMAIN}"
-        originRequest:
-          matchSNItoHost: true
-        service: https://traefik.networking.svc.cluster.local:443
       - hostname: "jellyfin.${SECRET_APEX_DOMAIN}"
         originRequest:
           matchSNItoHost: true
@@ -75,10 +71,6 @@ data:
           matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "bitwarden.${SECRET_APEX_DOMAIN}"
-        originRequest:
-          matchSNItoHost: true
-        service: https://traefik.networking.svc.cluster.local:443
-      - hostname: "backrest.${SECRET_APEX_DOMAIN}"
         originRequest:
           matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
@@ -111,10 +103,6 @@ data:
           matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "maintainerr.${SECRET_APEX_DOMAIN}"
-        originRequest:
-          matchSNItoHost: true
-        service: https://traefik.networking.svc.cluster.local:443
-      - hostname: "node-red.${SECRET_APEX_DOMAIN}"
         originRequest:
           matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443

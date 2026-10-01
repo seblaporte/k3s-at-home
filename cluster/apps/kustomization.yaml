@@ -9,7 +9,6 @@ resources:
   - home-assistant
   - unifi
   - teslamate
-  - node-red
   - heimdall
   - esphome
   - influxdb-home-assistant
@@ -23,7 +22,6 @@ resources:
   - prowlarr
   - transmission
   - joal
-  - obsidian-couchdb
   - unpoller
   - jellyfin
   - jellyseerr
@@ -34,11 +32,9 @@ resources:
   - uptime-kuma
   - minio
   - spotdl
-  - backrest
   - aiconnect
   - memos
   - tesla-fleet
-  - ygege
   - music-assistant
   - slskd
   - yubal

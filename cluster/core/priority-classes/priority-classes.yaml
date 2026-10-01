@@ -15,7 +15,7 @@ metadata:
 value: 750000
 preemptionPolicy: PreemptLowerPriority
 globalDefault: false
-description: "Applications core homelab : home-assistant, vaultwarden, go2rtc, scrypted, zigbee2mqtt, node-red, tydom2mqtt"
+description: "Applications core homelab : home-assistant, vaultwarden, go2rtc, scrypted, zigbee2mqtt, tydom2mqtt"
 ---
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass

@@ -29,7 +29,7 @@ spec:
           main:
             image:
               repository: lscr.io/linuxserver/tvheadend
-              tag: version-a9c6db8a
+              tag: latest@sha256:7877fa501f235ee6b38ef1d342ccbe2919fa705e1d5d94d87957a4daef768c37
             env:
               TZ: Europe/Paris
               PUID: 1000

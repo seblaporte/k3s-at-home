@@ -7,8 +7,9 @@
     'prIgnoreNotification',
   ],
   rebaseWhen: 'conflicted',
+  timezone: 'Europe/Paris',
   schedule: [
-    'before 9am on Monday',
+    'before 9am',
   ],
   minimumReleaseAge: '3 days',
   osvVulnerabilityAlerts: true,
@@ -22,34 +23,27 @@
       'at any time',
     ],
   },
-  'helm-values': {
-    fileMatch: [
-      'cluster/.+/helm-release\\.yaml$',
+  flux: {
+    managerFilePatterns: [
+      '/^cluster/.+\\.yaml$/',
     ],
   },
   kubernetes: {
-    fileMatch: [
-      'cluster/.+\\.yaml$',
+    managerFilePatterns: [
+      '/^cluster/.+\\.yaml$/',
     ],
     ignorePaths: [
       'cluster/base/',
     ],
   },
+  'pre-commit': {
+    enabled: true,
+  },
   customManagers: [
     {
       customType: 'regex',
-      fileMatch: [
-        'cluster/.+\\.yaml$',
-      ],
-      matchStrings: [
-        'registryUrl=(?<registryUrl>.*?)\n *chart: (?<depName>.*?)\n *version: (?<currentValue>.*)\n',
-      ],
-      datasourceTemplate: 'helm',
-    },
-    {
-      customType: 'regex',
-      fileMatch: [
-        'cluster/crds/cert-manager/.+\\.yaml$',
+      managerFilePatterns: [
+        '/^cluster/crds/cert-manager/.+\\.yaml$/',
       ],
       matchStrings: [
         'registryUrl=(?<registryUrl>.*?) chart=(?<depName>.*?)\n.*\\/(?<currentValue>.*?)\\/',
@@ -58,16 +52,50 @@
     },
     {
       customType: 'regex',
-      fileMatch: [
-        'cluster/crds/traefik/.+\\.yaml$',
+      managerFilePatterns: [
+        '/^cluster/apps/networking/traefik/helm-release\\.yaml$/',
       ],
       matchStrings: [
-        'registryUrl=(?<registryUrl>.*?) chart=(?<depName>.*?)\n *tag: v(?<currentValue>.*)\n',
+        'moduleName: github\\.com/(?<depName>\\S+)\n *version: (?<currentValue>\\S+)\n',
       ],
-      datasourceTemplate: 'helm',
+      datasourceTemplate: 'github-releases',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
+        '/^cluster/apps/kitchenvault/dev/patch-.+-tag\\.yaml$/',
+      ],
+      matchStrings: [
+        '# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\n *tag: "?(?<currentValue>[^"\\s]+)"?',
+      ],
     },
   ],
   packageRules: [
+    {
+      groupName: 'traefik',
+      matchPackageNames: [
+        'traefik',
+        'traefik/traefik-helm-chart',
+      ],
+    },
+    {
+      matchDatasources: [
+        'docker',
+      ],
+      matchPackageNames: [
+        'ghcr.io/linuxserver/lidarr',
+      ],
+      versioning: 'regex:^nightly-version-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$',
+    },
+    {
+      matchDatasources: [
+        'docker',
+      ],
+      matchPackageNames: [
+        'pgsty/minio',
+      ],
+      versioning: 'regex:^RELEASE\\.(?<major>\\d{4})-(?<minor>\\d{2})-(?<patch>\\d{2})T(?<build>\\d{2})-\\d{2}-\\d{2}Z$',
+    },
     {
       matchDatasources: [
         'helm',
@@ -128,6 +156,8 @@
       matchDatasources: [
         'docker',
         'helm',
+        'github-tags',
+        'github-releases',
       ],
       matchUpdateTypes: [
         'major',
@@ -205,6 +235,21 @@
         'renovate/helm',
         'dep/patch',
       ],
+    },
+      {
+      // kitchenvault dev tracks release candidates of our own images
+      matchFileNames: [
+        'cluster/apps/kitchenvault/dev/**',
+      ],
+      groupName: 'kitchenvault-dev',
+      schedule: [
+        'at any time',
+      ],
+      versioning: 'semver',
+      ignoreUnstable: false,
+      minimumReleaseAge: null,
+      dependencyDashboardApproval: false,
+      automerge: false,
     },
   ],
 }

@@ -10,4 +10,5 @@ spec:
         containers:
           main:
             image:
+              # renovate: datasource=docker depName=ghcr.io/seblaporte/kitchenvault/frontend
               tag: "2026.9.2-rc.2"

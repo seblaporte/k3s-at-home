@@ -32,8 +32,8 @@ spec:
         containers:
           main:
             image:
-              repository: minio/minio
-              tag: "RELEASE.2025-04-08T15-41-24Z"
+              repository: pgsty/minio
+              tag: "RELEASE.2026-08-04T00-00-00Z"
               pullPolicy: IfNotPresent
             command:
               - minio

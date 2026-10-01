@@ -112,7 +112,7 @@ spec:
       plugins:
         bouncer:
           moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
-          version: v1.3.0
+          version: v1.7.1
     livenessProbe:
       initialDelaySeconds: 10
       periodSeconds: 15

@@ -42,6 +42,44 @@ spec:
               reason: "local IP"
               cidr:
                 - "192.168.1.0/24"
+                - "${SECRET_HOME_IPV6_PREFIX}"
+                - "${SECRET_HOME_IPV4}/32"
+          # Apps behind the Authelia forward-auth cannot be brute-forced directly:
+          # their 401s are expired sessions (e.g. auto-refreshing dashboards).
+          # Authelia's own login (auth.*) is not listed and stays protected.
+          whitelist-authelia-401.yaml: |
+            name: homelab/whitelist-authelia-401
+            description: "Ignore 401s on apps protected by Authelia"
+            whitelist:
+              reason: "401 on Authelia-protected app"
+              expression:
+                - >-
+                  evt.Meta.http_status == '401' && evt.Meta.target_fqdn in [
+                  'esphome.${SECRET_APEX_DOMAIN}',
+                  'go2rtc.${SECRET_APEX_DOMAIN}',
+                  'heimdall.${SECRET_APEX_DOMAIN}',
+                  'joal.${SECRET_APEX_DOMAIN}',
+                  'kitchenvault.${SECRET_APEX_DOMAIN}',
+                  'kitchenvault-dev.${SECRET_APEX_DOMAIN}',
+                  'lidarr.${SECRET_APEX_DOMAIN}',
+                  'logs.${SECRET_APEX_DOMAIN}',
+                  'maintainerr.${SECRET_APEX_DOMAIN}',
+                  'minio.${SECRET_APEX_DOMAIN}',
+                  'monitoring.${SECRET_APEX_DOMAIN}',
+                  'music-assistant.${SECRET_APEX_DOMAIN}',
+                  'prowlarr.${SECRET_APEX_DOMAIN}',
+                  'radarr.${SECRET_APEX_DOMAIN}',
+                  'shopping-cards.${SECRET_APEX_DOMAIN}',
+                  'slskd.${SECRET_APEX_DOMAIN}',
+                  'sonarr.${SECRET_APEX_DOMAIN}',
+                  'tesla-fleet.${SECRET_APEX_DOMAIN}',
+                  'teslamate.${SECRET_APEX_DOMAIN}',
+                  'teslamate-grafana.${SECRET_APEX_DOMAIN}',
+                  'transmission.${SECRET_APEX_DOMAIN}',
+                  'uptime-kuma.${SECRET_APEX_DOMAIN}',
+                  'yubal.${SECRET_APEX_DOMAIN}',
+                  'zigbee2mqtt.${SECRET_APEX_DOMAIN}'
+                  ]
     agent:
       priorityClassName: homelab-critical
       daemonsetAnnotations:

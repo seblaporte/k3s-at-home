@@ -1,0 +1,22 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: trivy-operator
+  namespace: trivy-system
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: trivy-operator
+      rules:
+        - alert: TrivyCriticalVulnerability
+          expr: sum by (namespace, image_repository, image_tag) (trivy_image_vulnerabilities{severity="Critical"}) > 0
+          for: 24h
+          labels:
+            severity: critical
+          annotations:
+            summary: "Faille critique corrigeable dans {{ $labels.image_repository }}:{{ $labels.image_tag }}"
+            description: >-
+              {{ $value }} CVE critique(s) avec correctif disponible dans l'image
+              {{ $labels.image_repository }}:{{ $labels.image_tag }} (namespace {{ $labels.namespace }}).

@@ -56,6 +56,8 @@ spec:
     trivyOperator:
       scanJobPodPriorityClassName: homelab-scan
       scanJobAffinity: *affinity
+      # Les init containers réutilisent en général les images des conteneurs principaux
+      skipInitContainers: true
     trivy:
       # Seules les CVE avec un correctif disponible sont remontées
       ignoreUnfixed: true
@@ -68,11 +70,13 @@ spec:
       # BoltDB (base Trivy) supporte mal NFS : stockage bloc
       storageClassName: synology-iscsi-storage
       storageSize: 5Gi
+      # Un conteneur par image du workload (init containers inclus) : requêtes minimales,
+      # le cluster a déjà 85-99% de ses requêtes réservées sur la plupart des nœuds
       resources:
         requests:
-          cpu: 100m
-          memory: 256Mi
-          ephemeralStorage: 1Gi
+          cpu: 10m
+          memory: 64Mi
+          ephemeralStorage: 128Mi
         limits:
           cpu: "1"
           memory: 1Gi

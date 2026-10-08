@@ -12,3 +12,4 @@ resources:
   - kured
   - coredns
   - reloader
+  - trivy-operator

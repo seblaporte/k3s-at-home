@@ -34,3 +34,12 @@ value: 100000
 preemptionPolicy: PreemptLowerPriority
 globalDefault: true
 description: "Default pour toutes les applications non classifiées"
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: homelab-scan
+value: 50000
+preemptionPolicy: Never
+globalDefault: false
+description: "Jobs de scan de vulnérabilités (trivy-operator) : évincés avant toute application"

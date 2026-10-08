@@ -56,6 +56,8 @@ spec:
     trivyOperator:
       scanJobPodPriorityClassName: homelab-scan
       scanJobAffinity: *affinity
+      # Les init containers réutilisent en général les images des conteneurs principaux
+      skipInitContainers: true
     trivy:
       # Seules les CVE avec un correctif disponible sont remontées
       ignoreUnfixed: true

@@ -53,6 +53,10 @@ spec:
       rbacAssessmentScannerEnabled: false
       infraAssessmentScannerEnabled: false
       clusterComplianceEnabled: false
+      # Métriques détaillées (une série par CVE / contrôle en échec / image) pour les tableaux du dashboard
+      metricsVulnIdEnabled: true
+      metricsConfigAuditInfo: true
+      metricsImageInfo: true
     trivyOperator:
       scanJobPodPriorityClassName: homelab-scan
       scanJobAffinity: *affinity

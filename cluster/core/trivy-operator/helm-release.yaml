@@ -63,7 +63,7 @@ spec:
       ignoreUnfixed: true
       # Cluster 100% arm64 : Trivy ne scanne que linux/amd64 par défaut
       configFile:
-        scan:
+        image:
           platform: linux/arm64
       timeout: 10m0s
       priorityClassName: homelab-low

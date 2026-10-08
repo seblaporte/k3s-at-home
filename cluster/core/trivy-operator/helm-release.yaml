@@ -59,6 +59,10 @@ spec:
     trivy:
       # Seules les CVE avec un correctif disponible sont remontées
       ignoreUnfixed: true
+      # Cluster 100% arm64 : Trivy ne scanne que linux/amd64 par défaut
+      configFile:
+        scan:
+          platform: linux/arm64
       timeout: 10m0s
       priorityClassName: homelab-low
       # BoltDB (base Trivy) supporte mal NFS : stockage bloc

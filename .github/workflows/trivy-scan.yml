@@ -58,6 +58,8 @@ jobs:
         include: ${{ fromJSON(needs.detect.outputs.images) }}
     env:
       TRIVY_CACHE_DIR: .trivycache
+      # Cluster 100% arm64 : Trivy ne scanne que linux/amd64 par défaut
+      TRIVY_PLATFORM: linux/arm64
     steps:
       - name: Cache Trivy DB
         uses: actions/cache@v6

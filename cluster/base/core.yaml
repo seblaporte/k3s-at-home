@@ -18,7 +18,11 @@ spec:
     secretRef:
       name: sops-gpg
   postBuild:
-    substitute: {}
+    # Upstream grafana.com dashboards reference their datasource as ${DS_PROMETHEUS}: resolve it
+    # to the uid of the Prometheus datasource so the dashboard JSON can stay unmodified.
+    substitute:
+      DS_PROMETHEUS: prometheus
+      DS_UNIFI_POLLER: prometheus
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings

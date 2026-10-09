@@ -20,6 +20,10 @@ spec:
     crds: Create
   upgrade:
     crds: CreateReplace
+  valuesFrom:
+    - kind: ConfigMap
+      name: kube-state-metrics-flux-values
+      valuesKey: values.yaml
   values:
     alertmanager:
       enabled: false
@@ -99,43 +103,13 @@ spec:
             app.kubernetes.io/part-of: flux
         serviceMonitorSelectorNilUsesHelmValues: false
 
+    # The standalone Grafana (helm-release-grafana.yaml) replaces the embedded one. These flags
+    # keep generating the Kubernetes/Node Exporter dashboards and the Prometheus datasource as ConfigMaps.
     grafana:
+      enabled: false
+      forceDeployDashboards: true
+      forceDeployDatasources: true
       sidecar:
-        dashboards:
-          searchNamespace: ALL
-      adminUser: ${SECRET_GRAFANA_ADMIN_USERNAME}
-      adminPassword: ${SECRET_GRAFANA_ADMIN_PASSWORD}
-      grafana.ini:
-        log:
-          mode: console
-          level: error
-      persistence:
-        enabled: true
-        storageClassName: "nfs-client"
-        size: 1Gi
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: node-role.kubernetes.io/master
-                operator: NotIn
-                values:
-                - "true"
-      ingress:
-        enabled: true
-        ingressClassName: "traefik"
-        annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: networking-forwardauth-authelia@kubernetescrd
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
-        hosts:
-          - "monitoring.${SECRET_DOMAIN}"
-          - "monitoring.${SECRET_APEX_DOMAIN}"
-        tls:
-          - secretName: monitoring-tls-secret
-            hosts:
-              - "monitoring.${SECRET_DOMAIN}"
-          - secretName: monitoring-flat-tls-secret
-            hosts:
-              - "monitoring.${SECRET_APEX_DOMAIN}"
+        datasources:
+          alertmanager:
+            enabled: false

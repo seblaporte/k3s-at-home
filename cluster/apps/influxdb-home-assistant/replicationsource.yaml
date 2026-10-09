@@ -1,0 +1,22 @@
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: influxdb-home-assistant
+  namespace: influxdb-home-assistant
+spec:
+  sourcePVC: influxdb-home-assistant-influxdb2
+  trigger:
+    schedule: "15 2 * * *"
+  restic:
+    repository: influxdb-home-assistant-volsync-restic
+    copyMethod: Snapshot
+    volumeSnapshotClassName: synology-snapshotclass
+    moverSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+    pruneIntervalDays: 14
+    retain:
+      daily: 7
+      weekly: 4
+      monthly: 3

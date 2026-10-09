@@ -12,3 +12,7 @@ resources:
   - kured
   - coredns
   - reloader
+  - trivy-operator
+  - snapshot-controller
+  - synology-csi-snapshotter
+  - volsync

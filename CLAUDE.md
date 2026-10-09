@@ -111,6 +111,18 @@ defaultPodOptions:
 5. Add the app kustomization to `cluster/apps/kustomization.yaml`
 6. If the app is protected by Authelia (`networking-forwardauth-authelia` middleware), add an `access_control` rule for `<app>.${SECRET_APEX_DOMAIN}` in `cluster/apps/networking/authelia/configmap.yaml` — Reloader restarts Authelia automatically. Also add `<app>.${SECRET_APEX_DOMAIN}` to the `whitelist-authelia-401.yaml` host list in `cluster/apps/networking/crowdsec/helm-release.yaml`, otherwise expired sessions on that app (401s) can get your own IP banned by CrowdSec. Authelia secrets (JWT/session/storage keys, `users_database.yml`) live in `cluster/apps/networking/authelia/secret.sops.yaml`.
 
+## Grafana Dashboards
+
+Grafana (`monitoring` namespace) is stateless: datasources and dashboards come from ConfigMaps, picked up by the Grafana sidecar (label `grafana_dashboard` / `grafana_datasource`).
+
+- **Upstream dashboards** (grafana.com, Flux) are versioned **unmodified** in `cluster/core/monitoring/dashboards/<folder>/`. Never edit the JSON by hand.
+- **Source of truth for what is downloaded**: `.taskfiles/grafana.yml` (pinned grafana.com id + revision, or pinned commit for Flux). The cluster never runs it; Flux only deploys the JSON committed in Git.
+- **Update a dashboard**: change the revision in `.taskfiles/grafana.yml`, run `task grafana:fetch-dashboards`, review the JSON diff, commit.
+- **Add a dashboard**: add a `curl` line in the task, then list the file in a `configMapGenerator` of `cluster/core/monitoring/kustomization.yaml` (one ConfigMap per folder, with `grafana_dashboard: "1"` label and `grafana_folder` annotation).
+- **Datasource placeholders**: upstream JSON uses `${DS_PROMETHEUS}`-style names, resolved by `postBuild.substitute` in `cluster/base/core.yaml` (to the datasource uid, `prometheus` or `loki`). A new `${DS_...}` name must be added there.
+- **Flux substitution pitfall**: `core` runs variable substitution on the whole rendered YAML, JSON included. A dashboard containing `${...}` with a non-identifier (e.g. `${__series.name}`) breaks the build: check with `flux build kustomization core --dry-run` before committing.
+- **Datasources**: Loki is in `cluster/core/monitoring/grafana-datasources.yaml`; Prometheus comes from kube-prometheus-stack, which also generates the Kubernetes and Node Exporter dashboards as ConfigMaps.
+
 ## Secrets Management
 
 ```bash

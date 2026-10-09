@@ -1,0 +1,87 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: trivy-operator
+  namespace: trivy-system
+spec:
+  interval: 5m
+  dependsOn:
+    - name: kube-prometheus-stack
+      namespace: monitoring
+  chart:
+    spec:
+      # renovate: registryUrl=https://aquasecurity.github.io/helm-charts/
+      chart: trivy-operator
+      version: 0.37.0
+      sourceRef:
+        kind: HelmRepository
+        name: aqua-charts
+        namespace: flux-system
+      interval: 15m
+  values:
+    priorityClassName: homelab-low
+    affinity: &affinity
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: node-role.kubernetes.io/master
+                  operator: NotIn
+                  values:
+                    - "true"
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+    serviceMonitor:
+      enabled: true
+    operator:
+      # Un seul scan à la fois pour ne pas saturer les Pi
+      scanJobsConcurrentLimit: 1
+      scanJobTimeout: 10m
+      # Rescan de chaque workload toutes les 24h (détecte les nouvelles CVE)
+      scannerReportTTL: 24h
+      # Serveur Trivy intégré : la base de vulnérabilités n'est pas retéléchargée à chaque scan
+      builtInTrivyServer: true
+      vulnerabilityScannerEnabled: true
+      sbomGenerationEnabled: false
+      exposedSecretScannerEnabled: false
+      configAuditScannerEnabled: true
+      rbacAssessmentScannerEnabled: false
+      infraAssessmentScannerEnabled: false
+      clusterComplianceEnabled: false
+      # Métriques détaillées (une série par CVE / contrôle en échec / image) pour les tableaux du dashboard
+      metricsVulnIdEnabled: true
+      metricsConfigAuditInfo: true
+      metricsImageInfo: true
+    trivyOperator:
+      scanJobPodPriorityClassName: homelab-scan
+      scanJobAffinity: *affinity
+      # Les init containers réutilisent en général les images des conteneurs principaux
+      skipInitContainers: true
+    trivy:
+      # Seules les CVE avec un correctif disponible sont remontées
+      ignoreUnfixed: true
+      # Cluster 100% arm64 : Trivy ne scanne que linux/amd64 par défaut
+      configFile:
+        image:
+          platform: linux/arm64
+      timeout: 10m0s
+      priorityClassName: homelab-low
+      # BoltDB (base Trivy) supporte mal NFS : stockage bloc
+      storageClassName: synology-iscsi-storage
+      storageSize: 5Gi
+      # Un conteneur par image du workload (init containers inclus) : requêtes minimales,
+      # le cluster a déjà 85-99% de ses requêtes réservées sur la plupart des nœuds
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+          ephemeralStorage: 128Mi
+        limits:
+          cpu: "1"
+          memory: 1Gi
+          ephemeralStorage: 4Gi

@@ -64,6 +64,8 @@ data:
           policy: 'two_factor'
         - domain: 'go2rtc.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+        - domain: 'grafana.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
         - domain: 'heimdall.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
         - domain: 'joal.${SECRET_APEX_DOMAIN}'
@@ -71,8 +73,6 @@ data:
         - domain: 'kitchenvault.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
         - domain: 'kitchenvault-dev.${SECRET_APEX_DOMAIN}'
-          policy: 'two_factor'
-        - domain: 'logs.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
         - domain: 'maintainerr.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
@@ -87,8 +87,6 @@ data:
         - domain: 'teslamate.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
         - domain: 'teslamate-grafana.${SECRET_APEX_DOMAIN}'
-          policy: 'two_factor'
-        - domain: 'monitoring.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
 
     session:

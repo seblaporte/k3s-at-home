@@ -1,0 +1,116 @@
+---
+# Source: https://github.com/SynologyOpenSource/synology-csi/blob/v1.1.3/deploy/kubernetes/v1.20/snapshotter/snapshotter.yaml
+# Pinned to v1.1.3 to match the synology-csi-controller/node version already running on the cluster
+# (deployed out-of-band, see https://github.com/seblaporte/k3s-at-home/issues/1008).
+# Additive only: a dedicated StatefulSet + csi-plugin instance for snapshot RPCs, reusing the
+# existing client-info-secret. Does not modify the existing controller/node DaemonSet.
+# csi-snapshotter sidecar bumped from Synology's pinned v4.2.1 (2021) to v8.4.0 to match the
+# VolumeSnapshot CRDs installed alongside this: v4.2.1 predates the sourceVolumeMode field and
+# never sets it on updates, which the v8.4.0 CRDs' transition rule rejects.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: csi-snapshotter-sa
+  namespace: synology-csi
+
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: synology-csi-snapshotter-role
+rules:
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list", "watch", "create", "update", "patch"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotcontents"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotcontents/status"]
+    verbs: ["update", "patch"]
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: synology-csi-snapshotter-role
+  namespace: synology-csi
+subjects:
+  - kind: ServiceAccount
+    name: csi-snapshotter-sa
+    namespace: synology-csi
+roleRef:
+  kind: ClusterRole
+  name: synology-csi-snapshotter-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: synology-csi-snapshotter
+  namespace: synology-csi
+spec:
+  serviceName: "synology-csi-snapshotter"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: synology-csi-snapshotter
+  template:
+    metadata:
+      labels:
+        app: synology-csi-snapshotter
+    spec:
+      serviceAccountName: csi-snapshotter-sa
+      hostNetwork: true
+      containers:
+        - name: csi-snapshotter
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["SYS_ADMIN"]
+            allowPrivilegeEscalation: true
+          image: registry.k8s.io/sig-storage/csi-snapshotter:v8.4.0
+          args:
+            - --v=5
+            - --csi-address=$(ADDRESS)
+            - --timeout=120s
+          env:
+            - name: ADDRESS
+              value: /var/lib/csi/sockets/pluginproxy/csi.sock
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /var/lib/csi/sockets/pluginproxy/
+        - name: csi-plugin
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["SYS_ADMIN"]
+            allowPrivilegeEscalation: true
+          image: synology/synology-csi:v1.1.3
+          args:
+            - --nodeid=NotUsed
+            - --endpoint=$(CSI_ENDPOINT)
+            - --client-info
+            - /etc/synology/client-info.yml
+            - --log-level=info
+          env:
+            - name: CSI_ENDPOINT
+              value: unix:///var/lib/csi/sockets/pluginproxy/csi.sock
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /var/lib/csi/sockets/pluginproxy/
+            - name: client-info
+              mountPath: /etc/synology
+              readOnly: true
+      volumes:
+        - name: socket-dir
+          emptyDir: {}
+        - name: client-info
+          secret:
+            secretName: client-info-secret

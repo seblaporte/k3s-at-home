@@ -1,0 +1,19 @@
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: zigbee2mqtt
+  namespace: zigbee2mqtt
+spec:
+  sourcePVC: zigbee2mqtt-data-iscsi
+  trigger:
+    schedule: "45 3 * * *"
+  restic:
+    repository: zigbee2mqtt-volsync-restic
+    copyMethod: Snapshot
+    volumeSnapshotClassName: synology-snapshotclass
+    pruneIntervalDays: 14
+    retain:
+      daily: 7
+      weekly: 4
+      monthly: 3

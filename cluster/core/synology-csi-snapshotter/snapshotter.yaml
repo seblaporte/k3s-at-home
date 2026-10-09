@@ -4,6 +4,9 @@
 # (deployed out-of-band, see https://github.com/seblaporte/k3s-at-home/issues/1008).
 # Additive only: a dedicated StatefulSet + csi-plugin instance for snapshot RPCs, reusing the
 # existing client-info-secret. Does not modify the existing controller/node DaemonSet.
+# csi-snapshotter sidecar bumped from Synology's pinned v4.2.1 (2021) to v8.4.0 to match the
+# VolumeSnapshot CRDs installed alongside this: v4.2.1 predates the sourceVolumeMode field and
+# never sets it on updates, which the v8.4.0 CRDs' transition rule rejects.
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -70,7 +73,7 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-          image: registry.k8s.io/sig-storage/csi-snapshotter:v4.2.1
+          image: registry.k8s.io/sig-storage/csi-snapshotter:v8.4.0
           args:
             - --v=5
             - --csi-address=$(ADDRESS)

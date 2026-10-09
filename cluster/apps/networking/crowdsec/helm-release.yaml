@@ -57,6 +57,7 @@ spec:
                   evt.Meta.http_status == '401' && evt.Meta.target_fqdn in [
                   'esphome.${SECRET_APEX_DOMAIN}',
                   'go2rtc.${SECRET_APEX_DOMAIN}',
+                  'grafana.${SECRET_APEX_DOMAIN}',
                   'heimdall.${SECRET_APEX_DOMAIN}',
                   'joal.${SECRET_APEX_DOMAIN}',
                   'kitchenvault.${SECRET_APEX_DOMAIN}',

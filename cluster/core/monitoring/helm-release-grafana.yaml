@@ -1,0 +1,79 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://grafana-community.github.io/helm-charts
+      chart: grafana
+      version: 13.4.0
+      sourceRef:
+        kind: HelmRepository
+        name: grafana-community-charts
+        namespace: flux-system
+      interval: 1m
+  values:
+    # Stateless: everything is provisioned from ConfigMaps/Secrets, nothing is stored on disk.
+    persistence:
+      enabled: false
+    admin:
+      existingSecret: grafana-admin
+    grafana.ini:
+      log:
+        mode: console
+        level: error
+      analytics:
+        reporting_enabled: false
+        check_for_updates: false
+      security:
+        disable_gravatar: true
+      users:
+        allow_sign_up: false
+    sidecar:
+      dashboards:
+        enabled: true
+        # Dashboards live in ConfigMaps of any namespace (kube-prometheus-stack, flux-system, ...)
+        searchNamespace: ALL
+        resource: configmap
+        folderAnnotation: grafana_folder
+        provider:
+          foldersFromFilesStructure: true
+          allowUiUpdates: false
+      datasources:
+        enabled: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 512Mi
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: node-role.kubernetes.io/master
+                  operator: NotIn
+                  values:
+                    - "true"
+    ingress:
+      enabled: true
+      ingressClassName: "traefik"
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+        traefik.ingress.kubernetes.io/router.middlewares: networking-forwardauth-authelia@kubernetescrd
+        cert-manager.io/cluster-issuer: "letsencrypt-production"
+      hosts:
+        - "grafana.${SECRET_DOMAIN}"
+        - "grafana.${SECRET_APEX_DOMAIN}"
+      tls:
+        - secretName: grafana-tls-secret
+          hosts:
+            - "grafana.${SECRET_DOMAIN}"
+        - secretName: grafana-flat-tls-secret
+          hosts:
+            - "grafana.${SECRET_APEX_DOMAIN}"

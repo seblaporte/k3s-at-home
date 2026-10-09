@@ -12,5 +12,6 @@ env:
 includes:
   flux: .taskfiles/flux.yml
   format: .taskfiles/format.yml
+  grafana: .taskfiles/grafana.yml
   lint: .taskfiles/lint.yml
   pre-commit: .taskfiles/pre-commit.yml

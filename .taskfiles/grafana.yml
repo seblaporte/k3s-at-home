@@ -1,0 +1,23 @@
+---
+version: "3"
+
+vars:
+  DASHBOARDS_DIR:
+    sh: echo "$(git rev-parse --show-toplevel)/cluster/core/monitoring/dashboards"
+  GRAFANA_COM: https://grafana.com/api/dashboards
+  FLUX_MONITORING: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/14129216b7e43db91c49bf0cd6b588360e4aa953/monitoring/configs/dashboards
+
+tasks:
+  fetch-dashboards:
+    desc: Download the pinned Grafana dashboards (id + revision) into the repo, unmodified
+    cmds:
+      - mkdir -p {{.DASHBOARDS_DIR}}/flux {{.DASHBOARDS_DIR}}/traefik {{.DASHBOARDS_DIR}}/unifi
+      # Flux
+      - curl -fsSL {{.FLUX_MONITORING}}/control-plane.json -o {{.DASHBOARDS_DIR}}/flux/flux-control-plane.json
+      - curl -fsSL {{.FLUX_MONITORING}}/cluster.json -o {{.DASHBOARDS_DIR}}/flux/flux-cluster.json
+      # Traefik: Official Kubernetes Dashboard
+      - curl -fsSL {{.GRAFANA_COM}}/17347/revisions/9/download -o {{.DASHBOARDS_DIR}}/traefik/traefik-kubernetes.json
+      # UniFi-Poller: Network Sites, UAP Insights, Client Insights
+      - curl -fsSL {{.GRAFANA_COM}}/11311/revisions/5/download -o {{.DASHBOARDS_DIR}}/unifi/unifi-network-sites.json
+      - curl -fsSL {{.GRAFANA_COM}}/11314/revisions/10/download -o {{.DASHBOARDS_DIR}}/unifi/unifi-uap-insights.json
+      - curl -fsSL {{.GRAFANA_COM}}/11315/revisions/9/download -o {{.DASHBOARDS_DIR}}/unifi/unifi-client-insights.json

@@ -1,0 +1,19 @@
+---
+# The Prometheus datasource (uid "prometheus") is provided by kube-prometheus-stack's own ConfigMap.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasource-loki
+  namespace: monitoring
+  labels:
+    grafana_datasource: "1"
+data:
+  loki.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Loki
+        uid: loki
+        type: loki
+        access: proxy
+        url: http://loki-stack.log-management.svc.cluster.local:3100
+        isDefault: false

@@ -20,6 +20,10 @@ spec:
     crds: Create
   upgrade:
     crds: CreateReplace
+  valuesFrom:
+    - kind: ConfigMap
+      name: kube-state-metrics-flux-values
+      valuesKey: values.yaml
   values:
     alertmanager:
       enabled: false
@@ -103,6 +107,9 @@ spec:
       sidecar:
         dashboards:
           searchNamespace: ALL
+        datasources:
+          alertmanager:
+            enabled: false
       adminUser: ${SECRET_GRAFANA_ADMIN_USERNAME}
       adminPassword: ${SECRET_GRAFANA_ADMIN_PASSWORD}
       grafana.ini:

@@ -2,3 +2,50 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - helm-release.yaml
+  - helm-release-grafana.yaml
+  - grafana-admin-secret.yaml
+  - grafana-datasources.yaml
+  - podmonitor-flux.yaml
+# Hash suffix disabled: prune is off on `core`, a renamed ConfigMap would linger (and, for
+# dashboards, be loaded twice by the Grafana sidecar).
+generatorOptions:
+  disableNameSuffixHash: true
+configMapGenerator:
+  # Values for kube-state-metrics, referenced by the kube-prometheus-stack HelmRelease (valuesFrom).
+  - name: kube-state-metrics-flux-values
+    namespace: monitoring
+    files:
+      - values.yaml=kube-state-metrics-flux-values.yaml
+  # Dashboards are the unmodified upstream JSON (see `task grafana:fetch-dashboards`).
+  # Their ${DS_PROMETHEUS}/${DS_UNIFI_POLLER} placeholders are resolved by the Flux
+  # postBuild substitution defined in cluster/base/core.yaml.
+  - name: grafana-dashboards-flux
+    namespace: monitoring
+    files:
+      - dashboards/flux/flux-control-plane.json
+      - dashboards/flux/flux-cluster.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Flux
+  - name: grafana-dashboards-traefik
+    namespace: monitoring
+    files:
+      - dashboards/traefik/traefik-kubernetes.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Traefik
+  - name: grafana-dashboards-unifi
+    namespace: monitoring
+    files:
+      - dashboards/unifi/unifi-network-sites.json
+      - dashboards/unifi/unifi-uap-insights.json
+      - dashboards/unifi/unifi-client-insights.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: UniFi

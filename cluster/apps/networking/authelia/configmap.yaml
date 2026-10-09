@@ -64,6 +64,8 @@ data:
           policy: 'two_factor'
         - domain: 'go2rtc.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+        - domain: 'grafana.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
         - domain: 'heimdall.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
         - domain: 'joal.${SECRET_APEX_DOMAIN}'

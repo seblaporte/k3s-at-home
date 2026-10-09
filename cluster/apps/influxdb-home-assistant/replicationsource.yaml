@@ -12,6 +12,9 @@ spec:
     repository: influxdb-home-assistant-volsync-restic
     copyMethod: Snapshot
     volumeSnapshotClassName: synology-snapshotclass
+    moverSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
     pruneIntervalDays: 14
     retain:
       daily: 7

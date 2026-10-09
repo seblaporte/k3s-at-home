@@ -17,6 +17,9 @@ spec:
         namespace: flux-system
       interval: 1m
   values:
+    # The chart does not restart Grafana when the existing admin Secret changes.
+    annotations:
+      secret.reloader.stakater.com/reload: "grafana-admin"
     # Stateless: everything is provisioned from ConfigMaps/Secrets, nothing is stored on disk.
     persistence:
       enabled: false

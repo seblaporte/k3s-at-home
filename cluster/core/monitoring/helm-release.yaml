@@ -40,6 +40,9 @@ spec:
     kubeScheduler:
       enabled: false
     kube-state-metrics:
+      # It does not reload its custom resource state ConfigMap (see kube-state-metrics-flux-values.yaml).
+      annotations:
+        reloader.stakater.com/auto: "true"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

@@ -1,0 +1,53 @@
+---
+# monitoring.* and logs.* used to be two separate Grafana instances: send their bookmarks to the shared one.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-to-grafana
+  namespace: monitoring
+spec:
+  redirectRegex:
+    regex: ^https://[^/]+/(.*)
+    replacement: https://grafana.${SECRET_APEX_DOMAIN}/$1
+    permanent: false
+---
+# The backend is never reached (the middleware answers first) but Traefik needs a valid Service.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-legacy-redirects
+  namespace: monitoring
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+    traefik.ingress.kubernetes.io/router.middlewares: monitoring-redirect-to-grafana@kubernetescrd
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: "monitoring.${SECRET_APEX_DOMAIN}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana
+                port:
+                  number: 80
+    - host: "logs.${SECRET_APEX_DOMAIN}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana
+                port:
+                  number: 80
+  tls:
+    - secretName: monitoring-flat-tls-secret
+      hosts:
+        - "monitoring.${SECRET_APEX_DOMAIN}"
+    - secretName: logs-flat-tls-secret
+      hosts:
+        - "logs.${SECRET_APEX_DOMAIN}"

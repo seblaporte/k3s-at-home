@@ -17,7 +17,7 @@ image::doc/k3s-cluster.jpeg[k3s-cluster]
 * https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner[nfs-subdir-external-provisioner] - external cluster storage
 * https://github.com/prometheus/prometheus[Prometheus] - cluster monitoring
 * https://github.com/grafana/loki[Loki] - log management
-* https://grafana.com[Grafana] - visualization for cluster monitoring and log management
+* https://grafana.com[Grafana] - single shared instance (`grafana.*`) for cluster monitoring and log management, fully provisioned from ConfigMaps/Secrets
 * https://github.com/aquasecurity/trivy-operator[Trivy Operator] - continuous container image vulnerability scanning (fixable CVEs only), exposed as Prometheus metrics and a Grafana dashboard
 
 == 🔧 Tools

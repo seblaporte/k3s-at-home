@@ -72,45 +72,6 @@ spec:
         - key: "hardware"
           operator: "Exists"
           effect: "NoSchedule"
+    # Replaced by the shared Grafana of the monitoring namespace.
     grafana:
-      enabled: true
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: node-role.kubernetes.io/master
-                operator: NotIn
-                values:
-                - "true"
-      persistence:
-        enabled: true
-        storageClassName: "nfs-client"
-        size: 1Gi
-      env:
-        GF_AUTH_ANONYMOUS_ENABLED: true
-        GF_ANALYTICS_REPORTING_ENABLED: false
-        GF_SECURITY_DISABLE_GRAVATAR: true
-        GF_USERS_ALLOW_SIGN_UP: false
-      adminUser: ${SECRET_GRAFANA_ADMIN_USERNAME}
-      adminPassword: ${SECRET_GRAFANA_ADMIN_PASSWORD}
-      sidecar:
-        datasources:
-          enabled: true
-      ingress:
-        enabled: true
-        ingressClassName: "traefik"
-        annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: networking-forwardauth-authelia@kubernetescrd
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
-        hosts:
-          - "logs.${SECRET_DOMAIN}"
-          - "logs.${SECRET_APEX_DOMAIN}"
-        tls:
-          - secretName: logs-tls-secret
-            hosts:
-              - "logs.${SECRET_DOMAIN}"
-          - secretName: logs-flat-tls-secret
-            hosts:
-              - "logs.${SECRET_APEX_DOMAIN}"
+      enabled: false

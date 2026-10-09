@@ -5,6 +5,7 @@ resources:
   - helm-release-grafana.yaml
   - grafana-admin-secret.yaml
   - grafana-datasources.yaml
+  - grafana-redirects.yaml
   - podmonitor-flux.yaml
 # Hash suffix disabled: prune is off on `core`, a renamed ConfigMap would linger (and, for
 # dashboards, be loaded twice by the Grafana sidecar).

@@ -74,8 +74,6 @@ data:
           policy: 'two_factor'
         - domain: 'kitchenvault-dev.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
-        - domain: 'logs.${SECRET_APEX_DOMAIN}'
-          policy: 'two_factor'
         - domain: 'maintainerr.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
         - domain: 'shopping-cards.${SECRET_APEX_DOMAIN}'
@@ -89,8 +87,6 @@ data:
         - domain: 'teslamate.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
         - domain: 'teslamate-grafana.${SECRET_APEX_DOMAIN}'
-          policy: 'two_factor'
-        - domain: 'monitoring.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
 
     session:

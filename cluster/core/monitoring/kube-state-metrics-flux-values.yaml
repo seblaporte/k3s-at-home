@@ -3,6 +3,9 @@
 # `valuesFrom` (see kustomization.yaml). Exposes gotk_resource_info, which the "Flux Cluster
 # Stats" dashboard reads. To follow another Flux kind: add it to rbac.extraRules and add an
 # entry that reuses the `flux-resource-info` anchor.
+#
+# Each kind MUST have its own `help` text: kube-state-metrics drops the metrics of a kind whose
+# HELP line is identical to the previous one, so only one kind would be exported.
 kube-state-metrics:
   rbac:
     extraRules:
@@ -25,9 +28,10 @@ kube-state-metrics:
         resources:
           - groupVersionKind: {group: kustomize.toolkit.fluxcd.io, version: v1, kind: Kustomization}
             metricNamePrefix: gotk
-            metrics: &flux-resource-info
-              - name: resource_info
-                help: The current state of a Flux resource.
+            metrics:
+              - &flux-resource-info
+                name: resource_info
+                help: The current state of a Flux Kustomization resource.
                 each:
                   type: Info
                   info:
@@ -39,16 +43,26 @@ kube-state-metrics:
                   suspended: [spec, suspend]
           - groupVersionKind: {group: helm.toolkit.fluxcd.io, version: v2, kind: HelmRelease}
             metricNamePrefix: gotk
-            metrics: *flux-resource-info
+            metrics:
+              - <<: *flux-resource-info
+                help: The current state of a Flux HelmRelease resource.
           - groupVersionKind: {group: source.toolkit.fluxcd.io, version: v1, kind: GitRepository}
             metricNamePrefix: gotk
-            metrics: *flux-resource-info
+            metrics:
+              - <<: *flux-resource-info
+                help: The current state of a Flux GitRepository resource.
           - groupVersionKind: {group: source.toolkit.fluxcd.io, version: v1, kind: HelmRepository}
             metricNamePrefix: gotk
-            metrics: *flux-resource-info
+            metrics:
+              - <<: *flux-resource-info
+                help: The current state of a Flux HelmRepository resource.
           - groupVersionKind: {group: source.toolkit.fluxcd.io, version: v1, kind: OCIRepository}
             metricNamePrefix: gotk
-            metrics: *flux-resource-info
+            metrics:
+              - <<: *flux-resource-info
+                help: The current state of a Flux OCIRepository resource.
           - groupVersionKind: {group: source.toolkit.fluxcd.io, version: v1, kind: Bucket}
             metricNamePrefix: gotk
-            metrics: *flux-resource-info
+            metrics:
+              - <<: *flux-resource-info
+                help: The current state of a Flux Bucket resource.

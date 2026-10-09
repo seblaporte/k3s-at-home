@@ -100,7 +100,7 @@ data:
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "grafana.${SECRET_APEX_DOMAIN}"
         originRequest:
-          noTLSVerify: true # temporary until grafana-flat-tls-secret is READY, then matchSNItoHost: true
+          matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "logs.${SECRET_APEX_DOMAIN}"
         originRequest:

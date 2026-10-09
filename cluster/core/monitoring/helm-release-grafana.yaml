@@ -68,12 +68,8 @@ spec:
         traefik.ingress.kubernetes.io/router.middlewares: networking-forwardauth-authelia@kubernetescrd
         cert-manager.io/cluster-issuer: "letsencrypt-production"
       hosts:
-        - "grafana.${SECRET_DOMAIN}"
         - "grafana.${SECRET_APEX_DOMAIN}"
       tls:
-        - secretName: grafana-tls-secret
-          hosts:
-            - "grafana.${SECRET_DOMAIN}"
         - secretName: grafana-flat-tls-secret
           hosts:
             - "grafana.${SECRET_APEX_DOMAIN}"

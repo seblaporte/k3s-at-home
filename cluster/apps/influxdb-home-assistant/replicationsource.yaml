@@ -2,14 +2,14 @@
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: uptime-kuma
-  namespace: uptime-kuma
+  name: influxdb-home-assistant
+  namespace: influxdb-home-assistant
 spec:
-  sourcePVC: uptime-kuma-data
+  sourcePVC: influxdb-home-assistant-influxdb2
   trigger:
-    schedule: "0 2 * * *"
+    schedule: "15 2 * * *"
   restic:
-    repository: uptime-kuma-volsync-restic
+    repository: influxdb-home-assistant-volsync-restic
     copyMethod: Snapshot
     volumeSnapshotClassName: synology-snapshotclass
     pruneIntervalDays: 14

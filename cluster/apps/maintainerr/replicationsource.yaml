@@ -2,14 +2,14 @@
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: uptime-kuma
-  namespace: uptime-kuma
+  name: maintainerr
+  namespace: maintainerr
 spec:
-  sourcePVC: uptime-kuma-data
+  sourcePVC: maintainerr-data
   trigger:
-    schedule: "0 2 * * *"
+    schedule: "0 3 * * *"
   restic:
-    repository: uptime-kuma-volsync-restic
+    repository: maintainerr-volsync-restic
     copyMethod: Snapshot
     volumeSnapshotClassName: synology-snapshotclass
     pruneIntervalDays: 14

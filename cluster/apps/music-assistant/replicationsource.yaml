@@ -2,14 +2,14 @@
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: uptime-kuma
-  namespace: uptime-kuma
+  name: music-assistant
+  namespace: music-assistant
 spec:
-  sourcePVC: uptime-kuma-data
+  sourcePVC: music-assistant-data
   trigger:
-    schedule: "0 2 * * *"
+    schedule: "45 2 * * *"
   restic:
-    repository: uptime-kuma-volsync-restic
+    repository: music-assistant-volsync-restic
     copyMethod: Snapshot
     volumeSnapshotClassName: synology-snapshotclass
     pruneIntervalDays: 14

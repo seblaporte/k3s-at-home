@@ -2,14 +2,14 @@
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: uptime-kuma
-  namespace: uptime-kuma
+  name: zigbee2mqtt
+  namespace: zigbee2mqtt
 spec:
-  sourcePVC: uptime-kuma-data
+  sourcePVC: zigbee2mqtt-data-iscsi
   trigger:
-    schedule: "0 2 * * *"
+    schedule: "45 3 * * *"
   restic:
-    repository: uptime-kuma-volsync-restic
+    repository: zigbee2mqtt-volsync-restic
     copyMethod: Snapshot
     volumeSnapshotClassName: synology-snapshotclass
     pruneIntervalDays: 14

@@ -4,3 +4,5 @@ resources:
   - namespace.yaml
   - pvc-iscsi.yaml
   - helm-release.yaml
+  - volsync-restic-secret.yaml
+  - replicationsource.yaml

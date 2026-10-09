@@ -2,14 +2,14 @@
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: uptime-kuma
-  namespace: uptime-kuma
+  name: yubal
+  namespace: yubal
 spec:
-  sourcePVC: uptime-kuma-data
+  sourcePVC: yubal-config
   trigger:
-    schedule: "0 2 * * *"
+    schedule: "30 3 * * *"
   restic:
-    repository: uptime-kuma-volsync-restic
+    repository: yubal-volsync-restic
     copyMethod: Snapshot
     volumeSnapshotClassName: synology-snapshotclass
     pruneIntervalDays: 14

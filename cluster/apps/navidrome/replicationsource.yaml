@@ -1,0 +1,19 @@
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: navidrome
+  namespace: navidrome
+spec:
+  sourcePVC: navidrome-data
+  trigger:
+    schedule: "30 2 * * *"
+  restic:
+    repository: navidrome-volsync-restic
+    copyMethod: Snapshot
+    volumeSnapshotClassName: synology-snapshotclass
+    pruneIntervalDays: 14
+    retain:
+      daily: 7
+      weekly: 4
+      monthly: 3

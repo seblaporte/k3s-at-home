@@ -8,6 +8,7 @@ configMapGenerator:
     namespace: monitoring
     files:
       - trivy-operator.json=dashboard.json
+      - trivy-image-updates.json=dashboard-updates.json
     options:
       disableNameSuffixHash: true
       labels:

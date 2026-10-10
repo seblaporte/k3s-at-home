@@ -42,10 +42,35 @@ jobs:
           done < <(git diff --name-only --diff-filter=AM "$base" HEAD | grep -E '^cluster/.*/helm-release[^/]*\.ya?ml$' || true)
 
           comm -13 <(sort -u old.txt) <(sort -u new.txt) > changed.txt
-          echo "Images to scan:"
-          cat changed.txt
+          comm -23 <(sort -u old.txt) <(sort -u new.txt) > replaced.txt
 
-          list=$(jq -R -s -c 'split("\n") | map(select(length > 0)) | to_entries | map({id: (.key | tostring), image: .value})' < changed.txt)
+          # Repository d'une référence (sans tag ni digest)
+          repo_of() {
+            local ref="${1%%@*}"
+            echo "${ref%:*}"
+          }
+
+          # Associe chaque nouvelle image à l'ancien tag de la même image (s'il est unique)
+          : > pairs.tsv
+          while IFS= read -r new; do
+            repo=$(repo_of "$new")
+            candidates=()
+            while IFS= read -r old; do
+              if [ "$(repo_of "$old")" = "$repo" ]; then
+                candidates+=("$old")
+              fi
+            done < replaced.txt
+            old=""
+            if [ "${#candidates[@]}" -eq 1 ]; then
+              old="${candidates[0]}"
+            fi
+            printf '%s\t%s\n' "$new" "$old" >> pairs.tsv
+          done < changed.txt
+
+          echo "Images to scan (new <TAB> previous):"
+          cat pairs.tsv
+
+          list=$(jq -R -s -c 'split("\n") | map(select(length > 0) | split("\t")) | to_entries | map({id: (.key | tostring), image: .value[0], old: (.value[1] // "")})' < pairs.tsv)
           echo "images=${list}" >> "$GITHUB_OUTPUT"
 
   scan:
@@ -80,11 +105,25 @@ jobs:
           cache-dir: ${{ env.TRIVY_CACHE_DIR }}
         continue-on-error: true
 
+      - name: Scan previous image ${{ matrix.old }}
+        if: matrix.old != ''
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: "image"
+          image-ref: ${{ matrix.old }}
+          format: "json"
+          output: "result-${{ matrix.id }}-old.json"
+          ignore-unfixed: true
+          cache-dir: ${{ env.TRIVY_CACHE_DIR }}
+        continue-on-error: true
+
       - name: Upload result
         uses: actions/upload-artifact@v7
         with:
           name: trivy-result-${{ matrix.id }}
-          path: result-${{ matrix.id }}.json
+          path: |
+            result-${{ matrix.id }}.json
+            result-${{ matrix.id }}-old.json
           if-no-files-found: ignore
 
   report:

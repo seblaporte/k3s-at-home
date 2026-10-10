@@ -1,0 +1,15 @@
+---
+# Same as synology-iscsi-storage but reclaimPolicy Delete: used for VolSync's temporary
+# snapshot-clone PVCs so their LUNs are removed from the NAS instead of piling up as Released PVs.
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: synology-iscsi-storage-delete
+provisioner: csi.san.synology.com
+parameters:
+  dsm: 192.168.1.10
+  fsType: ext4
+  location: /volume1
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+volumeBindingMode: Immediate

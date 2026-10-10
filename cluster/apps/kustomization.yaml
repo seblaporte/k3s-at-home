@@ -29,7 +29,6 @@ resources:
   - lidarr
   - navidrome
   - flaresolverr
-  - uptime-kuma
   - minio
   - spotdl
   - aiconnect

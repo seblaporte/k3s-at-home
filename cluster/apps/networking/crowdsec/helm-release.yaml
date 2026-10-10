@@ -75,7 +75,6 @@ spec:
                   'teslamate.${SECRET_APEX_DOMAIN}',
                   'teslamate-grafana.${SECRET_APEX_DOMAIN}',
                   'transmission.${SECRET_APEX_DOMAIN}',
-                  'uptime-kuma.${SECRET_APEX_DOMAIN}',
                   'yubal.${SECRET_APEX_DOMAIN}',
                   'zigbee2mqtt.${SECRET_APEX_DOMAIN}'
                   ]

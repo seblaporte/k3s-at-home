@@ -14,10 +14,6 @@ data:
         originRequest:
           matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
-      - hostname: "uptime-kuma.${SECRET_APEX_DOMAIN}"
-        originRequest:
-          matchSNItoHost: true
-        service: https://traefik.networking.svc.cluster.local:443
       - hostname: "sonarr.${SECRET_APEX_DOMAIN}"
         originRequest:
           matchSNItoHost: true

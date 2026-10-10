@@ -49,3 +49,56 @@ configMapGenerator:
         grafana_dashboard: "1"
       annotations:
         grafana_folder: UniFi
+  - name: grafana-dashboards-crowdsec
+    namespace: monitoring
+    files:
+      - dashboards/crowdsec/crowdsec-overview.json
+      - dashboards/crowdsec/crowdsec-insight.json
+      - dashboards/crowdsec/crowdsec-details-per-machine.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: CrowdSec
+  - name: grafana-dashboards-volsync
+    namespace: monitoring
+    files:
+      - dashboards/volsync/volsync.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: VolSync
+  # The dashboards below use native Grafana variables (${datasource}, ${__value.text}...) that Flux
+  # substitution would mangle: substitution is disabled for them (they need no DS_* placeholder).
+  - name: grafana-dashboards-trivy
+    namespace: monitoring
+    files:
+      - dashboards/trivy/trivy-operator-vulnerabilities.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Trivy
+        kustomize.toolkit.fluxcd.io/substitute: disabled
+  - name: grafana-dashboards-kubernetes
+    namespace: monitoring
+    files:
+      - dashboards/kubernetes/k8s-views-global.json
+      - dashboards/kubernetes/k8s-views-pods.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Kubernetes
+        kustomize.toolkit.fluxcd.io/substitute: disabled
+  - name: grafana-dashboards-cert-manager
+    namespace: monitoring
+    files:
+      - dashboards/cert-manager/cert-manager.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: cert-manager
+        kustomize.toolkit.fluxcd.io/substitute: disabled

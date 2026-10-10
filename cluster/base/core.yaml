@@ -23,6 +23,8 @@ spec:
     substitute:
       DS_PROMETHEUS: prometheus
       DS_UNIFI_POLLER: prometheus
+      DS_WATCHERS: prometheus
+      VAR_REPLICATIONDESTNAME: ".*-dst|.*-bootstrap"
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings

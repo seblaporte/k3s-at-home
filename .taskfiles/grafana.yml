@@ -5,13 +5,14 @@ vars:
   DASHBOARDS_DIR:
     sh: echo "$(git rev-parse --show-toplevel)/cluster/core/monitoring/dashboards"
   GRAFANA_COM: https://grafana.com/api/dashboards
+  CROWDSEC_DASHBOARDS: https://raw.githubusercontent.com/crowdsecurity/grafana-dashboards/0d34f686930aab1f11562bdf664ffad60c567e39/dashboards_v1
   FLUX_MONITORING: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/14129216b7e43db91c49bf0cd6b588360e4aa953/monitoring/configs/dashboards
 
 tasks:
   fetch-dashboards:
     desc: Download the pinned Grafana dashboards (id + revision) into the repo, unmodified
     cmds:
-      - mkdir -p {{.DASHBOARDS_DIR}}/flux {{.DASHBOARDS_DIR}}/traefik {{.DASHBOARDS_DIR}}/unifi
+      - mkdir -p {{.DASHBOARDS_DIR}}/flux {{.DASHBOARDS_DIR}}/traefik {{.DASHBOARDS_DIR}}/unifi {{.DASHBOARDS_DIR}}/crowdsec {{.DASHBOARDS_DIR}}/trivy {{.DASHBOARDS_DIR}}/kubernetes {{.DASHBOARDS_DIR}}/cert-manager {{.DASHBOARDS_DIR}}/volsync
       # Flux
       - curl -fsSL {{.FLUX_MONITORING}}/control-plane.json -o {{.DASHBOARDS_DIR}}/flux/flux-control-plane.json
       - curl -fsSL {{.FLUX_MONITORING}}/cluster.json -o {{.DASHBOARDS_DIR}}/flux/flux-cluster.json
@@ -21,3 +22,16 @@ tasks:
       - curl -fsSL {{.GRAFANA_COM}}/11311/revisions/5/download -o {{.DASHBOARDS_DIR}}/unifi/unifi-network-sites.json
       - curl -fsSL {{.GRAFANA_COM}}/11314/revisions/10/download -o {{.DASHBOARDS_DIR}}/unifi/unifi-uap-insights.json
       - curl -fsSL {{.GRAFANA_COM}}/11315/revisions/9/download -o {{.DASHBOARDS_DIR}}/unifi/unifi-client-insights.json
+      # CrowdSec: Overview, Insight, Details per Machine
+      - curl -fsSL {{.CROWDSEC_DASHBOARDS}}/Crowdsec_Overview.json -o {{.DASHBOARDS_DIR}}/crowdsec/crowdsec-overview.json
+      - curl -fsSL {{.CROWDSEC_DASHBOARDS}}/Crowdsec_Insight.json -o {{.DASHBOARDS_DIR}}/crowdsec/crowdsec-insight.json
+      - curl -fsSL {{.CROWDSEC_DASHBOARDS}}/Crowdsec_Details_per_Machine.json -o {{.DASHBOARDS_DIR}}/crowdsec/crowdsec-details-per-machine.json
+      # Trivy Operator: Vulnerabilities
+      - curl -fsSL {{.GRAFANA_COM}}/16337/revisions/16/download -o {{.DASHBOARDS_DIR}}/trivy/trivy-operator-vulnerabilities.json
+      # Kubernetes (dotdc): Views Global, Views Pods
+      - curl -fsSL {{.GRAFANA_COM}}/15757/revisions/43/download -o {{.DASHBOARDS_DIR}}/kubernetes/k8s-views-global.json
+      - curl -fsSL {{.GRAFANA_COM}}/15760/revisions/41/download -o {{.DASHBOARDS_DIR}}/kubernetes/k8s-views-pods.json
+      # cert-manager
+      - curl -fsSL {{.GRAFANA_COM}}/20842/revisions/3/download -o {{.DASHBOARDS_DIR}}/cert-manager/cert-manager.json
+      # VolSync
+      - curl -fsSL {{.GRAFANA_COM}}/21356/revisions/3/download -o {{.DASHBOARDS_DIR}}/volsync/volsync.json

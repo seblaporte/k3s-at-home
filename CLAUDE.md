@@ -120,7 +120,7 @@ Grafana (`monitoring` namespace) is stateless: datasources and dashboards come f
 - **Update a dashboard**: change the revision in `.taskfiles/grafana.yml`, run `task grafana:fetch-dashboards`, review the JSON diff, commit.
 - **Add a dashboard**: add a `curl` line in the task, then list the file in a `configMapGenerator` of `cluster/core/monitoring/kustomization.yaml` (one ConfigMap per folder, with `grafana_dashboard: "1"` label and `grafana_folder` annotation).
 - **Datasource placeholders**: upstream JSON uses `${DS_PROMETHEUS}`-style names, resolved by `postBuild.substitute` in `cluster/base/core.yaml` (to the datasource uid, `prometheus` or `loki`). A new `${DS_...}` name must be added there.
-- **Flux substitution pitfall**: `core` runs variable substitution on the whole rendered YAML, JSON included. A dashboard containing `${...}` with a non-identifier (e.g. `${__series.name}`) breaks the build: check with `flux build kustomization core --dry-run` before committing.
+- **Flux substitution pitfall**: `core` runs variable substitution on the whole rendered YAML, JSON included. A dashboard containing `${...}` with a non-identifier (e.g. `${__series.name}`) breaks the build: check with `flux build kustomization core --dry-run` before committing. For dashboards that use native Grafana variables (`${datasource}`, `${__value.text}`...) and no `DS_*` placeholder, set the annotation `kustomize.toolkit.fluxcd.io/substitute: disabled` on their ConfigMap in the `configMapGenerator` (JSON stays unmodified).
 - **Datasources**: Loki is in `cluster/core/monitoring/grafana-datasources.yaml`; Prometheus comes from kube-prometheus-stack, which also generates the Kubernetes and Node Exporter dashboards as ConfigMaps.
 
 ## Secrets Management

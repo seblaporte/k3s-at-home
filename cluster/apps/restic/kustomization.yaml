@@ -13,3 +13,5 @@ resources:
   - k3s-db-backup.yaml
   - volume-backup-script.yaml
   - volume-backup.yaml
+  - prune-script.yaml
+  - restic-prune.yaml

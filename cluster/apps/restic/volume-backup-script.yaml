@@ -6,13 +6,10 @@ metadata:
 data:
   entrypoint.sh: |-
     #!/bin/sh
-    restic --host k3s --tag zigbee2mqtt             backup /k3s/zigbee2mqtt*
     restic --host k3s --tag vaultwarden             backup /k3s/vaultwarden*
-    restic --host k3s --tag tvheadend               backup /k3s/tvheadend-tvheadend-config*
     restic --host k3s --tag teslamate               backup /k3s/teslamate*
     restic --host k3s --tag crowdsec                backup /k3s/networking-crowdsec*
     restic --host k3s --tag mosquitto               backup /k3s/mosquitto*
-    restic --host k3s --tag homebridge              backup /k3s/homebridge*
     restic --host k3s --tag home-assistant          backup /k3s/home-assistant-home-assistant-data*
     restic --host k3s --tag heimdall                backup /k3s/heimdall*
     restic --host k3s --tag esphome                 backup /k3s/esphome*
@@ -24,4 +21,8 @@ data:
     restic --host k3s --tag transmission            backup /k3s/transmission*
     restic --host k3s --tag jellyfin                backup /k3s/jellyfin-jellyfin-config*
     restic --host k3s --tag jellyseerr              backup /k3s/jellyseerr*
+    restic --host k3s --tag airconnect              backup /k3s/airconnect*
+    restic --host k3s --tag lidarr                  backup /k3s/lidarr*
+    restic --host k3s --tag authelia                backup /k3s/networking-authelia-config*
+    restic --host k3s --tag scrypted                backup /k3s/scrypted*
     curl -fsS -m 10 --retry 5 -o /dev/null https://hc-ping.com/$HEALTH_CHECK_UUID

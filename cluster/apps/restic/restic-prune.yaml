@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: restic-prune
+  namespace: restic
+spec:
+  schedule: "0 4 * * 6" # Tous les samedi à 04h00 UTC
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: restic-prune
+              image: ghcr.io/seblaporte/restic:1.1.0
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: RESTIC_PASSWORD
+                  value: ${SECRET_RESTIC_PASSWORD}
+                - name: RESTIC_REPOSITORY
+                  value: ${SECRET_RESTIC_REPOSITORY}
+                - name: OS_AUTH_URL
+                  value: ${SECRET_RESTIC_OS_AUTH_URL}
+                - name: OS_IDENTITY_API_VERSION
+                  value: "${SECRET_RESTIC_OS_IDENTITY_API_VERSION}"
+                - name: OS_TENANT_ID
+                  value: ${SECRET_RESTIC_OS_TENANT_ID}
+                - name: OS_TENANT_NAME
+                  value: "${SECRET_RESTIC_OS_TENANT_NAME}"
+                - name: OS_USERNAME
+                  value: ${SECRET_RESTIC_OS_USERNAME}
+                - name: OS_PASSWORD
+                  value: ${SECRET_RESTIC_OS_PASSWORD}
+                - name: OS_REGION_NAME
+                  value: ${SECRET_RESTIC_OS_REGION_NAME}
+                - name: OS_USER_DOMAIN_NAME
+                  value: "Default"
+                - name: OS_PROJECT_DOMAIN_NAME
+                  value: "Default"
+                - name: HEALTH_CHECK_UUID
+                  value: ${SECRET_RESTIC_PRUNE_HEALTH_CHECK_UUID}
+              command: ["/bin/entrypoint.sh"]
+              volumeMounts:
+                - name: script
+                  mountPath: /bin/entrypoint.sh
+                  readOnly: true
+                  subPath: entrypoint.sh
+          volumes:
+            - name: script
+              configMap:
+                defaultMode: 0700
+                name: prune-script
+          restartPolicy: OnFailure

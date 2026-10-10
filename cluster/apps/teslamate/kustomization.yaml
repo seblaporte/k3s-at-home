@@ -4,4 +4,6 @@ resources:
   - namespace.yaml
   - helm-release-backend.yaml
   - helm-release-grafana.yaml
+  - probe-backend.yaml
+  - probe-grafana.yaml
   

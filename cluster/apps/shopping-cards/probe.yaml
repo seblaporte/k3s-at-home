@@ -1,0 +1,18 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: shopping-cards
+  namespace: shopping-cards
+spec:
+  interval: 60s
+  scrapeTimeout: 15s
+  module: http_app
+  prober:
+    url: blackbox-exporter.monitoring.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      labels:
+        check: web-app
+      static:
+        - http://shopping-cards.shopping-cards.svc.cluster.local:80/

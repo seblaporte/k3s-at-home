@@ -1,0 +1,18 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: maintainerr
+  namespace: maintainerr
+spec:
+  interval: 60s
+  scrapeTimeout: 15s
+  module: http_app
+  prober:
+    url: blackbox-exporter.monitoring.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      labels:
+        check: web-app
+      static:
+        - http://maintainerr.maintainerr.svc.cluster.local:6246/

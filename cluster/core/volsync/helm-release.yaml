@@ -15,3 +15,7 @@ spec:
         name: backube-charts
         namespace: flux-system
       interval: 15m
+  values:
+    # The ServiceMonitor scrapes without a token: without this the target is down (HTTP 401).
+    metrics:
+      disableAuth: true

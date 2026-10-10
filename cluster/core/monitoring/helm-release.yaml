@@ -26,7 +26,81 @@ spec:
       valuesKey: values.yaml
   values:
     alertmanager:
-      enabled: false
+      enabled: true
+      alertmanagerSpec:
+        logLevel: error
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 128Mi
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: node-role.kubernetes.io/master
+                  operator: NotIn
+                  values:
+                  - "true"
+      # Secrets come from cluster-secrets through the `core` postBuild substitution. The defaults
+      # keep the config valid (Alertmanager rejects an empty bot token / chat id) until they are set.
+      config:
+        global:
+          resolve_timeout: 5m
+        route:
+          receiver: telegram
+          group_by: [alertname, namespace]
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 12h
+          routes:
+            # Dead man's switch: heartbeat to healthchecks.io, which alerts when it stops arriving.
+            - receiver: healthchecks
+              matchers:
+                - alertname = "Watchdog"
+              group_wait: 0s
+              group_interval: 5m
+              repeat_interval: 5m
+            - receiver: "null"
+              matchers:
+                - alertname =~ "InfoInhibitor|CPUThrottlingHigh"
+            # ~60 findings at once: one grouped message per week instead of a message per image.
+            - receiver: telegram
+              matchers:
+                - alertname = "TrivyCriticalVulnerability"
+              group_by: [alertname]
+              group_wait: 5m
+              group_interval: 24h
+              repeat_interval: 168h
+        inhibit_rules:
+          - source_matchers:
+              - severity = "critical"
+            target_matchers:
+              - severity =~ "warning|info"
+            equal: [namespace, alertname]
+          - source_matchers:
+              - severity = "warning"
+            target_matchers:
+              - severity = "info"
+            equal: [namespace, alertname]
+          - source_matchers:
+              - alertname = "InfoInhibitor"
+            target_matchers:
+              - severity = "info"
+            equal: [namespace]
+        receivers:
+          - name: "null"
+          - name: telegram
+            telegram_configs:
+              - bot_token: ${SECRET_ALERTMANAGER_TELEGRAM_BOT_TOKEN:=unset}
+                chat_id: ${SECRET_ALERTMANAGER_TELEGRAM_CHAT_ID:=1}
+                send_resolved: true
+          - name: healthchecks
+            webhook_configs:
+              - url: https://hc-ping.com/${SECRET_WATCHDOG_HEALTH_CHECK_UUID:=unset}
+                send_resolved: false
     kubeEtcd:
       enabled: false
     kubeControllerManager:
@@ -102,6 +176,7 @@ spec:
           matchLabels:
             app.kubernetes.io/part-of: flux
         serviceMonitorSelectorNilUsesHelmValues: false
+        probeSelectorNilUsesHelmValues: false
 
     # The standalone Grafana (helm-release-grafana.yaml) replaces the embedded one. These flags
     # keep generating the Kubernetes/Node Exporter dashboards and the Prometheus datasource as ConfigMaps.

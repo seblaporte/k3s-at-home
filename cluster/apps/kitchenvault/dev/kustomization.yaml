@@ -5,6 +5,7 @@ resources:
   - ../base
   - namespace.yaml
   - secret.sops.yaml
+  - probe.yaml
 patches:
   - path: patch-backend-ingress.yaml
     target:

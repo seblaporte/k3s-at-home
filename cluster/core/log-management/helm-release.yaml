@@ -72,6 +72,9 @@ spec:
         - key: "hardware"
           operator: "Exists"
           effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
     # Replaced by the shared Grafana of the monitoring namespace.
     grafana:
       enabled: false

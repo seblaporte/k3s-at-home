@@ -7,4 +7,3 @@ data:
   entrypoint.sh: |-
     #!/bin/sh
     restic forget --host k3s --keep-daily 7 --keep-weekly 8 --keep-monthly 12 --prune
-    curl -fsS -m 10 --retry 5 -o /dev/null https://hc-ping.com/$HEALTH_CHECK_UUID

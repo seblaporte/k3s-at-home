@@ -108,8 +108,9 @@ defaultPodOptions:
 3. Use the chart `app-template` from HelmRepository `bjw-s-helm-charts`
 3. If the app needs a LoadBalancer IP, add `SVC_APPNAME_ADDR` to `cluster/base/cluster-settings.yaml`
 4. If the app needs secrets, create `secret.sops.yaml` (encrypt with `sops -e -i`)
-5. Add the app kustomization to `cluster/apps/kustomization.yaml`
-6. If the app is protected by Authelia (`networking-forwardauth-authelia` middleware), add an `access_control` rule for `<app>.${SECRET_APEX_DOMAIN}` in `cluster/apps/networking/authelia/configmap.yaml` — Reloader restarts Authelia automatically. Also add `<app>.${SECRET_APEX_DOMAIN}` to the `whitelist-authelia-401.yaml` host list in `cluster/apps/networking/crowdsec/helm-release.yaml`, otherwise expired sessions on that app (401s) can get your own IP banned by CrowdSec. Authelia secrets (JWT/session/storage keys, `users_database.yml`) live in `cluster/apps/networking/authelia/secret.sops.yaml`.
+5. If the app exposes a web UI, add a `probe.yaml` next to its HelmRelease (copy one from another app: `Probe` in the app namespace, `module: http_app`, `check: web-app` label, target = the in-cluster Service URL) and list it in `kustomization.yaml`. The `WebAppDown` alert fires when it fails.
+6. Add the app kustomization to `cluster/apps/kustomization.yaml`
+7. If the app is protected by Authelia (`networking-forwardauth-authelia` middleware), add an `access_control` rule for `<app>.${SECRET_APEX_DOMAIN}` in `cluster/apps/networking/authelia/configmap.yaml` — Reloader restarts Authelia automatically. Also add `<app>.${SECRET_APEX_DOMAIN}` to the `whitelist-authelia-401.yaml` host list in `cluster/apps/networking/crowdsec/helm-release.yaml`, otherwise expired sessions on that app (401s) can get your own IP banned by CrowdSec. Authelia secrets (JWT/session/storage keys, `users_database.yml`) live in `cluster/apps/networking/authelia/secret.sops.yaml`.
 
 ## Grafana Dashboards
 

@@ -6,6 +6,9 @@ resources:
   - grafana-admin-secret.yaml
   - grafana-datasources.yaml
   - podmonitor-flux.yaml
+  - helm-release-blackbox-exporter.yaml
+  - probe-grafana.yaml
+  - prometheusrule-homelab.yaml
 # Hash suffix disabled: prune is off on `core`, a renamed ConfigMap would linger (and, for
 # dashboards, be loaded twice by the Grafana sidecar).
 generatorOptions:

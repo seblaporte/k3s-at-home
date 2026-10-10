@@ -6,22 +6,24 @@ metadata:
 data:
   entrypoint.sh: |-
     #!/bin/sh
-    restic --host k3s --tag zigbee2mqtt             backup /k3s/zigbee2mqtt*
-    restic --host k3s --tag vaultwarden             backup /k3s/vaultwarden*
-    restic --host k3s --tag tvheadend               backup /k3s/tvheadend-tvheadend-config*
-    restic --host k3s --tag teslamate               backup /k3s/teslamate*
-    restic --host k3s --tag crowdsec                backup /k3s/networking-crowdsec*
-    restic --host k3s --tag mosquitto               backup /k3s/mosquitto*
-    restic --host k3s --tag homebridge              backup /k3s/homebridge*
-    restic --host k3s --tag home-assistant          backup /k3s/home-assistant-home-assistant-data*
-    restic --host k3s --tag heimdall                backup /k3s/heimdall*
-    restic --host k3s --tag esphome                 backup /k3s/esphome*
-    restic --host k3s --tag adguard-home            backup /k3s/adguard-home*
-    restic --host k3s --tag sonarr                  backup /k3s/sonarr*
-    restic --host k3s --tag radarr                  backup /k3s/radarr*
-    restic --host k3s --tag prowlarr                backup /k3s/prowlarr*
-    restic --host k3s --tag joal                    backup /k3s/joal*
-    restic --host k3s --tag transmission            backup /k3s/transmission*
-    restic --host k3s --tag jellyfin                backup /k3s/jellyfin-jellyfin-config*
-    restic --host k3s --tag jellyseerr              backup /k3s/jellyseerr*
-    curl -fsS -m 10 --retry 5 -o /dev/null https://hc-ping.com/$HEALTH_CHECK_UUID
+    # Keep going after a failure so one broken app does not skip the others, then fail the job.
+    rc=0
+    restic --host k3s --tag zigbee2mqtt             backup /k3s/zigbee2mqtt* || rc=1
+    restic --host k3s --tag vaultwarden             backup /k3s/vaultwarden* || rc=1
+    restic --host k3s --tag tvheadend               backup /k3s/tvheadend-tvheadend-config* || rc=1
+    restic --host k3s --tag teslamate               backup /k3s/teslamate* || rc=1
+    restic --host k3s --tag crowdsec                backup /k3s/networking-crowdsec* || rc=1
+    restic --host k3s --tag mosquitto               backup /k3s/mosquitto* || rc=1
+    restic --host k3s --tag homebridge              backup /k3s/homebridge* || rc=1
+    restic --host k3s --tag home-assistant          backup /k3s/home-assistant-home-assistant-data* || rc=1
+    restic --host k3s --tag heimdall                backup /k3s/heimdall* || rc=1
+    restic --host k3s --tag esphome                 backup /k3s/esphome* || rc=1
+    restic --host k3s --tag adguard-home            backup /k3s/adguard-home* || rc=1
+    restic --host k3s --tag sonarr                  backup /k3s/sonarr* || rc=1
+    restic --host k3s --tag radarr                  backup /k3s/radarr* || rc=1
+    restic --host k3s --tag prowlarr                backup /k3s/prowlarr* || rc=1
+    restic --host k3s --tag joal                    backup /k3s/joal* || rc=1
+    restic --host k3s --tag transmission            backup /k3s/transmission* || rc=1
+    restic --host k3s --tag jellyfin                backup /k3s/jellyfin-jellyfin-config* || rc=1
+    restic --host k3s --tag jellyseerr              backup /k3s/jellyseerr* || rc=1
+    exit $rc

@@ -1,0 +1,51 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: homelab
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: homelab-availability
+      rules:
+        - alert: WebAppDown
+          expr: probe_success{check="web-app"} == 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Application web injoignable : {{ $labels.instance }}"
+            description: >-
+              La sonde HTTP {{ $labels.instance }} échoue depuis plus de 5 minutes.
+        - alert: BlackboxExporterNoData
+          expr: absent(probe_success{check="web-app"})
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Aucune métrique de sonde HTTP"
+            description: >-
+              Le blackbox-exporter ou la Probe web-apps ne remonte plus rien : les applis ne sont plus surveillées.
+    - name: homelab-backups
+      rules:
+        - alert: ResticBackupNotSucceeding
+          expr: time() - kube_cronjob_status_last_successful_time{namespace="restic"} > 8 * 24 * 3600
+          for: 1h
+          labels:
+            severity: critical
+          annotations:
+            summary: "Sauvegarde {{ $labels.cronjob }} sans succès depuis plus de 8 jours"
+            description: >-
+              Le CronJob restic/{{ $labels.cronjob }} (hebdomadaire) n'a pas terminé avec succès depuis plus de 8 jours.
+        - alert: VolSyncVolumeOutOfSync
+          expr: volsync_volume_out_of_sync == 1
+          for: 30m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Sauvegarde VolSync en retard : {{ $labels.obj_namespace }}/{{ $labels.obj_name }}"
+            description: >-
+              La ReplicationSource {{ $labels.obj_namespace }}/{{ $labels.obj_name }} n'est plus synchronisée
+              (dernière synchro plus ancienne que 2 intervalles).

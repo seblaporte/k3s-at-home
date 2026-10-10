@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - helm-release.yaml
+  - probe.yaml
   - nginx-config.yaml
   - tesla-public-key.yaml
   

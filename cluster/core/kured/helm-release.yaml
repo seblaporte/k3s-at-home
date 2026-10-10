@@ -43,7 +43,7 @@ spec:
       period: "1h"
       concurrency: 1
       prometheusUrl: "http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090"
-      alertFilterRegexp: "^(Watchdog|InfoAlert)$"
+      alertFilterRegexp: "^(Watchdog|InfoAlert|TrivyCriticalVulnerability|KubeJobFailed|ResticBackupNotSucceeding|VolSyncVolumeOutOfSync|InfoInhibitor|CPUThrottlingHigh|PrometheusDuplicateTimestamps)$"
       alertFiringOnly: true
     metrics:
       create: true

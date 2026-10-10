@@ -6,4 +6,5 @@ resources:
   - helm-release.yaml
   - middleware.yaml
   - pdb.yaml
+  - probe.yaml
   

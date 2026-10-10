@@ -1,0 +1,18 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: music-assistant
+  namespace: music-assistant
+spec:
+  interval: 60s
+  scrapeTimeout: 15s
+  module: http_app
+  prober:
+    url: blackbox-exporter.monitoring.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      labels:
+        check: web-app
+      static:
+        - http://music-assistant.music-assistant.svc.cluster.local:8095/

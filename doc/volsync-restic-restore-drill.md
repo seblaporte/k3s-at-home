@@ -18,7 +18,7 @@ pilote `uptime-kuma` (voir #1008, #1009, #1010, #1011).
 ## Procédure
 
 Remplacer `<ns>`, `<app>`, `<pvc-secret>` (le `Secret` restic de l'app, ex.
-`uptime-kuma-volsync-restic`) selon l'app testée.
+`slskd-volsync-restic`) selon l'app testée.
 
 ### 1. Lancer la restauration dans un PVC neuf (jamais sur le PVC de prod)
 

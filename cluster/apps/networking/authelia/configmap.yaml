@@ -44,8 +44,6 @@ data:
       rules:
         - domain: 'slskd.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
-        - domain: 'uptime-kuma.${SECRET_APEX_DOMAIN}'
-          policy: 'two_factor'
         - domain: 'sonarr.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
         - domain: 'radarr.${SECRET_APEX_DOMAIN}'

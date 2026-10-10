@@ -36,8 +36,6 @@ spec:
                   value: "Default"
                 - name: OS_PROJECT_DOMAIN_NAME
                   value: "Default"
-                - name: HEALTH_CHECK_UUID
-                  value: ${SECRET_VOLUMES_BACKUP_HEALTH_CHECK_UUID}
               command: ["/bin/entrypoint.sh"]
               volumeMounts:
                 - name: script

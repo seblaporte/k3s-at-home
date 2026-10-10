@@ -6,7 +6,7 @@ metadata:
 data:
   entrypoint.sh: |-
     #!/bin/sh
+    set -e -o pipefail
     mysqldump -u $MYSQL_USER --skip-dump-date --force --port $MYSQL_PORT --host $MYSQL_HOST $MYSQL_DB | \
     gzip --rsyncable | \
     restic backup --host k3s --stdin --stdin-filename databases/$MYSQL_DB.sql.gz --tag $MYSQL_DB
-    curl -fsS -m 10 --retry 5 -o /dev/null https://hc-ping.com/$HEALTH_CHECK_UUID

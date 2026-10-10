@@ -14,5 +14,6 @@ resources:
   - reloader
   - trivy-operator
   - snapshot-controller
+  - synology-csi
   - synology-csi-snapshotter
   - volsync

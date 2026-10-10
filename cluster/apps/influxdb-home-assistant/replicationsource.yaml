@@ -12,6 +12,7 @@ spec:
     repository: influxdb-home-assistant-volsync-restic
     copyMethod: Snapshot
     volumeSnapshotClassName: synology-snapshotclass
+    storageClassName: synology-iscsi-storage-delete
     moverSecurityContext:
       runAsUser: 1000
       runAsGroup: 1000

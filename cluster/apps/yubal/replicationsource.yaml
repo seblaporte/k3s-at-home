@@ -12,6 +12,7 @@ spec:
     repository: yubal-volsync-restic
     copyMethod: Snapshot
     volumeSnapshotClassName: synology-snapshotclass
+    storageClassName: synology-iscsi-storage-delete
     pruneIntervalDays: 14
     retain:
       daily: 7

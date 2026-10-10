@@ -39,11 +39,11 @@ spec:
           nodeAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
               nodeSelectorTerms:
-              - matchExpressions:
-                - key: node-role.kubernetes.io/master
-                  operator: NotIn
-                  values:
-                  - "true"
+                - matchExpressions:
+                    - key: node-role.kubernetes.io/master
+                      operator: NotIn
+                      values:
+                        - "true"
       # Secrets come from cluster-secrets through the `core` postBuild substitution. The defaults
       # keep the config valid (Alertmanager rejects an empty bot token / chat id) until they are set.
       config:
@@ -118,11 +118,11 @@ spec:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-            - matchExpressions:
-              - key: node-role.kubernetes.io/master
-                operator: NotIn
-                values:
-                - "true"
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: NotIn
+                    values:
+                      - "true"
     prometheusOperator:
       enabled: true
       logLevel: error
@@ -130,11 +130,11 @@ spec:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-            - matchExpressions:
-              - key: node-role.kubernetes.io/master
-                operator: NotIn
-                values:
-                - "true"
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: NotIn
+                    values:
+                      - "true"
     prometheus-node-exporter:
       resources:
         requests:
@@ -152,11 +152,11 @@ spec:
           nodeAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
               nodeSelectorTerms:
-              - matchExpressions:
-                - key: node-role.kubernetes.io/master
-                  operator: NotIn
-                  values:
-                  - "true"
+                - matchExpressions:
+                    - key: node-role.kubernetes.io/master
+                      operator: NotIn
+                      values:
+                        - "true"
         resources:
           requests:
             cpu: 1000m

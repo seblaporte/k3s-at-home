@@ -30,7 +30,7 @@ spec:
           main:
             image:
               repository: ghcr.io/seblaporte/teleinfo2mqtt
-              tag: latest@sha256:7bf7ccca55f5c52a305472ea3d14e631ace0e2d2d6d7ac44ac3667cb1739414a
+              tag: latest@sha256:efdfa9f9d6827b73479f3301253cfb6f6b73c86c6f830439285f2a5c230cb1d4
               pullPolicy: IfNotPresent
             resources:
               requests:

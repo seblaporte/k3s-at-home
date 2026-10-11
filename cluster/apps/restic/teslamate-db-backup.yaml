@@ -45,7 +45,7 @@ spec:
                 - name: PGHOST
                   value: "192.168.1.10"
                 - name: PGPORT
-                  value: "5439"
+                  value: "5440"
                 - name: HEALTH_CHECK_UUID
                   value: ${SECRET_TESLAMATE_DB_BACKUP_HEALTH_CHECK_UUID}
               command: ["/bin/entrypoint.sh"]

@@ -15,4 +15,4 @@ spec:
       labels:
         check: web-app
       static:
-        - http://joal.joal.svc.cluster.local:8090/
+        - http://joal.joal.svc.cluster.local:8090/nastiness/ui/

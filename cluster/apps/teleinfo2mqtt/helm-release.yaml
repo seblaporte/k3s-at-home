@@ -34,11 +34,11 @@ spec:
               pullPolicy: IfNotPresent
             resources:
               requests:
-                memory: 64Mi
-                cpu: 250m
+                memory: 96Mi
+                cpu: 25m
               limits:
-                memory: 64Mi
-                cpu: 500m
+                memory: 128Mi
+                cpu: 200m
             securityContext:
               # Privileged securityContext required by USB devices accessed directly through the host machine
               privileged: true

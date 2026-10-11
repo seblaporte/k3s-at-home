@@ -1,8 +1,7 @@
 FROM alpine:3.23
-RUN apk add nodejs npm python3 make gcc g++ linux-headers udev
-RUN mkdir /app
-ADD index.js /app
-ADD config.js /app
+RUN apk add --no-cache nodejs npm
 WORKDIR /app
-RUN npm install raspi raspi-serial mqtt
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+COPY index.js config.js ./
 CMD ["node","index.js"]

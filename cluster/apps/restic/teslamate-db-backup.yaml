@@ -45,7 +45,7 @@ spec:
                 - name: PGHOST
                   value: "192.168.1.10"
                 - name: PGPORT
-                  value: "5439"
+                  value: "5440"
               command: ["/bin/entrypoint.sh"]
               volumeMounts:
                 - name: script

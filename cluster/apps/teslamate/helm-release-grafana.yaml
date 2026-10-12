@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: teslamate/grafana
-              tag: "2.2.0"
+              tag: "4.3.0"
               pullPolicy: IfNotPresent
             env:
               DATABASE_USER: teslamate

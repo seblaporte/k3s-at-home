@@ -10,7 +10,7 @@ spec:
     spec:
       # renovate: registryUrl=https://prometheus-community.github.io/helm-charts
       chart: kube-prometheus-stack
-      version: 58.7.2
+      version: 92.3.1
       sourceRef:
         kind: HelmRepository
         name: prometheus-community-charts
@@ -109,6 +109,9 @@ spec:
       enabled: false
     coreDns:
       enabled: false
+    kubelet:
+      serviceMonitor:
+        cAdvisorInterval: 30s
     kubeProxy:
       enabled: false
     kubeScheduler:
@@ -148,8 +151,6 @@ spec:
         logLevel: error
         retention: 90d
         retentionSize: 50GB
-        image:
-          tag: v2.55.1
         affinity:
           nodeAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:

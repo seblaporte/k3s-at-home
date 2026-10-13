@@ -148,6 +148,8 @@ spec:
         logLevel: error
         retention: 90d
         retentionSize: 50GB
+        image:
+          tag: v2.55.1
         affinity:
           nodeAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:

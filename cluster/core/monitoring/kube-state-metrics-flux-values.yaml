@@ -7,6 +7,8 @@
 # Each kind MUST have its own `help` text: kube-state-metrics drops the metrics of a kind whose
 # HELP line is identical to the previous one, so only one kind would be exported.
 kube-state-metrics:
+  image:
+    tag: v2.17.0
   rbac:
     extraRules:
       - apiGroups:

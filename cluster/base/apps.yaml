@@ -17,6 +17,12 @@ spec:
     provider: sops
     secretRef:
       name: sops-gpg
+  timeout: 5m
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: traefik
+      namespace: networking
   postBuild:
     substitute: {}
     substituteFrom:

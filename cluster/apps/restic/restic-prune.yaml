@@ -8,6 +8,7 @@ spec:
   schedule: "0 4 * * 6" # Tous les samedi à 04h00 UTC
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 86400
       template:
         spec:
           containers:

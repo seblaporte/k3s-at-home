@@ -87,10 +87,10 @@ spec:
     resources:
       requests:
         cpu: 25m
-        memory: 60Mi
+        memory: 100Mi
       limits:
         cpu: 50m
-        memory: 75Mi
+        memory: 256Mi
     config: |
       bind_host: 0.0.0.0
       bind_port: 3000

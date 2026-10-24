@@ -105,3 +105,14 @@ configMapGenerator:
       annotations:
         grafana_folder: cert-manager
         kustomize.toolkit.fluxcd.io/substitute: disabled
+  # Custom dashboard (not upstream, not fetched by `task grafana:fetch-dashboards`): edit the JSON directly.
+  - name: grafana-dashboards-homelab
+    namespace: monitoring
+    files:
+      - dashboards/homelab/memory-requests.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Homelab
+        kustomize.toolkit.fluxcd.io/substitute: disabled

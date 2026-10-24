@@ -49,3 +49,26 @@ spec:
             description: >-
               La ReplicationSource {{ $labels.obj_namespace }}/{{ $labels.obj_name }} n'est plus synchronisée
               (dernière synchro plus ancienne que 2 intervalles).
+    - name: homelab-capacity
+      rules:
+        # Même calcul que KubeMemoryOvercommit : requests / (mémoire allouable moins le plus gros nœud).
+        # Une valeur > 1 signifie que le cluster ne tolérerait pas la perte d'un nœud.
+        - record: homelab:memory_requests:ratio_tolerating_node_loss
+          expr: |
+            sum(namespace_memory:kube_pod_container_resource_requests:sum)
+            /
+            (
+              sum(kube_node_status_allocatable{job="kube-state-metrics", resource="memory"})
+              - max(kube_node_status_allocatable{job="kube-state-metrics", resource="memory"})
+            )
+        - alert: MemoryRequestsHeadroomLow
+          expr: homelab:memory_requests:ratio_tolerating_node_loss > 0.95
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: "Marge mémoire des requests presque épuisée"
+            description: >-
+              Les requests mémoire représentent {{ $value | humanizePercentage }} de la capacité tolérant la perte
+              d'un nœud. KubeMemoryOvercommit se déclenche à 100 % : redimensionner les requests surdimensionnées
+              (dashboard Grafana « Mémoire : requests vs usage »).

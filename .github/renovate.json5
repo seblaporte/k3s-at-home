@@ -236,6 +236,28 @@
         'dep/patch',
       ],
     },
+    {
+      // Internet-facing edge: security fixes ship as plain releases (no CVE/GHSA),
+      // so vulnerabilityAlerts can't catch them — shorten the exposure window instead
+      matchDatasources: [
+        'docker',
+        'helm',
+      ],
+      matchPackageNames: [
+        'cloudflare/cloudflared',
+        'ghcr.io/authelia/authelia',
+        'crowdsecurity/crowdsec',
+        'traefik',
+      ],
+      matchUpdateTypes: [
+        'minor',
+        'patch',
+      ],
+      minimumReleaseAge: '1 day',
+      schedule: [
+        'at any time',
+      ],
+    },
       {
       // kitchenvault dev tracks release candidates of our own images
       matchFileNames: [

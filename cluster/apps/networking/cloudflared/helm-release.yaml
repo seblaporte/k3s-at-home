@@ -41,7 +41,7 @@ spec:
           main:
             image:
               repository: cloudflare/cloudflared
-              tag: "2026.10.1"
+              tag: "2026.10.4"
               pullPolicy: IfNotPresent
             args:
               - "tunnel"

@@ -13,7 +13,6 @@ data:
     restic --host k3s --tag crowdsec                backup /k3s/networking-crowdsec* || rc=1
     restic --host k3s --tag mosquitto               backup /k3s/mosquitto* || rc=1
     restic --host k3s --tag home-assistant          backup /k3s/home-assistant-home-assistant-data* || rc=1
-    restic --host k3s --tag heimdall                backup /k3s/heimdall* || rc=1
     restic --host k3s --tag esphome                 backup /k3s/esphome* || rc=1
     restic --host k3s --tag adguard-home            backup /k3s/adguard-home* || rc=1
     restic --host k3s --tag sonarr                  backup /k3s/sonarr* || rc=1

@@ -82,10 +82,6 @@ data:
         originRequest:
           matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
-      - hostname: "heimdall.${SECRET_APEX_DOMAIN}"
-        originRequest:
-          matchSNItoHost: true
-        service: https://traefik.networking.svc.cluster.local:443
       - hostname: "joal.${SECRET_APEX_DOMAIN}"
         originRequest:
           matchSNItoHost: true

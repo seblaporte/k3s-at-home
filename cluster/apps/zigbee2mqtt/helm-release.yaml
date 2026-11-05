@@ -33,6 +33,8 @@ spec:
           effect: "NoSchedule"
     controllers:
       main:
+        # Single serial device: never run old and new pod at the same time
+        strategy: Recreate
         containers:
           main:
             image:

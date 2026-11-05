@@ -273,5 +273,17 @@
       dependencyDashboardApproval: false,
       automerge: false,
     },
+    {
+      // Drives the RaspBee through a host serial port: a bad release takes down all Zigbee devices
+      // 2.14.3 fails with "failed to start adapter connection to firmware" (deconz, herdsman 11.2.0)
+      matchDatasources: [
+        'docker',
+      ],
+      matchPackageNames: [
+        'koenkk/zigbee2mqtt',
+      ],
+      allowedVersions: '!/^2\\.14\\.3$/',
+      automerge: false,
+    },
   ],
 }

@@ -6,6 +6,13 @@ metadata:
   namespace: zigbee2mqtt
 spec:
   interval: 5m
+  timeout: 5m
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 2
+      strategy: rollback
+      remediateLastFailure: true
   chart:
     spec:
       chart: app-template
@@ -26,11 +33,13 @@ spec:
           effect: "NoSchedule"
     controllers:
       main:
+        # Single serial device: never run old and new pod at the same time
+        strategy: Recreate
         containers:
           main:
             image:
               repository: koenkk/zigbee2mqtt
-              tag: 2.14.3
+              tag: 2.14.2
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/Paris

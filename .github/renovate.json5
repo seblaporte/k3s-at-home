@@ -273,5 +273,15 @@
       dependencyDashboardApproval: false,
       automerge: false,
     },
+    {
+      // Drives the RaspBee through a host serial port: a bad release takes down all Zigbee devices
+      matchDatasources: [
+        'docker',
+      ],
+      matchPackageNames: [
+        'koenkk/zigbee2mqtt',
+      ],
+      automerge: false,
+    },
   ],
 }

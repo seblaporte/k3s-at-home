@@ -14,3 +14,19 @@ Using the Raspbee II adapter on a Raspberry Pi 3B requires to add 2 lines in `/b
 enable_uart=1
 dtoverlay=pi3-disable-bt
 ----
+
+== Zigbee2MQTT baudrate
+
+Since zigbee-herdsman 11 (Zigbee2MQTT 2.14.3), the deconz driver no longer falls back to `38400` and defaults to `115200`.
+With the Raspbee II this fails with `failed to start adapter connection to firmware` after 20 seconds.
+`configuration.yaml` lives in the Zigbee2MQTT data volume (not in Git) and must contain:
+
+[source,yaml]
+----
+serial:
+  adapter: deconz
+  port: /dev/serial0
+  baudrate: 38400
+----
+
+See https://github.com/Koenkk/zigbee2mqtt/issues/33598[Koenkk/zigbee2mqtt#33598].

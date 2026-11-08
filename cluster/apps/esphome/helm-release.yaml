@@ -56,6 +56,8 @@ spec:
         accessMode: "ReadWriteOnce"
         mountPath: /config
         size: "1Gi"
+        # Pose helm.sh/resource-policy: keep : le volume survivra au changement de chart
+        retain: true
     resources:
       requests:
         memory: 250Mi

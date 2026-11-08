@@ -1,0 +1,4 @@
+# Secrets déchiffrés (make secrets) et environnement de travail local
+secrets.yaml
+.work/
+.DS_Store

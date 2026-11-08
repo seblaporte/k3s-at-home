@@ -17,8 +17,15 @@ configMapGenerator:
       - devices/dinos.yaml
       - devices/emporia-vue.yaml
       - devices/home-bridge.yaml
+      - devices/inmotion-charger.yaml
       - devices/lecteur-cartes-musique-etage.yaml
       - devices/lecteur-cartes-musique.yaml
       - devices/veilleuse-etoile.yaml
       - devices/ventilateur-cluster-k3s.yaml
       - .gitignore=devices/.gitignore
+  - name: esphome-component-inmotion-v1
+    files:
+      - __init__.py=components/inmotion_v1/__init__.py
+      - inmotion_protocol.h=components/inmotion_v1/inmotion_protocol.h
+      - inmotion_v1.cpp=components/inmotion_v1/inmotion_v1.cpp
+      - inmotion_v1.h=components/inmotion_v1/inmotion_v1.h

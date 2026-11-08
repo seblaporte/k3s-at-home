@@ -8,21 +8,54 @@ spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://k8s-at-home.com/charts/
-      chart: esphome
-      version: 8.2.0
+      chart: app-template
+      version: 2.2.0
       sourceRef:
         kind: HelmRepository
-        name: k8s-at-home-charts
+        name: bjw-s-helm-charts
         namespace: flux-system
-      interval: 5m
+      interval: 15m
   values:
-    priorityClassName: homelab-medium
-    image:
-      repository: esphome/esphome
-      tag: "2026.1.4"
-    env:
-      ESPHOME_DASHBOARD_USE_PING: true
+    defaultPodOptions:
+      priorityClassName: homelab-medium
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: NotIn
+                    values:
+                      - "true"
+    controllers:
+      main:
+        # Volume RWO : l'ancien pod doit libérer le volume avant que le nouveau démarre
+        strategy: Recreate
+        containers:
+          main:
+            image:
+              repository: esphome/esphome
+              tag: "2026.1.4"
+              pullPolicy: IfNotPresent
+            env:
+              TZ: Europe/Paris
+              ESPHOME_DASHBOARD_USE_PING: "true"
+            resources:
+              requests:
+                memory: 250Mi
+                cpu: 500m
+              limits:
+                memory: 2048Mi
+                cpu: 4000m
+    service:
+      main:
+        enabled: true
+        controller: main
+        ports:
+          http:
+            enabled: true
+            port: 6052
+            protocol: TCP
     ingress:
       main:
         enabled: true
@@ -36,32 +69,17 @@ spec:
             paths:
               - path: /
                 pathType: Prefix
+                service:
+                  name: main
         tls:
           - hosts:
               - "esphome.${SECRET_APEX_DOMAIN}"
             secretName: esphome-flat-tls-secret
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: node-role.kubernetes.io/master
-              operator: NotIn
-              values:
-              - "true"
     persistence:
       config:
         enabled: true
-        storageClass: "nfs-client"
-        accessMode: "ReadWriteOnce"
-        mountPath: /config
-        size: "1Gi"
-        # Pose helm.sh/resource-policy: keep : le volume survivra au changement de chart
-        retain: true
-    resources:
-      requests:
-        memory: 250Mi
-        cpu: 500m
-      limits:
-        memory: 2048Mi
-        cpu: 4000m
+        # Volume créé par l'ancien chart k8s-at-home, conservé avec ses données
+        # (helm.sh/resource-policy: keep posé par le commit précédent)
+        existingClaim: esphome-config
+        globalMounts:
+          - path: /config

@@ -1,0 +1,24 @@
+---
+# Généré par scripts/gen-kustomization.py : ne pas modifier à la main (make kustomization).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: esphome
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    app.kubernetes.io/part-of: esphome-config
+resources:
+  - secret.sops.yaml
+configMapGenerator:
+  - name: esphome-devices
+    files:
+      - devices/bluetooth-bridge.yaml
+      - devices/detecteur-presence-bureau.yaml
+      - devices/dinos.yaml
+      - devices/emporia-vue.yaml
+      - devices/home-bridge.yaml
+      - devices/lecteur-cartes-musique-etage.yaml
+      - devices/lecteur-cartes-musique.yaml
+      - devices/veilleuse-etoile.yaml
+      - devices/ventilateur-cluster-k3s.yaml
+      - .gitignore=devices/.gitignore

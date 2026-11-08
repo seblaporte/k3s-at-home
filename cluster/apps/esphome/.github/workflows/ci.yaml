@@ -1,0 +1,96 @@
+---
+# Valide tous les appareils et compile ceux qui changent, avec la même image
+# ESPHome que le cluster (tag lu dans le HelmRelease de k3s-at-home).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      compile_all:
+        description: Compiler tous les appareils
+        type: boolean
+        default: false
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      compile: ${{ steps.devices.outputs.compile }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Kustomization à jour et rendu kustomize
+        run: |
+          python3 scripts/gen-kustomization.py --check
+          kubectl kustomize . > /dev/null
+
+      - id: version
+        name: Version d'ESPHome du cluster
+        run: echo "version=$(make -s version)" >> "$GITHUB_OUTPUT"
+
+      - id: devices
+        name: Appareils à compiler
+        env:
+          EVENT: ${{ github.event_name }}
+          COMPILE_ALL: ${{ inputs.compile_all }}
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          all=$(ls devices/*.yaml | xargs -n1 basename | sed 's/\.yaml$//')
+          if [ "$EVENT" = workflow_dispatch ] && [ "$COMPILE_ALL" = true ]; then
+            list="$all"
+          elif [ -z "$BASE" ] || ! git cat-file -e "$BASE" 2>/dev/null; then
+            list="$all"
+          else
+            changed=$(git diff --name-only "$BASE" HEAD)
+            if echo "$changed" | grep -qE '^(components/|Makefile|scripts/|\.github/)'; then
+              list="$all"   # changement commun : tout recompiler
+            else
+              list=$(echo "$changed" | sed -n 's|^devices/\(.*\)\.yaml$|\1|p' | while read -r d; do
+                [ -f "devices/$d.yaml" ] && echo "$d"; done)
+            fi
+          fi
+          json=$(printf '%s\n' $list | jq -R . | jq -sc 'map(select(length > 0))')
+          echo "compile=$json" >> "$GITHUB_OUTPUT"
+          echo "À compiler : $json"
+
+  validate:
+    needs: plan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Valider tous les appareils (secrets factices)
+        run: make validate DUMMY=1 ESPHOME_VERSION=${{ needs.plan.outputs.version }}
+
+  compile:
+    needs: [plan, validate]
+    if: needs.plan.outputs.compile != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        device: ${{ fromJson(needs.plan.outputs.compile) }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v6
+        with:
+          path: .pio-cache
+          key: platformio-${{ needs.plan.outputs.version }}-${{ matrix.device }}
+          restore-keys: platformio-${{ needs.plan.outputs.version }}-
+      - name: Compiler ${{ matrix.device }}
+        run: >
+          make compile DUMMY=1 DEVICE=${{ matrix.device }}
+          ESPHOME_VERSION=${{ needs.plan.outputs.version }}
+          PIO_CACHE=${{ github.workspace }}/.pio-cache
+      - name: Rendre le cache lisible pour actions/cache
+        if: always()
+        run: sudo chown -R "$(id -u):$(id -g)" .pio-cache || true

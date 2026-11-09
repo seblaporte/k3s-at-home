@@ -1,14 +1,33 @@
+# Proxy Bluetooth pour Home Assistant + passerelle BLE de la gyroroue InMotion V10F
+# (composant components/inmotion_v1, entités regroupées dans le sous-appareil « Gyroroue »).
+
+substitutions:
+  # Adresse MAC de la roue, déduite du System ID (0x2A23) du module TI CC2541
+  wheel_mac: !secret inmotion_wheel_mac
+
 esphome:
   name: bluetooth-bridge
   friendly_name: Bluetooth bridge
+  devices:
+    - id: gyroroue
+      name: Gyroroue
 
 esp32:
   board: esp32dev
   framework:
     type: esp-idf
 
+external_components:
+  - source:
+      type: local
+      path: /components
+
 # Enable logging
 logger:
+  logs:
+    # Passer à VERBOSE pour voir les trames brutes RX/TX en hexadécimal
+    inmotion_v1: DEBUG
+    esp32_ble_tracker: INFO
 
 # Enable Home Assistant API
 api:
@@ -37,10 +56,45 @@ wifi:
 
 captive_portal:
 
+esp32_ble:
+  # 3 emplacements pour le proxy + 1 occupé en permanence par la roue
+  max_connections: 4
+
 esp32_ble_tracker:
 
 bluetooth_proxy:
   active: true
+  connection_slots: 3
+
+ble_client:
+  - mac_address: ${wheel_mac}
+    id: wheel_ble
+    auto_connect: true
+
+inmotion_v1:
+  ble_client_id: wheel_ble
+  password: "000000"
+  better_percents: false
+  publish_interval: 2s
+  voltage:
+    name: Tension
+    id: wheel_voltage
+    device_id: gyroroue
+  battery_level:
+    name: Batterie
+    device_id: gyroroue
+  current:
+    name: Courant
+    device_id: gyroroue
+  temperature:
+    name: Température
+    device_id: gyroroue
+  charging:
+    name: En charge
+    device_id: gyroroue
+  online:
+    name: En ligne
+    device_id: gyroroue
 
 binary_sensor:
   - platform: status
@@ -57,6 +111,12 @@ sensor:
     update_interval: 60s
   - platform: uptime
     name: "Uptime Bluetooth bridge"
+  - platform: ble_client
+    type: rssi
+    ble_client_id: wheel_ble
+    name: Signal BLE
+    device_id: gyroroue
+    update_interval: 60s
 
 text_sensor:
   - platform: wifi_info

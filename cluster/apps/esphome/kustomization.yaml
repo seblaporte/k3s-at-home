@@ -32,7 +32,6 @@ configMapGenerator:
       - devices/dinos.yaml
       - devices/emporia-vue.yaml
       - devices/home-bridge.yaml
-      - devices/inmotion-charger.yaml
       - devices/lecteur-cartes-musique-etage.yaml
       - devices/lecteur-cartes-musique.yaml
       - devices/veilleuse-etoile.yaml

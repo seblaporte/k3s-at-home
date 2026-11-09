@@ -20,6 +20,9 @@ on: # yamllint disable-line rule:truthy
         type: boolean
         default: false
 
+permissions:
+  contents: read
+
 concurrency:
   group: esphome-${{ github.ref }}
   cancel-in-progress: true

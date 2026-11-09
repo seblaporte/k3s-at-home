@@ -1,0 +1,5 @@
+# Secrets déchiffrés (task esphome:secrets) et environnement de travail local
+secrets.yaml
+secrets.yaml.*
+.work/
+.DS_Store

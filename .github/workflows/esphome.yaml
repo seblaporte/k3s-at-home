@@ -1,0 +1,114 @@
+---
+# Valide tous les appareils ESPHome et compile ceux qui changent, avec la même image que
+# le cluster (tag lu dans cluster/apps/esphome/helm-release.yaml, mis à jour par Renovate).
+name: ESPHome
+
+on: # yamllint disable-line rule:truthy
+  pull_request:
+    paths:
+      - "cluster/apps/esphome/**"
+      - ".github/workflows/esphome.yaml"
+  push:
+    branches: [main]
+    paths:
+      - "cluster/apps/esphome/**"
+      - ".github/workflows/esphome.yaml"
+  workflow_dispatch:
+    inputs:
+      compile_all:
+        description: Compiler tous les appareils
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: esphome-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ESPHOME_DIR: cluster/apps/esphome
+
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      compile: ${{ steps.devices.outputs.compile }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: kustomization.yaml à jour et rendu kustomize
+        run: ${{ env.ESPHOME_DIR }}/scripts/esphome.sh check
+
+      - id: version
+        name: Version d'ESPHome du cluster
+        run: echo "version=$(${{ env.ESPHOME_DIR }}/scripts/esphome.sh version)" >> "$GITHUB_OUTPUT"
+
+      - id: devices
+        name: Appareils à compiler
+        env:
+          EVENT: ${{ github.event_name }}
+          COMPILE_ALL: ${{ inputs.compile_all }}
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          all=$(ls "$ESPHOME_DIR"/devices/*.yaml | xargs -n1 basename | sed 's/\.yaml$//')
+          if [ "$EVENT" = workflow_dispatch ] && [ "$COMPILE_ALL" = true ]; then
+            list="$all"
+          elif [ -z "$BASE" ] || ! git cat-file -e "$BASE" 2>/dev/null; then
+            list="$all"
+          else
+            changed=$(git diff --name-only "$BASE" HEAD)
+            new_version=$(git diff "$BASE" HEAD -- "$ESPHOME_DIR/helm-release.yaml" | grep -cE '^[+-] +tag: ' || true)
+            if echo "$changed" | grep -qE "^($ESPHOME_DIR/(components|scripts)/|\.github/workflows/esphome\.yaml)" \
+              || [ "$new_version" != 0 ]; then
+              list="$all"   # changement commun ou nouvelle version d'ESPHome : tout recompiler
+            else
+              list=$(echo "$changed" | sed -n "s|^$ESPHOME_DIR/devices/\(.*\)\.yaml\$|\1|p" | while read -r d; do
+                [ -f "$ESPHOME_DIR/devices/$d.yaml" ] && echo "$d"; done)
+            fi
+          fi
+          json=$(printf '%s\n' $list | jq -R . | jq -sc 'map(select(length > 0))')
+          echo "compile=$json" >> "$GITHUB_OUTPUT"
+          echo "À compiler : $json"
+
+  validate:
+    needs: plan
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: Valider tous les appareils (secrets factices)
+        run: >
+          ${{ env.ESPHOME_DIR }}/scripts/esphome.sh validate
+        env:
+          DUMMY: "1"
+          ESPHOME_VERSION: ${{ needs.plan.outputs.version }}
+
+  compile:
+    needs: [plan, validate]
+    if: needs.plan.outputs.compile != '[]'
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        device: ${{ fromJson(needs.plan.outputs.compile) }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v6
+        with:
+          path: .pio-cache
+          key: platformio-${{ needs.plan.outputs.version }}-${{ matrix.device }}
+          restore-keys: platformio-${{ needs.plan.outputs.version }}-
+      - name: Compiler ${{ matrix.device }}
+        run: ${{ env.ESPHOME_DIR }}/scripts/esphome.sh compile
+        env:
+          DUMMY: "1"
+          DEVICE: ${{ matrix.device }}
+          ESPHOME_VERSION: ${{ needs.plan.outputs.version }}
+          PIO_CACHE: ${{ github.workspace }}/.pio-cache
+      - name: Rendre le cache lisible pour actions/cache
+        if: always()
+        run: sudo chown -R "$(id -u):$(id -g)" .pio-cache || true

@@ -1,0 +1,48 @@
+esphome:
+    name: ventilateur-cluster-k3s
+    friendly_name: Ventilateur cluster k3s
+    on_boot:
+      priority: -100  # Après l'initialisation complète des composants
+      then:
+        - fan.turn_on:
+            id: ventilateur
+            speed: 100
+
+esp8266:
+  board: esp01_1m
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.1.42
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
+  ap:
+    ssid: "Ventilateur-cluster-k3s"
+    password: !secret wifi_hotspot_fallback_password
+
+logger:
+
+api:
+  encryption:
+    key: !secret ventilateur_cluster_k3s_api_key
+
+ota:
+  platform: esphome
+  password: !secret ventilateur_cluster_k3s_ota_password
+
+captive_portal:
+
+output:
+  - platform: esp8266_pwm
+    pin: 13
+    frequency: 25000 Hz
+    id: pwm_output
+
+fan:
+  - platform: speed
+    output: pwm_output
+    name: "Ventilateur"
+    id: ventilateur          # ← nécessaire pour le cibler dans on_boot
+    restore_mode: ALWAYS_ON

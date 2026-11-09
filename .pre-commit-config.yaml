@@ -41,3 +41,4 @@ repos:
           - --kubernetes-version
           - "1.31.0"
         files: cluster/.+\.yaml$
+        exclude: ^cluster/apps/esphome/devices/

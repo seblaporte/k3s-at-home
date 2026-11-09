@@ -159,6 +159,16 @@ sops -d cluster/base/cluster-secrets.sops.yaml | grep SECRET_APEX_DOMAIN
   tell the user exactly which keys were exposed (not their values, to avoid repeating them), and
   recommend rotating every exposed credential.
 
+## ESPHome
+
+Device configs live in `cluster/apps/esphome/` (`devices/`, `components/`) next to the HelmRelease, and are the source of truth: the dashboard is read-only. Flux deploys them as ConfigMaps `esphome-devices` / `esphome-component-<name>` and the SOPS Secret `esphome-secrets` (an ESPHome `secrets.yaml`), projected into `/config` of the pod.
+
+- **Tooling**: `task esphome:validate|compile|run|logs|dashboard|secrets|kustomization` (see `cluster/apps/esphome/README.md`). It runs the same `esphome/esphome` tag as the HelmRelease in Docker.
+- **`kustomization.yaml` is generated** (`task esphome:kustomization`) — re-run it after adding/removing a device or component; CI fails if it is stale.
+- **No secret in device files**: use `!secret <name>` and add the value with `sops cluster/apps/esphome/secret.sops.yaml`. No personal names or identifiers (MAC, serial numbers) in this public repo: use neutral device names. Labels that reveal household equipment (gates, spa, alarm, energy circuits…) also go in the secret, through `substitutions` (`cir_1: !secret emporia_circuit_1`), with neutral `id`s and comments.
+- **Flux substitution**: the generated ConfigMaps/Secret carry `kustomize.toolkit.fluxcd.io/substitute: disabled`, because ESPHome's own `${...}` would otherwise be emptied by the `apps` postBuild.
+- Flux never flashes devices; installing firmware is a manual step (`task esphome:run`).
+
 ## Dependency Updates
 
 Renovate bot automatically opens PRs for Helm chart and container image updates. Labels: `renovate/image`, `renovate/helm`, `dep/major`, `dep/minor`, `dep/patch`. No manual update process needed for tracked dependencies.

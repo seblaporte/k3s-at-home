@@ -1,3 +1,5 @@
 *.sops.*
 gotk-components.yaml
 cluster/core/monitoring/dashboards/
+cluster/apps/esphome/devices/
+cluster/apps/esphome/components/

@@ -1,7 +1,45 @@
+---
+# Généré par scripts/gen-kustomization.py : ne pas modifier à la main (task esphome:kustomization).
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: esphome
 resources:
   - namespace.yaml
   - helm-release.yaml
   - probe.yaml
-  
+  - secret.sops.yaml
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    app.kubernetes.io/part-of: esphome-config
+  annotations:
+    # Les ${...} d'ESPHome ne doivent pas être substitués par Flux (postBuild de `apps`)
+    kustomize.toolkit.fluxcd.io/substitute: disabled
+patches:
+  - patch: |-
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: esphome-secrets
+        namespace: esphome
+        annotations:
+          kustomize.toolkit.fluxcd.io/substitute: disabled
+configMapGenerator:
+  - name: esphome-devices
+    files:
+      - devices/bluetooth-bridge.yaml
+      - devices/detecteur-presence-bureau.yaml
+      - devices/dinos.yaml
+      - devices/emporia-vue.yaml
+      - devices/home-bridge.yaml
+      - devices/lecteur-cartes-musique-etage.yaml
+      - devices/lecteur-cartes-musique.yaml
+      - devices/veilleuse-etoile.yaml
+      - devices/ventilateur-cluster-k3s.yaml
+      - .gitignore=devices/.gitignore
+  - name: esphome-component-inmotion-v1
+    files:
+      - __init__.py=components/inmotion_v1/__init__.py
+      - inmotion_protocol.h=components/inmotion_v1/inmotion_protocol.h
+      - inmotion_v1.cpp=components/inmotion_v1/inmotion_v1.cpp
+      - inmotion_v1.h=components/inmotion_v1/inmotion_v1.h

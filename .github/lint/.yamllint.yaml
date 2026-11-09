@@ -1,6 +1,7 @@
 ignore: |
   *.sops.*
   gotk-components.yaml
+  cluster/apps/esphome/devices/
 extends: default
 rules:
   truthy:

@@ -1,0 +1,130 @@
+# Proxy Bluetooth pour Home Assistant + passerelle BLE de la gyroroue InMotion V10F
+# (composant components/inmotion_v1, entités regroupées dans le sous-appareil « Gyroroue »).
+
+substitutions:
+  # Adresse MAC de la roue, déduite du System ID (0x2A23) du module TI CC2541
+  wheel_mac: !secret inmotion_wheel_mac
+
+esphome:
+  name: bluetooth-bridge
+  friendly_name: Bluetooth bridge
+  devices:
+    - id: gyroroue
+      name: Gyroroue
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+external_components:
+  - source:
+      type: local
+      path: /components
+
+# Enable logging
+logger:
+  logs:
+    # Passer à VERBOSE pour voir les trames brutes RX/TX en hexadécimal
+    inmotion_v1: DEBUG
+    esp32_ble_tracker: INFO
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret bluetooth_bridge_api_key
+
+ota:
+  - platform: esphome
+    password: !secret bluetooth_bridge_ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
+
+  manual_ip:
+    static_ip: 192.168.1.48
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
+
+  ap:
+    ssid: "Bluetooth Fallback Hotspot"
+    password: !secret wifi_hotspot_fallback_password
+
+  power_save_mode: none
+
+captive_portal:
+
+esp32_ble:
+  # 3 emplacements pour le proxy + 1 occupé en permanence par la roue
+  max_connections: 4
+
+esp32_ble_tracker:
+
+bluetooth_proxy:
+  active: true
+  connection_slots: 3
+
+ble_client:
+  - mac_address: ${wheel_mac}
+    id: wheel_ble
+    auto_connect: true
+
+inmotion_v1:
+  ble_client_id: wheel_ble
+  password: "000000"
+  better_percents: false
+  publish_interval: 2s
+  voltage:
+    name: Tension
+    id: wheel_voltage
+    device_id: gyroroue
+  battery_level:
+    name: Batterie
+    device_id: gyroroue
+  current:
+    name: Courant
+    device_id: gyroroue
+  temperature:
+    name: Température
+    device_id: gyroroue
+  charging:
+    name: En charge
+    device_id: gyroroue
+  online:
+    name: En ligne
+    device_id: gyroroue
+
+binary_sensor:
+  - platform: status
+    name: "Statut Home bridge"
+
+button:
+  - platform: restart
+    id: restart_button
+    name: "Redémarrage Bluetooth bridge"
+
+sensor:
+  - platform: wifi_signal
+    name: "Signal WiFi Bluetooth bridge"
+    update_interval: 60s
+  - platform: uptime
+    name: "Uptime Bluetooth bridge"
+  - platform: ble_client
+    type: rssi
+    ble_client_id: wheel_ble
+    name: Signal BLE
+    device_id: gyroroue
+    update_interval: 60s
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP Bluetooth bridge"
+    ssid:
+      name: "SSID Bluetooth bridge"
+    bssid:
+      name: "BSSID Bluetooth bridge"
+    mac_address:
+      name: "MAC Bluetooth bridge"

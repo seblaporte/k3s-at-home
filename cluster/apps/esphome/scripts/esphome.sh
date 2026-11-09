@@ -84,7 +84,8 @@ cmd_validate() {
       echo "  OK    $d"
     else
       echo "  ÉCHEC $d"
-      echo "$out" | grep -E "ERROR|Failed|^\[" | head -5 | sed 's/^/        /'
+      # Sans ligne reconnue (ex. Docker arrêté), affiche la fin de la sortie
+      { echo "$out" | grep -E "ERROR|Failed|^\[" || echo "$out" | tail -3; } | head -5 | sed 's/^/        /'
       fail=1
     fi
   done

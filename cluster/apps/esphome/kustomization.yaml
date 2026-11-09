@@ -36,7 +36,7 @@ configMapGenerator:
       - devices/lecteur-cartes-musique.yaml
       - devices/veilleuse-etoile.yaml
       - devices/ventilateur-cluster-k3s.yaml
-      - .gitignore=devices/.gitignore
+      - .gitignore=devices/esphome.gitignore
   - name: esphome-component-inmotion-v1
     files:
       - __init__.py=components/inmotion_v1/__init__.py

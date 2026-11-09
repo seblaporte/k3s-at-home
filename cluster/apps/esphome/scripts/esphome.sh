@@ -55,7 +55,7 @@ secrets() {
 stage() {
   if [ -z "$DUMMY" ]; then secrets; fi
   rm -rf "$WORK/config" && mkdir -p "$WORK/config" "$WORK/data"
-  cp "$ROOT"/devices/*.yaml "$ROOT/devices/.gitignore" "$WORK/config/"
+  cp "$ROOT"/devices/*.yaml "$WORK/config/" && cp "$ROOT/devices/esphome.gitignore" "$WORK/config/.gitignore"
   if [ -n "$DUMMY" ]; then
     python3 "$ROOT/scripts/dummy-secrets.py" > "$WORK/config/secrets.yaml"
   else

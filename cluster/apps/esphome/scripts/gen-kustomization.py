@@ -55,8 +55,8 @@ def render() -> str:
     ]
     lines += [f"      - {p.relative_to(ROOT)}" for p in sorted((ROOT / "devices").glob("*.yaml"))]
     # ESPHome écrit /config/.gitignore à la compilation s'il est absent : /config étant en
-    # lecture seule, on le fournit
-    lines.append("      - .gitignore=devices/.gitignore")
+    # lecture seule, on le fournit (nommé esphome.gitignore : Flux exclut les .gitignore du dépôt)
+    lines.append("      - .gitignore=devices/esphome.gitignore")
     components = ROOT / "components"
     for comp in sorted(p for p in components.glob("*") if p.is_dir()) if components.exists() else []:
         files = sorted(

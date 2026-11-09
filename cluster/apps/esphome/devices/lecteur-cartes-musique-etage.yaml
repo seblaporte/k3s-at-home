@@ -1,0 +1,197 @@
+esphome:
+  name: lecteur-cartes-musique-etage
+  friendly_name: Lecteur cartes musique étage
+  project:
+    name: adonno.tag_reader
+    version: "1.4"
+
+dashboard_import:
+  package_import_url: github://adonno/tagreader/tagreader.yaml
+
+improv_serial:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  manual_ip:
+    static_ip: 192.168.1.49
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Lecteur-Cartes-Musique-Etage"
+    password: !secret wifi_hotspot_fallback_password
+
+captive_portal:
+
+esp8266:
+  board: d1_mini
+
+# Enable logging
+logger:
+
+substitutions:
+  name: tagreader
+  friendly_name: TagReader
+  
+button:
+  - platform: restart
+    name: "${friendly_name} Restart"
+    entity_category: config
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret lecteur_cartes_musique_etage_api_key
+
+ota:
+  - platform: esphome
+    password: !secret lecteur_cartes_musique_etage_ota_password
+
+i2c:
+  scan: False
+  frequency: 400kHz
+
+globals:
+  - id: source
+    type: std::string
+  - id: url
+    type: std::string
+  - id: info
+    type: std::string
+
+pn532_i2c:
+  id: pn532_board
+  on_tag:
+    then:
+    
+    - delay: 0.15s #to fix slow component
+        
+    - lambda: |-
+        id(source)="";
+        id(url)="";
+        id(info)="";
+        if (tag.has_ndef_message()) {
+          auto message = tag.get_ndef_message();
+          auto records = message->get_records();
+          for (auto &record : records) {
+            std::string payload = record->get_payload();
+            std::string type = record->get_type();
+            size_t hass = payload.find("https://www.home-assistant.io/tag/");
+            size_t applemusic = payload.find("https://music.apple.com");
+            size_t spotify = payload.find("https://open.spotify.com");
+            size_t sonos = payload.find("sonos-2://");
+
+            size_t mass_deezer = payload.find("deezer://");
+            size_t mass_filesystem_local = payload.find("filesystem_local://");
+            size_t mass_filesystem_smb = payload.find("filesystem_smb://");
+            size_t mass_plex = payload.find("plex://");
+            size_t mass_qobuz = payload.find("qobuz://");
+            size_t mass_radiobrowser = payload.find("radiobrowser://");
+            size_t mass_soundcloud = payload.find("soundcloud://");
+            size_t mass_spotify = payload.find("spotify://");
+            size_t mass_tidal = payload.find("tidal://");
+            size_t mass_tunein = payload.find("tunein://");
+            size_t mass_ytmusic = payload.find("ytmusic://");
+
+            if (type == "U" and hass != std::string::npos ) {
+              ESP_LOGD("tagreader", "Found Home Assistant tag NDEF");
+              id(source)="hass";
+              id(url)=payload;
+              id(info)=payload.substr(hass + 34);
+            }
+            else if (type == "U" and applemusic != std::string::npos ) {
+              ESP_LOGD("tagreader", "Found Apple Music tag NDEF");
+              id(source)="amusic";
+              id(url)=payload;
+            }
+            else if (type == "U" and spotify != std::string::npos ) {
+              ESP_LOGD("tagreader", "Found Spotify tag NDEF");
+              id(source)="spotify";
+              id(url)=payload;
+            }
+            else if (type == "U" and sonos != std::string::npos ) {
+              ESP_LOGD("tagreader", "Found Sonos app tag NDEF");
+              id(source)="sonos";
+              id(url)=payload;
+            }
+            else if (type == "U" && (mass_deezer != std::string::npos ||
+                    mass_filesystem_local != std::string::npos ||
+                    mass_filesystem_smb != std::string::npos ||
+                    mass_plex != std::string::npos ||
+                    mass_qobuz != std::string::npos ||
+                    mass_radiobrowser != std::string::npos ||
+                    mass_soundcloud != std::string::npos ||
+                    mass_spotify != std::string::npos ||
+                    mass_tidal != std::string::npos ||
+                    mass_tunein != std::string::npos ||
+                    mass_ytmusic != std::string::npos)) {
+              ESP_LOGD("tagreader", "Found Music Assistant tag NDEF");
+              id(source) = "mass";
+              id(url) = payload;
+            }
+            else if (type == "T" ) {
+              ESP_LOGD("tagreader", "Found music info tag NDEF");
+              id(info)=payload;
+            }
+            else if ( id(source)=="" ) {
+              id(source)="uid";
+            }
+          }
+        }
+        else {
+          id(source)="uid";
+        }
+    
+    - if:
+        condition:
+          lambda: 'return ( id(source)=="uid" );'
+        then:
+          - homeassistant.tag_scanned: !lambda |-
+              ESP_LOGD("tagreader", "No HA NDEF, using UID");
+              return x;
+        else:
+        - if:
+            condition:
+              lambda: 'return ( id(source)=="hass" );'
+            then:
+            - homeassistant.tag_scanned: !lambda 'return id(info);'
+            else:
+            - homeassistant.event:
+                event: esphome.music_tag
+                data:
+                  reader: !lambda |-
+                    return App.get_name().c_str();
+                  source: !lambda |-
+                    return id(source);
+                  url: !lambda |-
+                    return id(url);
+                  info: !lambda |-
+                    return id(info);
+    
+  on_tag_removed:
+    then:
+    - homeassistant.event:
+        event: esphome.tag_removed
+
+binary_sensor:
+  - platform: status
+    name: "${friendly_name} Status"
+    entity_category: diagnostic
+
+text_sensor:
+  - platform: version
+    hide_timestamp: true
+    name: "${friendly_name} ESPHome Version"
+    entity_category: diagnostic
+  - platform: wifi_info
+    ip_address:
+      name: "${friendly_name} IP Address"
+      icon: mdi:wifi
+      entity_category: diagnostic
+    ssid:
+      name: "${friendly_name} Connected SSID"
+      icon: mdi:wifi-strength-2
+      entity_category: diagnostic

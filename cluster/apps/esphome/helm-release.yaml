@@ -40,6 +40,7 @@ spec:
             env:
               TZ: Europe/Paris
               ESPHOME_DASHBOARD_USE_PING: "true"
+              ESPHOME_DATA_DIR: /data
             resources:
               requests:
                 memory: 250Mi
@@ -76,10 +77,35 @@ spec:
               - "esphome.${SECRET_APEX_DOMAIN}"
             secretName: esphome-flat-tls-secret
     persistence:
+      # Config issue de Git : ConfigMap esphome-devices + Secret esphome-secrets (secrets.yaml),
+      # fusionnés dans un volume projeté, mis à jour par le kubelet sans redémarrage du pod
       config:
         enabled: true
-        # Volume créé par l'ancien chart k8s-at-home, conservé avec ses données
-        # (helm.sh/resource-policy: keep posé par le commit précédent)
-        existingClaim: esphome-config
+        type: custom
+        volumeSpec:
+          projected:
+            sources:
+              - configMap:
+                  name: esphome-devices
+              - secret:
+                  name: esphome-secrets
         globalMounts:
           - path: /config
+            readOnly: true
+      component-inmotion-v1:
+        enabled: true
+        type: configMap
+        name: esphome-component-inmotion-v1
+        globalMounts:
+          - path: /components/inmotion_v1
+            readOnly: true
+      # Volume créé par l'ancien chart k8s-at-home, conservé avec ses données : builds et
+      # toolchains PlatformIO. L'ancienne config reste à sa racine (retour arrière possible).
+      data:
+        enabled: true
+        existingClaim: esphome-config
+        globalMounts:
+          - path: /data
+            subPath: data
+          - path: /cache
+            subPath: cache

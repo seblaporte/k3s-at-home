@@ -1,0 +1,135 @@
+esphome:
+  name: home-bridge
+  friendly_name: Home bridge
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+logger:
+
+api:
+  encryption:
+    key: !secret home_bridge_api_key
+
+ota:
+  - platform: esphome
+    password: !secret home_bridge_ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
+
+  manual_ip:
+    static_ip: 192.168.1.47
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
+
+  ap:
+    ssid: "Home-Bridge Fallback Hotspot"
+    password: !secret wifi_hotspot_fallback_password
+
+  power_save_mode: none
+
+captive_portal:
+
+interval:
+  - interval: 5min
+    then:
+      - if:
+          condition:
+            not:
+              wifi.connected:
+          then:
+            - logger.log: "WiFi perdu → redémarrage"
+            - button.press: restart_button
+
+switch:
+  # ───────────────────────
+  # Commande portail pieton
+  # ───────────────────────
+  - platform: gpio
+    name: "Commande portail piéton"
+    pin:
+      number: GPIO33
+      mode:
+        output: true
+        pullup: true
+    id: portail_pieton
+    restore_mode: ALWAYS_OFF
+    on_turn_on:
+      - delay: 500ms
+      - switch.turn_off: portail_pieton
+  # ────────────────────────
+  # Commande portail voiture
+  # ────────────────────────
+  - platform: gpio
+    name: "Commande portail voiture"
+    pin:
+      number: GPIO32
+      mode:
+        output: true
+        pullup: true
+    id: portail_voiture
+    restore_mode: ALWAYS_OFF
+    on_turn_on:
+      - delay: 500ms
+      - switch.turn_off: portail_voiture
+
+binary_sensor:
+  # ─────────────────────────
+  # Capteur ouverture portail
+  # ─────────────────────────
+  - platform: gpio
+    name: "Capteur ouverture portail"
+    device_class: opening
+    pin:
+      number: GPIO27
+      mode: INPUT
+      inverted: true
+    filters:
+      - delayed_on: 200ms
+      - delayed_off: 5s
+  # ────────────────
+  # Sonnette portail
+  # ────────────────
+  - platform: gpio
+    name: "Sonnette portail"
+    pin:
+      number: GPIO34
+      mode: INPUT
+      inverted: true
+    filters:
+      - delayed_on: 50ms
+      - delayed_off: 5s
+  # ───────────────
+  # Statut de l'ESP
+  # ───────────────
+  - platform: status
+    name: "Statut Home bridge"
+
+button:
+  - platform: restart
+    id: restart_button
+    name: "Redémarrage Home bridge"
+
+sensor:
+  - platform: wifi_signal
+    name: "Signal WiFi Home bridge"
+    update_interval: 60s
+  - platform: uptime
+    name: "Uptime Home bridge"
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP Home bridge"
+    ssid:
+      name: "SSID Home bridge"
+    bssid:
+      name: "BSSID Home bridge"
+    mac_address:
+      name: "MAC Home bridge"
+  

@@ -10,6 +10,7 @@ env:
   KUBECONFIG: "{{.PROJECT_DIR}}/kubeconfig"
 
 includes:
+  esphome: .taskfiles/esphome.yml
   flux: .taskfiles/flux.yml
   format: .taskfiles/format.yml
   grafana: .taskfiles/grafana.yml

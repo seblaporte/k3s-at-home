@@ -1,0 +1,87 @@
+---
+version: "3"
+
+# Variables acceptées en ligne de commande : DEVICE=<nom> IP=<adresse> PORT=/dev/cu.… DUMMY=1
+
+vars:
+  SCRIPT: "{{.CLUSTER_DIR}}/apps/esphome/scripts/esphome.sh"
+
+env:
+  DEVICE: '{{.DEVICE | default ""}}'
+  IP: '{{.IP | default ""}}'
+  PORT: '{{.PORT | default ""}}'
+  DUMMY: '{{.DUMMY | default ""}}'
+  ESPHOME_VERSION: '{{.ESPHOME_VERSION | default ""}}'
+
+tasks:
+  version:
+    desc: Version d'ESPHome utilisée (celle du cluster)
+    cmds:
+      - "{{.SCRIPT}} version"
+    silent: true
+
+  secrets:
+    desc: Déchiffre secret.sops.yaml en secrets.yaml (clé PGP requise)
+    cmds:
+      - "{{.SCRIPT}} secrets"
+    silent: true
+
+  validate:
+    desc: Valide tous les appareils (ou DEVICE=…), DUMMY=1 sans clé PGP
+    cmds:
+      - "{{.SCRIPT}} validate"
+    silent: true
+
+  compile:
+    desc: Compile DEVICE=…
+    cmds:
+      - "{{.SCRIPT}} compile"
+    silent: true
+
+  upload:
+    desc: Envoie en OTA le dernier build, DEVICE=… IP=…
+    cmds:
+      - "{{.SCRIPT}} upload"
+    silent: true
+
+  run:
+    desc: Compile puis envoie en OTA, DEVICE=… IP=…
+    cmds:
+      - "{{.SCRIPT}} run"
+    silent: true
+
+  logs:
+    desc: Logs en direct, DEVICE=… IP=…
+    cmds:
+      - "{{.SCRIPT}} logs"
+    silent: true
+
+  flash-usb:
+    desc: 1er flash par USB (hors Docker), DEVICE=… PORT=/dev/cu.…
+    cmds:
+      - "{{.SCRIPT}} flash-usb"
+    silent: true
+
+  dashboard:
+    desc: Tableau de bord local sur http://localhost:6052 (lecture seule, comme sur k3s)
+    cmds:
+      - "{{.SCRIPT}} dashboard"
+    silent: true
+
+  kustomization:
+    desc: Régénère kustomization.yaml après ajout ou suppression d'un appareil ou composant
+    cmds:
+      - "{{.SCRIPT}} kustomization"
+    silent: true
+
+  check:
+    desc: Vérifie que kustomization.yaml est à jour et que kustomize construit (CI)
+    cmds:
+      - "{{.SCRIPT}} check"
+    silent: true
+
+  clean:
+    desc: Supprime l'environnement local (.work, secrets.yaml)
+    cmds:
+      - "{{.SCRIPT}} clean"
+    silent: true

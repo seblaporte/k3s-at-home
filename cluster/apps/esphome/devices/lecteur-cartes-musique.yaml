@@ -5,26 +5,20 @@ esphome:
     name: adonno.tag_reader
     version: "1.4"
 
-dashboard_import:
-  package_import_url: github://adonno/tagreader/tagreader.yaml
-
 improv_serial:
 
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
+  # ESP8266 default, pinned: power saving makes the connection drop more often
+  power_save_mode: none
+  # Reboot if Wi-Fi stays down (only effective without a fallback AP)
+  reboot_timeout: 5min
 
   manual_ip:
     static_ip: 192.168.1.44
     gateway: 192.168.1.1
     subnet: 255.255.255.0
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "Lecteur-Cartes-Musique"
-    password: !secret wifi_hotspot_fallback_password
-
-captive_portal:
 
 esp8266:
   board: d1_mini
@@ -43,6 +37,8 @@ button:
 
 # Enable Home Assistant API
 api:
+  # Reboot if Home Assistant has not been connected for this long
+  reboot_timeout: 5min
   encryption:
     key: !secret lecteur_cartes_musique_api_key
 
@@ -53,9 +49,17 @@ ota:
 
 i2c:
   scan: False
-  frequency: 400kHz
+  # ESP8266 I2C is bit-banged and the PN532 stretches the clock a lot:
+  # 400kHz desyncs the bus and leaves the reader stuck
+  frequency: 100kHz
 
 globals:
+  - id: pn532_bad_checks
+    type: int
+    initial_value: "0"
+  - id: last_tag_ms
+    type: uint32_t
+    initial_value: "0"
   - id: source
     type: std::string
   - id: url
@@ -67,7 +71,8 @@ pn532_i2c:
   id: pn532_board
   on_tag:
     then:
-    
+    - lambda: 'id(last_tag_ms) = millis();'
+
     - delay: 0.15s #to fix slow component
         
     - lambda: |-
@@ -177,12 +182,71 @@ pn532_i2c:
     - homeassistant.event:
         event: esphome.tag_removed
 
+# Reboot when the PN532 is failed (setup error) or its read requests keep
+# failing. Only resets the ESP: the PN532 itself stays powered.
+interval:
+  - interval: 15s
+    then:
+      - lambda: |-
+          if (id(pn532_board)->is_failed() || id(pn532_board)->status_has_warning()) {
+            id(pn532_bad_checks) += 1;
+            ESP_LOGW("watchdog", "PN532 unhealthy (%d/4)", id(pn532_bad_checks));
+            if (id(pn532_bad_checks) >= 4) {
+              ESP_LOGE("watchdog", "PN532 unhealthy for 1min, rebooting");
+              App.safe_reboot();
+            }
+          } else {
+            id(pn532_bad_checks) = 0;
+          }
+  # The PN532 can also hang silently: it acks commands but stops detecting
+  # tags, without any error. Re-run its init (version + SAM configuration,
+  # what fixes it at boot). If it does not answer, it is marked failed and
+  # the check above reboots.
+  - interval: 10min
+    then:
+      - lambda: |-
+          if (id(pn532_board)->is_failed() || millis() - id(last_tag_ms) < 30000) return;
+          ESP_LOGI("watchdog", "Re-initializing PN532");
+          id(pn532_board)->setup();
+
+debug:
+  update_interval: 60s
+
 binary_sensor:
   - platform: status
     name: "${friendly_name} Status"
     entity_category: diagnostic
+  - platform: template
+    name: "${friendly_name} NFC Problem"
+    device_class: problem
+    entity_category: diagnostic
+    lambda: |-
+      return id(pn532_board)->is_failed() || id(pn532_board)->status_has_warning();
+
+sensor:
+  - platform: uptime
+    name: "${friendly_name} Uptime"
+    entity_category: diagnostic
+  - platform: wifi_signal
+    name: "${friendly_name} WiFi Signal"
+    update_interval: 60s
+    entity_category: diagnostic
+  - platform: debug
+    free:
+      name: "${friendly_name} Heap Free"
+      entity_category: diagnostic
+    block:
+      name: "${friendly_name} Heap Max Block"
+      entity_category: diagnostic
+    fragmentation:
+      name: "${friendly_name} Heap Fragmentation"
+      entity_category: diagnostic
 
 text_sensor:
+  - platform: debug
+    reset_reason:
+      name: "${friendly_name} Reset Reason"
+      entity_category: diagnostic
   - platform: version
     hide_timestamp: true
     name: "${friendly_name} ESPHome Version"

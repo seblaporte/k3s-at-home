@@ -10,6 +10,8 @@ improv_serial:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
+  # Refuse WPA/TKIP: never downgrade below WPA2
+  min_auth_mode: WPA2
   # ESP8266 default, pinned: power saving makes the connection drop more often
   power_save_mode: none
   # Reboot if Wi-Fi stays down (only effective without a fallback AP)

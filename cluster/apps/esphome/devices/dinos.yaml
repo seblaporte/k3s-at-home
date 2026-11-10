@@ -7,6 +7,8 @@ esp8266:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
+  # Refuse WPA/TKIP: never downgrade below WPA2
+  min_auth_mode: WPA2
   fast_connect: true
 
   manual_ip:

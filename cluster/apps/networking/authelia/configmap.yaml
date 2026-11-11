@@ -74,6 +74,8 @@ data:
           policy: 'two_factor'
         - domain: 'maintainerr.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+        - domain: 'orion.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
         - domain: 'shopping-cards.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
         - domain: 'transmission.${SECRET_APEX_DOMAIN}'

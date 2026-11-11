@@ -38,6 +38,7 @@ resources:
   - slskd
   - yubal
   - shopping-cards
+  - orion
   - maintainerr
   - kitchenvault/production
   - kitchenvault/dev

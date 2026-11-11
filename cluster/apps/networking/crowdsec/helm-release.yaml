@@ -65,6 +65,7 @@ spec:
                   'maintainerr.${SECRET_APEX_DOMAIN}',
                   'minio.${SECRET_APEX_DOMAIN}',
                   'music-assistant.${SECRET_APEX_DOMAIN}',
+                  'orion.${SECRET_APEX_DOMAIN}',
                   'prowlarr.${SECRET_APEX_DOMAIN}',
                   'radarr.${SECRET_APEX_DOMAIN}',
                   'shopping-cards.${SECRET_APEX_DOMAIN}',

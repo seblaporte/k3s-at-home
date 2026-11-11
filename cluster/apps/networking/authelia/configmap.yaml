@@ -44,50 +44,97 @@ data:
       rules:
         - domain: 'slskd.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'uptime-kuma.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'sonarr.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'radarr.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'lidarr.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'prowlarr.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'minio.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'tesla-fleet.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'music-assistant.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'esphome.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'go2rtc.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'grafana.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'joal.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'kitchenvault.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'kitchenvault-dev.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'maintainerr.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'orion.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
+            - 'group:guests'
         - domain: 'shopping-cards.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'transmission.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'yubal.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'zigbee2mqtt.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'teslamate.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
         - domain: 'teslamate-grafana.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
+          subject:
+            - 'group:admins'
 
     session:
       cookies:

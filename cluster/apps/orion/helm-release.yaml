@@ -34,7 +34,7 @@ spec:
           main:
             image:
               repository: ghcr.io/seblaporte/orion
-              tag: "latest"
+              tag: "sha-65dff6a"
               pullPolicy: IfNotPresent
             resources:
               requests:

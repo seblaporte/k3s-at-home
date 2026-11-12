@@ -99,6 +99,13 @@ spec:
         globalMounts:
           - path: /components/inmotion_v1
             readOnly: true
+      component-daikin-x10a:
+        enabled: true
+        type: configMap
+        name: esphome-component-daikin-x10a
+        globalMounts:
+          - path: /components/daikin_x10a
+            readOnly: true
       # Volume créé par l'ancien chart k8s-at-home, conservé avec ses données : builds et
       # toolchains PlatformIO. L'ancienne config reste à sa racine (retour arrière possible).
       data:

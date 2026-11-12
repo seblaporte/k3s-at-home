@@ -1,5 +1,7 @@
 # Proxy Bluetooth pour Home Assistant + passerelle BLE de la gyroroue InMotion V10F
-# (composant components/inmotion_v1, entités regroupées dans le sous-appareil « Gyroroue »).
+# (composant components/inmotion_v1, entités regroupées dans le sous-appareil « Gyroroue »)
+# + lecture de la pompe à chaleur sur son port X10A (composant components/daikin_x10a, port
+# ESPHome d'ESPAltherma, sous-appareil « Pompe à chaleur »).
 
 substitutions:
   # Adresse MAC de la roue, déduite du System ID (0x2A23) du module TI CC2541
@@ -11,6 +13,8 @@ esphome:
   devices:
     - id: gyroroue
       name: Gyroroue
+    - id: pac
+      name: Pompe à chaleur
 
 esp32:
   board: esp32dev
@@ -28,6 +32,8 @@ logger:
     # Passer à VERBOSE pour voir les trames brutes RX/TX en hexadécimal
     inmotion_v1: DEBUG
     esp32_ble_tracker: INFO
+    # VERY_VERBOSE pour voir les trames X10A brutes
+    daikin_x10a: DEBUG
 
 # Enable Home Assistant API
 api:
@@ -98,9 +104,118 @@ inmotion_v1:
     name: En ligne
     device_id: gyroroue
 
+# Port X10A : 9600 bauds 8E1, câblage sur la carte AZ-Delivery ESP32-WROOM-32 (38 broches,
+# colonne de droite, antenne en haut) :
+#
+#   | X10A                | Fil   | Ancien Wemos D1 mini | ESP32       | Repère             |
+#   | ------------------- | ----- | -------------------- | ----------- | ------------------ |
+#   | 1 · 5 V             | bleu  | 5V                   | non branché | bout isolé         |
+#   | 2 · TX de la PAC    | gris  | D2 (GPIO4)           | G16 (RX)    | entre G17 et G4    |
+#   | 3 · RX de la PAC    | vert  | D1 (GPIO5)           | G17 (TX)    | entre G5 et G16    |
+#   | 4 · non connecté    |       |                      |             |                    |
+#   | 5 · GND             | blanc | G                    | GND         | entre G21 et G19   |
+#
+# Piège : G4 et G5 encadrent G16/G17 sur cette carte, ce ne sont pas les broches du Wemos.
+# L'ESP32 reste alimenté par son USB : le 5 V du X10A ne suffit pas aux pointes Wi-Fi + BLE
+# (~380 mA) et ne doit jamais être relié en même temps que l'USB. GND commun obligatoire.
+uart:
+  id: x10a_uart
+  rx_pin: GPIO16
+  tx_pin: GPIO17
+  baud_rate: 9600
+  data_bits: 8
+  parity: EVEN
+  stop_bits: 1
+
+# Lignes reprises de ESPAltherma include/def/French/DEFAULT.h : {registre, offset, convid, taille, …}
+daikin_x10a:
+  id: pac_x10a
+  uart_id: x10a_uart
+  update_interval: 30s
+
+text_sensor:
+  - platform: daikin_x10a
+    name: Mode de fonctionnement
+    device_id: pac
+    register: 0x10
+    offset: 0
+    convid: 217
+  - platform: daikin_x10a
+    name: Type de dysfonctionnement
+    device_id: pac
+    register: 0x10
+    offset: 4
+    convid: 203
+  - platform: daikin_x10a
+    name: Mode de fonctionnement intérieur
+    device_id: pac
+    register: 0x60
+    offset: 2
+    convid: 315
+  - platform: wifi_info
+    ip_address:
+      name: "IP Bluetooth bridge"
+    ssid:
+      name: "SSID Bluetooth bridge"
+    bssid:
+      name: "BSSID Bluetooth bridge"
+    mac_address:
+      name: "MAC Bluetooth bridge"
+
 binary_sensor:
   - platform: status
     name: "Statut Home bridge"
+  - platform: daikin_x10a
+    name: Contrôle de bruit réduit
+    device_id: pac
+    register: 0x10
+    offset: 1
+    convid: 300
+  - platform: daikin_x10a
+    name: Données unité extérieure
+    device_id: pac
+    entity_category: diagnostic
+    register: 0x60
+    offset: 0
+    convid: 307
+  - platform: daikin_x10a
+    name: Thermostat
+    device_id: pac
+    register: 0x60
+    offset: 2
+    convid: 303
+  - platform: daikin_x10a
+    name: Protection antigel
+    device_id: pac
+    register: 0x60
+    offset: 2
+    convid: 302
+  - platform: daikin_x10a
+    name: Mode silencieux
+    device_id: pac
+    register: 0x60
+    offset: 2
+    convid: 301
+  - platform: daikin_x10a
+    name: Protection antigel tuyauterie eau
+    device_id: pac
+    register: 0x60
+    offset: 2
+    convid: 300
+  - platform: daikin_x10a
+    name: Pompe
+    device_id: pac
+    device_class: running
+    register: 0x60
+    offset: 12
+    convid: 301
+  - platform: daikin_x10a
+    name: Données unité intérieure
+    device_id: pac
+    entity_category: diagnostic
+    register: 0x61
+    offset: 0
+    convid: 307
 
 button:
   - platform: restart
@@ -119,14 +234,40 @@ sensor:
     name: Signal BLE
     device_id: gyroroue
     update_interval: 60s
+  - platform: daikin_x10a
+    name: Température extérieure
+    device_id: pac
+    device_class: temperature
+    unit_of_measurement: °C
+    register: 0x20
+    offset: 0
+    convid: 105
+    size: 2
+  - platform: daikin_x10a
+    name: Température refoulement
+    device_id: pac
+    device_class: temperature
+    unit_of_measurement: °C
+    register: 0x20
+    offset: 4
+    convid: 105
+    size: 2
+  - platform: daikin_x10a
+    name: Courant primaire INV
+    device_id: pac
+    device_class: current
+    unit_of_measurement: A
+    register: 0x21
+    offset: 0
+    convid: 105
+    size: 2
+  - platform: daikin_x10a
+    name: Température liquide (R3T)
+    device_id: pac
+    device_class: temperature
+    unit_of_measurement: °C
+    register: 0x61
+    offset: 6
+    convid: 105
+    size: 2
 
-text_sensor:
-  - platform: wifi_info
-    ip_address:
-      name: "IP Bluetooth bridge"
-    ssid:
-      name: "SSID Bluetooth bridge"
-    bssid:
-      name: "BSSID Bluetooth bridge"
-    mac_address:
-      name: "MAC Bluetooth bridge"

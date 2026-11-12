@@ -37,6 +37,15 @@ configMapGenerator:
       - devices/veilleuse-etoile.yaml
       - devices/ventilateur-cluster-k3s.yaml
       - .gitignore=devices/esphome.gitignore
+  - name: esphome-component-daikin-x10a
+    files:
+      - __init__.py=components/daikin_x10a/__init__.py
+      - binary_sensor.py=components/daikin_x10a/binary_sensor.py
+      - daikin_x10a.cpp=components/daikin_x10a/daikin_x10a.cpp
+      - daikin_x10a.h=components/daikin_x10a/daikin_x10a.h
+      - sensor.py=components/daikin_x10a/sensor.py
+      - text_sensor.py=components/daikin_x10a/text_sensor.py
+      - x10a_protocol.h=components/daikin_x10a/x10a_protocol.h
   - name: esphome-component-inmotion-v1
     files:
       - __init__.py=components/inmotion_v1/__init__.py

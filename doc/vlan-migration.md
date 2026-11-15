@@ -6,18 +6,18 @@ ce chantier.
 
 ## Matériel et décisions
 
-| Élément             | Choix                                                                                      |
-| ------------------- | ------------------------------------------------------------------------------------------ |
-| Routeur             | Ubiquiti EdgeRouter X sous OpenWRT (DSA `bridge-vlan`), accès SSH par clé                  |
-| Switch              | D-Link DGS-1100-16V2 (web-smart, sans CLI, **non PoE**, non flashable sous OpenWRT)        |
-| Bornes Wi-Fi        | UniFi U6-LR et U6-Lite, contrôleur dans le cluster (`192.168.1.22`, v10.0.162)             |
-| Wi-Fi               | **Les 3 SSID existants sont gardés** (nom et clé), VLAN par SSID + exceptions par appareil |
-| Inter-VLAN          | **Routage + pare-feu** (politique par défaut : refus), pas de NAT                          |
-| Configuration       | Routeur et UniFi pilotés par script depuis le Mac, switch configuré à la main guidée       |
-| Contrainte majeure  | **Aucune IP du cluster ne change** : le VLAN 1 reste le LAN actuel                         |
-| Contrainte majeure  | **Aucun objet à réappairer** : ni SSID ni clé Wi-Fi ne changent pour les appareils         |
-| Numérotation        | **Les VLAN 2 (guest) et 3 (home) existants sont conservés**, le reste s'y ajoute           |
-| Accès des automates | Clé SSH dédiée (`~/.ssh/id_ed25519_openwrt`), compte local UniFi `claude-automation`       |
+| Élément             | Choix                                                                                    |
+| ------------------- | ---------------------------------------------------------------------------------------- |
+| Routeur             | Ubiquiti EdgeRouter X sous OpenWRT (DSA `bridge-vlan`), accès SSH par clé                |
+| Switch              | D-Link DGS-1100-16V2 (web-smart, sans CLI, **non PoE**, non flashable sous OpenWRT)      |
+| Bornes Wi-Fi        | UniFi U6-LR et U6-Lite, contrôleur dans le cluster (`192.168.1.22`, v10.0.162)           |
+| Wi-Fi               | **Les 3 SSID existants sont gardés** (nom et clé), VLAN par SSID + VLAN par MAC (RADIUS) |
+| Inter-VLAN          | **Routage + pare-feu** (politique par défaut : refus), pas de NAT                        |
+| Configuration       | Routeur et UniFi pilotés par script depuis le Mac, switch configuré à la main guidée     |
+| Contrainte majeure  | **Aucune IP du cluster ne change** : le VLAN 1 reste le LAN actuel                       |
+| Contrainte majeure  | **Aucun objet à réappairer** : ni SSID ni clé Wi-Fi ne changent pour les appareils       |
+| Numérotation        | **Les VLAN 2 (guest) et 3 (home) existants sont conservés**, le reste s'y ajoute         |
+| Accès des automates | Clé SSH dédiée (`~/.ssh/id_rsa_openwrt`), compte local UniFi `claude-automation`         |
 
 > Les identifiants (mot de passe UniFi, clés SSH) ne vont jamais dans ce dépôt : trousseau
 > macOS en local, SOPS si un secret doit être versionné. `uci show network` affiche les
@@ -25,9 +25,6 @@ ce chantier.
 
 Points à traiter côté matériel :
 
-- Le DGS-1100-16V2 n'est pas PoE : les U6-LR et U6-Lite ont besoin d'injecteurs PoE
-  (802.3af), ou d'un switch PoE. Un switch UniFi PoE géré par le même contrôleur est
-  l'alternative recommandée si un remplacement est envisagé.
 - Un seul lien trunk relie le routeur au switch (`eth1`) : tout le trafic inter-VLAN passe
   par le CPU de l'EdgeRouter X.
 - Un port du routeur doit rester en VLAN 1 non tagué comme **port de secours** (câble).
@@ -161,14 +158,18 @@ Notes :
 
 Réappairer les objets (objets cloud, robots, électroménager…) est exclu : un objet ne
 se reconfigure que si son SSID ou sa clé change. Les **trois SSID actuels sont donc gardés
-tels quels** (nom, clé, WPA2) ; seul le VLAN derrière change. Le contrôleur permet :
+tels quels** (nom, clé, WPA2) ; seul le VLAN derrière change, de deux façons :
 
 1. un **VLAN par défaut par SSID** (`networkconf_id` du SSID) ;
-2. une **exception par appareil** (« Virtual Network Override », champ `network_id` du
-   client) : cet appareil, sur ce SSID, va dans tel VLAN. La borne le reconnecte, il reçoit
-   une IP du nouveau sous-réseau, sans rien voir d'autre.
+2. une **exception par appareil** par **RADIUS MAC Authentication** : à la connexion, la
+   borne envoie la MAC de l'appareil à FreeRADIUS (sur le routeur), qui répond le VLAN
+   (`Tunnel-Private-Group-Id`). Une MAC inconnue reste dans le VLAN par défaut du SSID.
+   L'appareil ne voit rien d'autre qu'une nouvelle IP.
 
-| SSID      | VLAN par défaut (cible) | Exceptions par appareil                                                         |
+La « Virtual Network Override » du contrôleur (VLAN par client) **n'est pas utilisable** :
+elle exige une passerelle UniFi, l'option n'apparaît pas avec un routeur tiers.
+
+| SSID      | VLAN par défaut (cible) | Exceptions par appareil (RADIUS)                                                |
 | --------- | ----------------------- | ------------------------------------------------------------------------------- |
 | IoT       | 6 (iot)                 | aucune (tous les appareils vus à l'audit sont de l'IoT)                         |
 | Principal | 3 (home)                | Google / Chromecast → 4, caméras → 5, OctoPrint et imprimante → 6, véhicule → 7 |
@@ -176,13 +177,36 @@ tels quels** (nom, clé, WPA2) ; seul le VLAN derrière change. Le contrôleur p
 
 Les appareils Apple restent dans le VLAN par défaut du SSID principal : **l'adresse Wi-Fi
 privée peut rester active**. Les exceptions ne visent que des objets non Apple, dont la
-MAC est fixe.
+MAC est fixe. Une MAC privée Apple est propre à chaque SSID.
 
 Un SSID peut être ajouté plus tard pour regrouper autrement, sans toucher aux existants.
 
-> À tester avant toute migration de groupe : l'exception par appareil est posée par la
-> borne, avec une passerelle non UniFi (OpenWRT). Valider sur **un seul appareil** (un
-> Google Home Mini en VLAN 4) dès que les VLAN existent sur le routeur.
+### Mise en œuvre RADIUS
+
+- **Routeur** : paquets `freeradius3-default` et `freeradius3-utils` (installés, service
+  arrêté et désactivé depuis le test). Client `unifi-aps` (`192.168.1.0/24`, secret
+  partagé dans le trousseau macOS, service `openwrt-radius`). Correspondances MAC → VLAN
+  dans `mods-config/files/authorize`, une entrée `Auth-Type := Accept` par appareil
+  avant une règle `DEFAULT` sans VLAN.
+- **UniFi** : profil RADIUS `openwrt-radius` (serveur `192.168.1.1:1812`, prise en charge
+  des VLAN pour le Wi-Fi : `vlan_wlan_mode: "optional"`). Sur chaque SSID concerné :
+  `radius_mac_auth_enabled`, `radius_macacl_format: "colon_lower"`, `radiusprofile_id`.
+- **Liste MAC → VLAN** : adresses MAC, donc dans un fichier SOPS édité à la main, rendu
+  vers le routeur par le script.
+
+Risques et parades :
+
+- Une fois activé sur un SSID, **FreeRADIUS devient nécessaire pour s'y connecter**. Il
+  tourne sur le routeur (si le routeur tombe, le réseau tombe de toute façon) et procd le
+  relance. À ajouter : une sonde de supervision sur le port 1812. Secours : désactiver
+  « RADIUS MAC Authentication » sur le SSID dans UniFi, tout redevient comme avant.
+- Ce n'est pas une mesure de sécurité : la clé WPA2 reste la seule barrière, une MAC se
+  falsifie (mais seulement par quelqu'un qui connaît déjà la clé).
+
+> Test validé le 2026-11-15 sur le SSID invités : un iPhone associé au VLAN 1 dans
+> FreeRADIUS a reçu une IP `192.168.1.x` sans changer de SSID. Piège rencontré : le SSID
+> doit utiliser le profil `openwrt-radius` ; avec le profil « Default » (sans prise en
+> charge des VLAN), la borne interroge le routeur mais ignore le VLAN de la réponse.
 
 ## Règles inter-VLAN
 
@@ -270,7 +294,8 @@ sous-réseau, son DHCP et sa zone de pare-feu. Configuration à versionner dans 
 - zone `guest` : passer l'accès au routeur (`input`) de « accepter » à « refuser », avec
   des règles DHCP et DNS (le transfert vers le VPN des invités ne change pas).
 
-Paquets à prévoir : `avahi-daemon` (reflector mDNS).
+Paquets : `avahi-daemon` (reflector mDNS) à installer ; FreeRADIUS déjà installé (voir
+« Mise en œuvre RADIUS »).
 
 ## Méthode de migration
 
@@ -278,21 +303,24 @@ Paquets à prévoir : `avahi-daemon` (reflector mDNS).
    « Inventaire »).
 2. ~~**Plan définitif**~~ : fait le 2026-11-15 (adressage, matrice de pare-feu, exceptions
    par appareil, accès Internet, accès WireGuard).
-3. **Configuration versionnée** : script OpenWRT (avec retour automatique), script UniFi
-   (réseaux, VLAN des SSID, exceptions), checklist du switch, ESPHome sans `manual_ip`,
-   liste des intégrations à mettre à jour. Rien n'est appliqué à ce stade.
+3. **Configuration versionnée** : script OpenWRT (avec retour automatique, FreeRADIUS et
+   sa liste MAC → VLAN depuis SOPS), script UniFi (réseaux, VLAN des SSID, profil RADIUS,
+   MAC Auth), checklist du switch, ESPHome sans `manual_ip`, liste des intégrations à
+   mettre à jour, sonde du port RADIUS. Rien n'est appliqué à ce stade.
 4. **Migration par étapes**, chacune validée avant la suivante :
    1. routeur : port de secours `eth2` ;
    2. routeur : VLAN 4 à 7, zones, DHCP, réservations, zone du VLAN 3 (sans effet, aucun
       client) ;
    3. switch : VLAN 4 à 7 tagués sur le trunk et les bornes, enregistrés après contrôle ;
    4. UniFi : réseaux VLAN 4 à 7 (les SSID restent en VLAN 1 par défaut) ;
-   5. test de l'exception sur un seul appareil ;
-   6. appareils déplacés **un par un** par exception, groupe par groupe (multimedia avec
-      Music Assistant, puis home, iot, security avec le NVR filaire, car). Retour arrière :
-      supprimer l'exception ;
+   5. FreeRADIUS démarré et activé, liste MAC → VLAN vide, puis « RADIUS MAC
+      Authentication » activée SSID par SSID (aucun effet : les MAC inconnues restent dans
+      le VLAN par défaut) ;
+   6. appareils déplacés **un par un** en ajoutant leur MAC dans FreeRADIUS, puis
+      reconnexion, groupe par groupe (multimedia avec Music Assistant, puis home, iot,
+      security avec le NVR filaire, car). Retour arrière : retirer la MAC ;
    7. quand un SSID est vide de VLAN 1, basculer son VLAN par défaut et retirer les
-      exceptions devenues inutiles.
+      entrées devenues inutiles.
 5. **Vérifications après chaque étape** : ping, DNS, MQTT, lecture Music Assistant, flux
    caméras, accès web, objets cloud en ligne, Internet des invités via le VPN, accès
    WireGuard.

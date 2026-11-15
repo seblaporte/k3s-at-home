@@ -104,38 +104,40 @@ Validé le 2026-11-15. Les adresses MAC ne sont pas versionnées ici (dépôt pu
 sont dans les baux DHCP et le contrôleur UniFi, et iront dans un fichier SOPS pour les
 réservations.
 
-| Appareil                                    | VLAN | IP actuelle      | IP cible       |
-| ------------------------------------------- | ---- | ---------------- | -------------- |
-| Switch D-Link                               | 1    | `1.2`            | `1.2`          |
-| Borne U6-LR                                 | 1    | `1.140`          | `1.4`          |
-| Borne U6-Lite                               | 1    | `1.141`          | `1.5`          |
-| NAS Synology                                | 1    | `1.10`           | `1.10`         |
-| Mac mini (filaire)                          | 1    | `1.90`           | `1.90`         |
-| Nœuds k3s (×6)                              | 1    | `1.100`–`.105`   | inchangées     |
-| Invités                                     | 2    | `2.x`            | DHCP           |
-| Mac, iPhone, iPad, Apple Watch de la maison | 3    | `1.x`            | DHCP           |
-| PC portables (×2)                           | 3    | `1.133`, `1.218` | DHCP           |
-| Mac mini (Wi-Fi)                            | 3    | `1.162`          | DHCP           |
-| Apple TV (concentrateur HomeKit)            | 3    | `1.187`          | `3.10`         |
-| Nest Audio (×2)                             | 4    | `1.205`, `1.228` | `4.10`, `4.11` |
-| Google Home Mini (×2)                       | 4    | `1.126`, `1.165` | `4.12`, `4.13` |
-| Chromecast Audio                            | 4    | `1.245`          | `4.14`         |
-| Google sans nom (Nest Hub / Chromecast ?)   | 4    | `1.154`, `1.238` | `4.15`, `4.16` |
-| NVR                                         | 5    | `1.3`            | `5.10`         |
-| Caméra                                      | 5    | `1.109`          | `5.20`         |
-| Caméra                                      | 5    | `1.113`          | `5.21`         |
-| ESPHome (×9, `cluster/apps/esphome`)        | 6    | `1.40`–`.50`     | `6.40`–`.50`   |
-| Objet cloud (module Tuya)                   | 6    | `1.209`          | `6.60`         |
-| Aspirateurs (×2)                            | 6    | `1.121`, `1.183` | `6.61`, `6.62` |
-| OctoPrint                                   | 6    | `1.214`          | `6.63`         |
-| Imprimante Epson                            | 6    | `1.193`          | `6.64`         |
-| Passerelle domotique                        | 6    | `1.122`          | `6.65`         |
-| Objet domotique                             | 6    | `1.178`          | `6.66`         |
-| Objets cloud (électroménager, santé, etc.)  | 6    | `1.x`, `2.172`   | DHCP           |
-| Objets du SSID IoT non identifiés           | 6    | `1.x`            | DHCP           |
-| Véhicule                                    | 7    | `1.115`          | `7.10`         |
-| Raspberry musique du véhicule               | 7    | `1.221`          | `7.11`         |
-| AirPort Express du véhicule                 | 7    | `1.176`          | `7.12`         |
+| Appareil                                    | VLAN | IP actuelle             | IP cible       |
+| ------------------------------------------- | ---- | ----------------------- | -------------- |
+| Switch D-Link                               | 1    | `1.2`                   | `1.2`          |
+| Borne U6-LR                                 | 1    | `1.140`                 | `1.4`          |
+| Borne U6-Lite                               | 1    | `1.141`                 | `1.5`          |
+| NAS Synology                                | 1    | `1.10`                  | `1.10`         |
+| Mac mini (filaire, Frigate)                 | 1    | `1.90`                  | `1.90`         |
+| Nœuds k3s (×6)                              | 1    | `1.100`–`.105`          | inchangées     |
+| Invités                                     | 2    | `2.x`                   | DHCP           |
+| Mac, iPhone, iPad, Apple Watch de la maison | 3    | `1.x`                   | DHCP           |
+| PC portables (×2)                           | 3    | `1.133`, `1.218`        | DHCP           |
+| Mac mini (Wi-Fi)                            | 3    | `1.162`                 | DHCP           |
+| Apple TV (concentrateur HomeKit)            | 3    | `1.187`                 | `3.10`         |
+| Nest Audio (×2)                             | 4    | `1.205`, `1.228`        | `4.10`, `4.11` |
+| Google Home Mini (×2)                       | 4    | `1.126`, `1.165`        | `4.12`, `4.13` |
+| Chromecast Audio                            | 4    | `1.245`                 | `4.14`         |
+| Chromecast Google TV, Nest Hub              | 4    | `1.154`, `1.238`        | `4.15`, `4.16` |
+| NVR                                         | 5    | `1.3`                   | `5.10`         |
+| Caméra                                      | 5    | `1.109`                 | `5.20`         |
+| Caméra                                      | 5    | `1.113`                 | `5.21`         |
+| ESPHome (×9, `cluster/apps/esphome`)        | 6    | `1.40`–`.50`            | `6.40`–`.50`   |
+| Objet cloud (module Tuya)                   | 6    | `1.209`                 | `6.60`         |
+| Shelly                                      | 6    | `1.45`                  | `6.45`         |
+| Aspirateurs (×3)                            | 6    | `1.121`, `.183`, `.239` | `6.61`–`.63`   |
+| OctoPrint                                   | 6    | `1.214`                 | `6.64`         |
+| Imprimante Epson                            | 6    | `1.193`                 | `6.65`         |
+| Passerelle domotique (filaire)              | 6    | `1.122`                 | `6.66`         |
+| Objet domotique                             | 6    | `1.178`                 | `6.67`         |
+| Objet Tuya piloté en local                  | 6    | `1.180`                 | `6.68`         |
+| Objets cloud (électroménager, santé, etc.)  | 6    | `1.x`, `2.172`          | DHCP           |
+| Autres objets du SSID IoT (station météo…)  | 6    | `1.x`                   | DHCP           |
+| Véhicule                                    | 7    | `1.115`                 | `7.10`         |
+| Raspberry musique du véhicule               | 7    | `1.221`                 | `7.11`         |
+| AirPort Express du véhicule                 | 7    | `1.176`                 | `7.12`         |
 
 Notes :
 
@@ -144,13 +146,16 @@ Notes :
   `1.4x` puis `6.4x`). Un seul flash OTA, fait pendant qu'ils sont encore dans le VLAN 1 :
   au passage dans le VLAN 6, ils prennent seuls leur nouvelle IP.
 - Toutes les IP cibles fixes sont des réservations DHCP sur le routeur : rien n'est saisi
-  sur les appareils. Seules les intégrations qui visent une IP (Home Assistant, Scrypted,
-  go2rtc) sont mises à jour.
+  sur les appareils. Seules les intégrations qui visent une IP sont mises à jour :
+  Home Assistant (`esphome`, `shelly`, `tuya_local`, `dreame_vacuum`, `octoprint`, `ipp`,
+  `androidtv_remote` et les deux intégrations du NVR), go2rtc (`configmap.yaml`, flux RTSP
+  du NVR), Frigate (Mac mini) et Scrypted.
 - Absents pendant l'audit (SSID à constater à la migration) : la tondeuse, le véhicule,
   l'imprimante.
 - Appareils ignorés : quatre modules Espressif hors ESPHome (`1.31`, `.33`, `.34`, `.36`).
 - À nettoyer : la réservation DHCP `artillery-3d-printer` (`1.65`, jamais vue) et les
-  anciens clients du contrôleur UniFi.
+  anciens clients du contrôleur UniFi, l'intégration `ipp` obsolète de Home Assistant
+  (`1.254`, absent).
 
 ## Wi-Fi : SSID existants, VLAN par SSID et par appareil
 
@@ -163,11 +168,11 @@ tels quels** (nom, clé, WPA2) ; seul le VLAN derrière change. Le contrôleur p
    client) : cet appareil, sur ce SSID, va dans tel VLAN. La borne le reconnecte, il reçoit
    une IP du nouveau sous-réseau, sans rien voir d'autre.
 
-| SSID      | VLAN par défaut (cible) | Exceptions par appareil                                           |
-| --------- | ----------------------- | ----------------------------------------------------------------- |
-| IoT       | 6 (iot)                 | aucune (tous les appareils vus à l'audit sont de l'IoT)           |
-| Principal | 3 (home)                | Google / Chromecast → 4, caméras → 5, OctoPrint → 6, véhicule → 7 |
-| Invités   | 2 (guest, inchangé)     | un objet cloud → 6                                                |
+| SSID      | VLAN par défaut (cible) | Exceptions par appareil                                                         |
+| --------- | ----------------------- | ------------------------------------------------------------------------------- |
+| IoT       | 6 (iot)                 | aucune (tous les appareils vus à l'audit sont de l'IoT)                         |
+| Principal | 3 (home)                | Google / Chromecast → 4, caméras → 5, OctoPrint et imprimante → 6, véhicule → 7 |
+| Invités   | 2 (guest, inchangé)     | un objet cloud → 6                                                              |
 
 Les appareils Apple restent dans le VLAN par défaut du SSID principal : **l'adresse Wi-Fi
 privée peut rester active**. Les exceptions ne visent que des objets non Apple, dont la
@@ -181,43 +186,51 @@ Un SSID peut être ajouté plus tard pour regrouper autrement, sans toucher aux 
 
 ## Règles inter-VLAN
 
-Politique par défaut : refus entre VLAN. Le retour des flux est géré par le suivi d'état.
+Validées le 2026-11-15. Politique par défaut : refus entre VLAN, retour des flux par suivi
+d'état.
 
-| Source → destination             | Autorisé                                                                       |
-| -------------------------------- | ------------------------------------------------------------------------------ |
-| VLAN 3, 4, 5, 6 → `192.168.1.23` | DNS AdGuard (53 TCP/UDP)                                                       |
-| VLAN 3 → `192.168.1.25`          | Traefik (443)                                                                  |
-| VLAN 4 → `192.168.1.34`          | Music Assistant : 8097 (stream), 8095 (web)                                    |
-| `192.168.1.100`–`.105` → VLAN 4  | Music Assistant vers les enceintes (tous ports)                                |
-| VLAN 6 → `192.168.1.21`, `.38`   | Mosquitto (1883, version sécurisée)                                            |
-| VLAN 6 → `192.168.1.32`          | API Home Assistant (8123)                                                      |
-| VLAN 1 → VLAN 6                  | Home Assistant vers ESPHome (6053), aspirateurs, objets cloud, OctoPrint       |
-| `192.168.1.30`, `.37` → VLAN 5   | Scrypted et go2rtc vers les caméras (RTSP)                                     |
-| VLAN 3 → VLAN 1, 4, 6            | Tout, sauf le management du routeur (SSH et LuCI depuis VLAN 3 seulement)      |
-| VLAN 7 → `192.168.1.33`          | Navidrome, si le Raspberry du véhicule s'en sert                               |
-| VLAN 2 → Internet                | Uniquement, via le VPN (inchangé)                                              |
-| VLAN 6 → Internet                | Autorisé au départ (objets cloud), à restreindre ensuite appareil par appareil |
-| VLAN 5, 7 → Internet             | Refusé par défaut, à autoriser appareil par appareil                           |
-| VPN `wg0` → VLAN 3 à 7           | À décider (aujourd'hui `vpn → lan` seulement)                                  |
+Les services du cluster qui initient des flux sortent avec **l'IP de leur nœud**, pas avec
+leur IP MetalLB : Home Assistant et Music Assistant (`hostNetwork`, nœud 4), Scrypted
+(`hostNetwork`, nœud 3), go2rtc (SNAT du nœud). Les règles visent donc `192.168.1.100` à
+`.105`, et les IP MetalLB ne servent qu'aux flux entrants.
 
-L'Apple TV (concentrateur HomeKit) est dans le VLAN 3 : la règle « VLAN 3 → VLAN 1, 4, 6 »
-lui donne déjà accès à Homebridge (`192.168.1.31`) et à Home Assistant (`192.168.1.32`).
-Si Music Assistant diffuse vers elle en AirPlay, ajouter `192.168.1.100`–`.105` →
-`192.168.3.10`.
+Accès au routeur (zone → routeur) :
 
-Relais mDNS (Avahi sur OpenWRT) : VLAN 3 ↔ 4 (AirPlay, Cast), VLAN 3 ↔ 6 (imprimante),
-VLAN 3 ↔ 1 (HomeKit : Homebridge, Home Assistant), VLAN 1 ↔ 4 (Music Assistant). Le SSDP
-n'est pas relayé par Avahi : ajouter les enceintes DLNA par IP fixe.
+| Zone                                           | Politique | Autorisé                                     |
+| ---------------------------------------------- | --------- | -------------------------------------------- |
+| lan (1), home (3)                              | accepter  | Tout, dont l'administration (SSH, LuCI)      |
+| guest (2)                                      | refuser   | DHCP, DNS (aujourd'hui « accepter » : fermé) |
+| multimedia (4), security (5), iot (6), car (7) | refuser   | DHCP, DNS (secours), ICMP                    |
+| vpn (`wg0`)                                    | accepter  | Inchangé                                     |
 
-Music Assistant : en `hostNetwork` pour la découverte mDNS (les enceintes voient alors l'IP
-du nœud, pas `192.168.1.34`), avec `dnsPolicy: ClusterFirstWithHostNet` et une affinité de
-nœud pour garder une IP source stable.
+Flux entre zones :
 
-AdGuard est un point de défaillance : mettre un DNS secondaire (routeur ou résolveur
-public) dans les baux DHCP des autres VLAN. Le VLAN 2 garde `8.8.8.8` (via le VPN).
+| Source → destination            | Autorisé                                                                 |
+| ------------------------------- | ------------------------------------------------------------------------ |
+| VLAN 1 → VLAN 3, 4, 5, 6, 7     | Tout (zone serveur de confiance : cluster, Mac mini avec Frigate)        |
+| VLAN 3 → VLAN 1, 4, 6           | Tout (pas d'accès au VLAN 5)                                             |
+| VPN `wg0` → VLAN 1, 4, 6        | Mêmes droits que le VLAN 3 ; alias NAS, DNS, Traefik conservés           |
+| VLAN 3, 4, 5, 6, 7 → `1.23`     | DNS AdGuard (53 TCP/UDP)                                                 |
+| VLAN 4 → `1.100`–`.105`         | Music Assistant en `hostNetwork` : 8095, 8097                            |
+| VLAN 4 → `1.34`, `1.29`         | Music Assistant (8095, 8097), Jellyfin (8096) pour le cast               |
+| VLAN 6 → `1.21`, `1.38`         | Mosquitto (1883, 8883)                                                   |
+| VLAN 6 → `1.32`, `1.100`–`.105` | Home Assistant (80, 8123) : objets qui poussent vers lui (Shelly, météo) |
+| VLAN 7 → `1.33`                 | Navidrome (4533)                                                         |
+| VLAN 1, 3, 4, 6, 7 → Internet   | Autorisé (VLAN 4 : DNS Google codés en dur ; VLAN 6 : à restreindre)     |
+| VLAN 5 → Internet               | Autorisé : accès à distance par le cloud du fabricant (NVR et caméras)   |
+| VLAN 2 → Internet               | Uniquement via le VPN des invités (inchangé)                             |
 
-À mettre à jour avec le NVR : la redirection « VPN alias NVR » (`10.50.1.3`) pointe vers
-`192.168.1.3`, à passer en `192.168.5.10`.
+Relais mDNS (Avahi sur OpenWRT) sur les VLAN 1, 3, 4 et 6 : Cast et AirPlay (Music
+Assistant, iPhone), HomeKit (Apple TV, Home Assistant), imprimante. Avahi relaie entre
+toutes les interfaces listées, pas couple par couple : la découverte est visible entre ces
+quatre VLAN, le pare-feu filtre le trafic. Pas de relais pour les VLAN 2, 5 et 7.
+
+AdGuard est un point de défaillance : les baux DHCP des nouveaux VLAN donnent AdGuard puis
+le routeur du VLAN. Le VLAN 2 garde `8.8.8.8` (via le VPN).
+
+À mettre à jour avec le NVR (`192.168.5.10`) : les flux RTSP de go2rtc et de Frigate. La
+redirection « VPN alias NVR » (`10.50.1.3`) est **supprimée** : 0 paquet en 100 jours,
+l'accès à distance passe par le cloud du fabricant, et le VPN n'a pas accès au VLAN 5.
 
 ## Switch DGS-1100-16V2
 
@@ -225,15 +238,16 @@ Le routeur envoie déjà les VLAN 1, 2 et 3 tagués sur `eth1` : vérifier dans 
 configuration du switch le mode VLAN actuel (« 802.1Q » attendu) et l'appartenance du
 port 1. Pour chaque port : appartenance au VLAN (untagged / tagged / non membre) et PVID.
 
-| Port    | Rôle                                    | Non tagué (PVID) | Tagués           |
-| ------- | --------------------------------------- | ---------------- | ---------------- |
-| 1       | Trunk vers le routeur                   | à constater      | 1 à 7            |
-| 2, 3    | Bornes U6-LR / U6-Lite (injecteurs PoE) | 1                | 2, 3, 4, 5, 6, 7 |
-| 4 à 8   | Raspberry du cluster                    | 1                | aucun            |
-| 9       | NAS Synology                            | 1                | aucun            |
-| 10      | NVR                                     | 5                | aucun            |
-| 11      | Raspberry du véhicule (si filaire)      | 7                | aucun            |
-| 12 à 16 | Mac mini (VLAN 1), libres / à décider   | à choisir        | aucun            |
+| Port      | Rôle                                      | Non tagué (PVID) | Tagués           |
+| --------- | ----------------------------------------- | ---------------- | ---------------- |
+| 1         | Trunk vers le routeur                     | à constater      | 1 à 7            |
+| 2, 3      | Bornes U6-LR / U6-Lite (injecteurs PoE)   | 1                | 2, 3, 4, 5, 6, 7 |
+| 4 à 8     | Raspberry du cluster                      | 1                | aucun            |
+| 9         | NAS Synology                              | 1                | aucun            |
+| 10        | NVR                                       | 5                | aucun            |
+| 11        | Raspberry du véhicule (si filaire)        | 7                | aucun            |
+| à repérer | Passerelle domotique, Shelly (si filaire) | 6                | aucun            |
+| 12 à 16   | Mac mini (VLAN 1), libres / à décider     | à choisir        | aucun            |
 
 À adapter au câblage réel. Le switch n'a pas d'API : configuration à la main guidée, en
 n'**enregistrant la configuration qu'après validation** (un redémarrage annule alors une
@@ -251,7 +265,10 @@ sous-réseau, son DHCP et sa zone de pare-feu. Configuration à versionner dans 
 - en premier, un port de secours (`eth2`, VLAN 1 non tagué) ;
 - ne pas toucher à l'interface `guest`, à la politique `pbr` des invités ni à la zone et
   à l'interface du VPN des invités ;
-- créer la zone de pare-feu manquante du VLAN 3 `home`.
+- créer la zone de pare-feu manquante du VLAN 3 `home` ;
+- supprimer la redirection « VPN alias NVR » ;
+- zone `guest` : passer l'accès au routeur (`input`) de « accepter » à « refuser », avec
+  des règles DHCP et DNS (le transfert vers le VPN des invités ne change pas).
 
 Paquets à prévoir : `avahi-daemon` (reflector mDNS).
 
@@ -259,11 +276,11 @@ Paquets à prévoir : `avahi-daemon` (reflector mDNS).
 
 1. ~~**Audit en lecture seule**~~ : fait le 2026-11-15 (voir « État constaté » et
    « Inventaire »).
-2. **Plan définitif** : adressage, matrice de pare-feu, liste des exceptions par appareil,
-   objets ayant besoin d'Internet, accès WireGuard.
+2. ~~**Plan définitif**~~ : fait le 2026-11-15 (adressage, matrice de pare-feu, exceptions
+   par appareil, accès Internet, accès WireGuard).
 3. **Configuration versionnée** : script OpenWRT (avec retour automatique), script UniFi
    (réseaux, VLAN des SSID, exceptions), checklist du switch, ESPHome sans `manual_ip`,
-   Music Assistant en `hostNetwork`. Rien n'est appliqué à ce stade.
+   liste des intégrations à mettre à jour. Rien n'est appliqué à ce stade.
 4. **Migration par étapes**, chacune validée avant la suivante :
    1. routeur : port de secours `eth2` ;
    2. routeur : VLAN 4 à 7, zones, DHCP, réservations, zone du VLAN 3 (sans effet, aucun
@@ -290,6 +307,5 @@ maison n'utilise pas le réseau.
 ## Questions ouvertes
 
 - Que fait exactement le Raspberry du véhicule (Bluetooth, Wi-Fi, serveur de musique) ?
-- Certaines caméras passent-elles par un cloud ?
-- Accès WireGuard vers les nouveaux VLAN : lesquels ?
-- Music Assistant diffuse-t-il vers l'Apple TV ?
+- Le Shelly et la passerelle domotique sont-ils filaires (port du switch à repérer) ?
+- SSID des appareils absents pendant l'audit (tondeuse, véhicule, imprimante, santé).

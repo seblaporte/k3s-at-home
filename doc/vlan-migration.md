@@ -6,17 +6,18 @@ ce chantier.
 
 ## Matériel et décisions
 
-| Élément             | Choix                                                                                |
-| ------------------- | ------------------------------------------------------------------------------------ |
-| Routeur             | Ubiquiti EdgeRouter X sous OpenWRT (DSA `bridge-vlan`), accès SSH par clé            |
-| Switch              | D-Link DGS-1100-16V2 (web-smart, sans CLI, **non PoE**, non flashable sous OpenWRT)  |
-| Bornes Wi-Fi        | UniFi U6-LR et U6-Lite, contrôleur dans le cluster (`192.168.1.22`, v10.0.162)       |
-| Wi-Fi               | **Un seul SSID, WPA2, une clé PPSK par VLAN** (pas un SSID par VLAN)                 |
-| Inter-VLAN          | **Routage + pare-feu** (politique par défaut : refus), pas de NAT                    |
-| Configuration       | Routeur et UniFi pilotés par script depuis le Mac, switch configuré à la main guidée |
-| Contrainte majeure  | **Aucune IP du cluster ne change** : le VLAN 1 reste le LAN actuel                   |
-| Numérotation        | **Les VLAN 2 (guest) et 3 (home) existants sont conservés**, le reste s'y ajoute     |
-| Accès des automates | Clé SSH dédiée (`~/.ssh/id_ed25519_openwrt`), compte local UniFi `claude-automation` |
+| Élément             | Choix                                                                                      |
+| ------------------- | ------------------------------------------------------------------------------------------ |
+| Routeur             | Ubiquiti EdgeRouter X sous OpenWRT (DSA `bridge-vlan`), accès SSH par clé                  |
+| Switch              | D-Link DGS-1100-16V2 (web-smart, sans CLI, **non PoE**, non flashable sous OpenWRT)        |
+| Bornes Wi-Fi        | UniFi U6-LR et U6-Lite, contrôleur dans le cluster (`192.168.1.22`, v10.0.162)             |
+| Wi-Fi               | **Les 3 SSID existants sont gardés** (nom et clé), VLAN par SSID + exceptions par appareil |
+| Inter-VLAN          | **Routage + pare-feu** (politique par défaut : refus), pas de NAT                          |
+| Configuration       | Routeur et UniFi pilotés par script depuis le Mac, switch configuré à la main guidée       |
+| Contrainte majeure  | **Aucune IP du cluster ne change** : le VLAN 1 reste le LAN actuel                         |
+| Contrainte majeure  | **Aucun objet à réappairer** : ni SSID ni clé Wi-Fi ne changent pour les appareils         |
+| Numérotation        | **Les VLAN 2 (guest) et 3 (home) existants sont conservés**, le reste s'y ajoute           |
+| Accès des automates | Clé SSH dédiée (`~/.ssh/id_ed25519_openwrt`), compte local UniFi `claude-automation`       |
 
 > Les identifiants (mot de passe UniFi, clés SSH) ne vont jamais dans ce dépôt : trousseau
 > macOS en local, SOPS si un secret doit être versionné. `uci show network` affiche les
@@ -138,52 +139,66 @@ réservations.
 
 Notes :
 
-- Les ESPHome gardent leur dernier octet : changer `manual_ip` (IP, passerelle) dans
-  chaque fichier de `cluster/apps/esphome/devices/`, puis flasher en OTA **avant** de
-  basculer leur clé Wi-Fi, sinon l'appareil est injoignable.
+- Les ESPHome gardent leur dernier octet, mais **`manual_ip` est retiré** de chaque fichier
+  de `cluster/apps/esphome/devices/` au profit d'une réservation DHCP par VLAN (même MAC,
+  `1.4x` puis `6.4x`). Un seul flash OTA, fait pendant qu'ils sont encore dans le VLAN 1 :
+  au passage dans le VLAN 6, ils prennent seuls leur nouvelle IP.
+- Toutes les IP cibles fixes sont des réservations DHCP sur le routeur : rien n'est saisi
+  sur les appareils. Seules les intégrations qui visent une IP (Home Assistant, Scrypted,
+  go2rtc) sont mises à jour.
+- Absents pendant l'audit (SSID à constater à la migration) : la tondeuse, le véhicule,
+  l'imprimante.
 - Appareils ignorés : quatre modules Espressif hors ESPHome (`1.31`, `.33`, `.34`, `.36`).
 - À nettoyer : la réservation DHCP `artillery-3d-printer` (`1.65`, jamais vue) et les
   anciens clients du contrôleur UniFi.
 
-## Wi-Fi : un SSID, une clé par VLAN (PPSK)
+## Wi-Fi : SSID existants, VLAN par SSID et par appareil
 
-SSID unique en WPA2 Personal (le WPA3 casse certains ESP8266 et objets IoT), 2,4 GHz et
-5 GHz. Une passphrase par groupe d'appareils, chacune rattachée à un VLAN dans le
-contrôleur UniFi :
+Réappairer les objets (objets cloud, robots, électroménager…) est exclu : un objet ne
+se reconfigure que si son SSID ou sa clé change. Les **trois SSID actuels sont donc gardés
+tels quels** (nom, clé, WPA2) ; seul le VLAN derrière change. Le contrôleur permet :
 
-| Clé        | VLAN |
-| ---------- | ---- |
-| guest      | 2    |
-| home       | 3    |
-| multimedia | 4    |
-| security   | 5    |
-| iot        | 6    |
-| car        | 7    |
+1. un **VLAN par défaut par SSID** (`networkconf_id` du SSID) ;
+2. une **exception par appareil** (« Virtual Network Override », champ `network_id` du
+   client) : cet appareil, sur ce SSID, va dans tel VLAN. La borne le reconnecte, il reçoit
+   une IP du nouveau sous-réseau, sans rien voir d'autre.
 
-Désactiver l'adresse Wi-Fi privée (MAC aléatoire) sur les appareils Apple avec une
-réservation DHCP. La disponibilité du PPSK dépend de la version du contrôleur (v10.0.162) :
-à vérifier au moment de l'implémentation. Les trois SSID actuels restent en place pendant
-la migration.
+| SSID      | VLAN par défaut (cible) | Exceptions par appareil                                           |
+| --------- | ----------------------- | ----------------------------------------------------------------- |
+| IoT       | 6 (iot)                 | aucune (tous les appareils vus à l'audit sont de l'IoT)           |
+| Principal | 3 (home)                | Google / Chromecast → 4, caméras → 5, OctoPrint → 6, véhicule → 7 |
+| Invités   | 2 (guest, inchangé)     | un objet cloud → 6                                                |
+
+Les appareils Apple restent dans le VLAN par défaut du SSID principal : **l'adresse Wi-Fi
+privée peut rester active**. Les exceptions ne visent que des objets non Apple, dont la
+MAC est fixe.
+
+Un SSID peut être ajouté plus tard pour regrouper autrement, sans toucher aux existants.
+
+> À tester avant toute migration de groupe : l'exception par appareil est posée par la
+> borne, avec une passerelle non UniFi (OpenWRT). Valider sur **un seul appareil** (un
+> Google Home Mini en VLAN 4) dès que les VLAN existent sur le routeur.
 
 ## Règles inter-VLAN
 
 Politique par défaut : refus entre VLAN. Le retour des flux est géré par le suivi d'état.
 
-| Source → destination             | Autorisé                                                                  |
-| -------------------------------- | ------------------------------------------------------------------------- |
-| VLAN 3, 4, 5, 6 → `192.168.1.23` | DNS AdGuard (53 TCP/UDP)                                                  |
-| VLAN 3 → `192.168.1.25`          | Traefik (443)                                                             |
-| VLAN 4 → `192.168.1.34`          | Music Assistant : 8097 (stream), 8095 (web)                               |
-| `192.168.1.100`–`.105` → VLAN 4  | Music Assistant vers les enceintes (tous ports)                           |
-| VLAN 6 → `192.168.1.21`, `.38`   | Mosquitto (1883, version sécurisée)                                       |
-| VLAN 6 → `192.168.1.32`          | API Home Assistant (8123)                                                 |
-| VLAN 1 → VLAN 6                  | Home Assistant vers ESPHome (6053), aspirateurs, objets cloud, OctoPrint  |
-| `192.168.1.30`, `.37` → VLAN 5   | Scrypted et go2rtc vers les caméras (RTSP)                                |
-| VLAN 3 → VLAN 1, 4, 6            | Tout, sauf le management du routeur (SSH et LuCI depuis VLAN 3 seulement) |
-| VLAN 7 → `192.168.1.33`          | Navidrome, si le Raspberry du véhicule s'en sert                          |
-| VLAN 2 → Internet                | Uniquement, via le VPN (inchangé)                                         |
-| VLAN 5, 6, 7 → Internet          | Refusé par défaut, à autoriser appareil par appareil                      |
-| VPN `wg0` → VLAN 3 à 7           | À décider (aujourd'hui `vpn → lan` seulement)                             |
+| Source → destination             | Autorisé                                                                       |
+| -------------------------------- | ------------------------------------------------------------------------------ |
+| VLAN 3, 4, 5, 6 → `192.168.1.23` | DNS AdGuard (53 TCP/UDP)                                                       |
+| VLAN 3 → `192.168.1.25`          | Traefik (443)                                                                  |
+| VLAN 4 → `192.168.1.34`          | Music Assistant : 8097 (stream), 8095 (web)                                    |
+| `192.168.1.100`–`.105` → VLAN 4  | Music Assistant vers les enceintes (tous ports)                                |
+| VLAN 6 → `192.168.1.21`, `.38`   | Mosquitto (1883, version sécurisée)                                            |
+| VLAN 6 → `192.168.1.32`          | API Home Assistant (8123)                                                      |
+| VLAN 1 → VLAN 6                  | Home Assistant vers ESPHome (6053), aspirateurs, objets cloud, OctoPrint       |
+| `192.168.1.30`, `.37` → VLAN 5   | Scrypted et go2rtc vers les caméras (RTSP)                                     |
+| VLAN 3 → VLAN 1, 4, 6            | Tout, sauf le management du routeur (SSH et LuCI depuis VLAN 3 seulement)      |
+| VLAN 7 → `192.168.1.33`          | Navidrome, si le Raspberry du véhicule s'en sert                               |
+| VLAN 2 → Internet                | Uniquement, via le VPN (inchangé)                                              |
+| VLAN 6 → Internet                | Autorisé au départ (objets cloud), à restreindre ensuite appareil par appareil |
+| VLAN 5, 7 → Internet             | Refusé par défaut, à autoriser appareil par appareil                           |
+| VPN `wg0` → VLAN 3 à 7           | À décider (aujourd'hui `vpn → lan` seulement)                                  |
 
 L'Apple TV (concentrateur HomeKit) est dans le VLAN 3 : la règle « VLAN 3 → VLAN 1, 4, 6 »
 lui donne déjà accès à Homebridge (`192.168.1.31`) et à Home Assistant (`192.168.1.32`).
@@ -244,15 +259,29 @@ Paquets à prévoir : `avahi-daemon` (reflector mDNS).
 
 1. ~~**Audit en lecture seule**~~ : fait le 2026-11-15 (voir « État constaté » et
    « Inventaire »).
-2. **Plan définitif** : adressage, règles, clés PPSK validés.
-3. **Configuration versionnée** : fichiers OpenWRT, configuration UniFi, checklist du
-   switch.
-4. **Migration par étapes** : routeur (sans effet sur l'existant), switch, bornes, puis
-   appareils par groupe (Servers et Multimedia d'abord, pour Music Assistant).
+2. **Plan définitif** : adressage, matrice de pare-feu, liste des exceptions par appareil,
+   objets ayant besoin d'Internet, accès WireGuard.
+3. **Configuration versionnée** : script OpenWRT (avec retour automatique), script UniFi
+   (réseaux, VLAN des SSID, exceptions), checklist du switch, ESPHome sans `manual_ip`,
+   Music Assistant en `hostNetwork`. Rien n'est appliqué à ce stade.
+4. **Migration par étapes**, chacune validée avant la suivante :
+   1. routeur : port de secours `eth2` ;
+   2. routeur : VLAN 4 à 7, zones, DHCP, réservations, zone du VLAN 3 (sans effet, aucun
+      client) ;
+   3. switch : VLAN 4 à 7 tagués sur le trunk et les bornes, enregistrés après contrôle ;
+   4. UniFi : réseaux VLAN 4 à 7 (les SSID restent en VLAN 1 par défaut) ;
+   5. test de l'exception sur un seul appareil ;
+   6. appareils déplacés **un par un** par exception, groupe par groupe (multimedia avec
+      Music Assistant, puis home, iot, security avec le NVR filaire, car). Retour arrière :
+      supprimer l'exception ;
+   7. quand un SSID est vide de VLAN 1, basculer son VLAN par défaut et retirer les
+      exceptions devenues inutiles.
 5. **Vérifications après chaque étape** : ping, DNS, MQTT, lecture Music Assistant, flux
-   caméras, accès web, Internet des invités via le VPN, accès WireGuard.
-6. Mettre à jour `doc/network.puml` (numérotation des VLAN, VLAN 7, suppression de
-   `pi-gateway`).
+   caméras, accès web, objets cloud en ligne, Internet des invités via le VPN, accès
+   WireGuard.
+6. **Nettoyage** : pool DHCP du VLAN 1 resserré à `.150`–`.250`, bornes en `.4` / `.5`,
+   réservation obsolète supprimée, `doc/network.puml` mis à jour (numérotation des VLAN,
+   VLAN 7, suppression de `pi-gateway`).
 
 Garde-fous : accès physique (câble) au routeur et au switch pendant les opérations,
 confirmation avant tout changement pouvant couper le réseau, migration à un moment où la

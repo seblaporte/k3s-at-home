@@ -23,11 +23,6 @@ wifi:
   # Refuse WPA/TKIP: never downgrade below WPA2
   min_auth_mode: WPA2
 
-  manual_ip:
-    static_ip: 192.168.1.50
-    gateway: 192.168.1.1
-    subnet: 255.255.255.0
-
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "Detecteur-Presence-Bureau"

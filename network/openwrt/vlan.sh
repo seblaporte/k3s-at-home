@@ -48,6 +48,10 @@ generate() {
 # Envoie le script de l'étape et guard.sh dans /tmp/vlan (RAM du routeur)
 upload() {
   local step="$1"
+  # Un guard.sh encore actif (application précédente, retour arrière en cours) :
+  # ne pas effacer son répertoire sous ses pieds
+  r "[ -f $W/guard.pid ] && kill -0 \$(cat $W/guard.pid) 2>/dev/null" \
+    && die "une application précédente est encore en cours sur le routeur (ssh $ROUTER cat $W/guard.log) : attendre sa fin"
   r "rm -rf $W && mkdir -p $W && chmod 700 $W"
   generate "$step" | r "cat > $W/step.sh"
   r "cat > $W/guard.sh" < "$HERE/guard.sh"
@@ -68,7 +72,8 @@ show_changes() {
        [ -e \"\$f\" ] || continue
        dest=/\$(echo \"\$f\" | sed 's#__#/#g')
        echo \"--- \$dest\"
-       if [ -e \"\$dest\" ]; then diff -u \"\$dest\" \"\$f\" || true; else echo '(nouveau fichier)'; cat \"\$f\"; fi
+       if [ -e \"\$dest\" ] && cmp -s \"\$dest\" \"\$f\"; then echo '(inchangé)'
+       else [ -e \"\$dest\" ] && echo '(remplacé par :)' || echo '(nouveau fichier)'; cat \"\$f\"; fi
      done; true"
 }
 
@@ -101,23 +106,29 @@ cmd_plan() {
 
 cmd_apply() {
   local step="$1"
+  # Confirmation au clavier obligatoire (pas de « ! » dans Claude Code, pas de tube)
+  [ -t 0 ] || die "apply est interactif : le lancer dans un vrai terminal"
   require_clean_uci
   cmd_backup
   upload "$step"
   r "mkdir -p $W/rollback/config && cp -p /etc/config/* $W/rollback/config/ && sh $W/step.sh snapshot"
   r "sh $W/step.sh stage" || { revert_all; r "rm -rf $W"; die "échec de la préparation, annulée"; }
+  # Toute sortie avant le lancement de guard.sh annule les modifications préparées
+  trap 'revert_all; r "rm -rf $W"; echo "interrompu : modifications annulées, rien appliqué" >&2' EXIT
   echo "=== Étape « $step » : modifications à appliquer"
   show_changes
   echo
-  read -r -p "Appliquer (retour automatique après ${CONFIRM_TIMEOUT}s sans confirmation) ? [o/N] " ok
+  local ok=""
+  read -r -p "Appliquer (retour automatique après ${CONFIRM_TIMEOUT}s sans confirmation) ? [o/N] " ok || true
   if [ "$ok" != o ]; then
-    revert_all
-    r "rm -rf $W"
-    echo "annulé, rien n'a été appliqué"
+    echo "annulé"
     exit 1
   fi
 
-  r "start-stop-daemon -S -b -x /bin/sh -- $W/guard.sh $CONFIRM_TIMEOUT"
+  # -p : sans fichier de PID, BusyBox refuse dès qu'un /bin/sh tourne déjà
+  r "start-stop-daemon -S -b -m -p $W/guard.pid -x /bin/sh -- $W/guard.sh $CONFIRM_TIMEOUT"
+  # guard.sh lancé : c'est lui qui commit, ou restaure
+  trap - EXIT
   echo "application en cours…"
   local state="" i
   for i in $(seq 1 30); do
@@ -135,7 +146,8 @@ sinon câble sur le port de secours, ou restauration de la sauvegarde ci-dessus.
   echo "=== Appliqué. Contrôles depuis le Mac :"
   checks || true
   echo
-  read -r -p "Tout fonctionne ? Confirmer (o) ou revenir en arrière (n) [o/N] " ok
+  ok=""
+  read -r -p "Tout fonctionne ? Confirmer (o) ou revenir en arrière (n) [o/N] " ok || true
   if [ "$ok" = o ]; then
     r "touch $W/confirmed"
     sleep 2
@@ -149,7 +161,7 @@ sinon câble sur le port de secours, ou restauration de la sauvegarde ci-dessus.
 checks() {
   local ok=1
   ping -c1 -t2 192.168.1.1 >/dev/null && echo "  ok  ping routeur" || { echo "  KO  ping routeur"; ok=0; }
-  ping -c1 -t2 192.168.1.23 >/dev/null && echo "  ok  ping AdGuard" || { echo "  KO  ping AdGuard"; ok=0; }
+  # Pas de ping vers AdGuard : une IP MetalLB ne répond pas à l'ICMP
   dig +short +time=2 +tries=1 @192.168.1.23 one.one.one.one | grep -q . \
     && echo "  ok  DNS AdGuard" || { echo "  KO  DNS AdGuard"; ok=0; }
   dig +short +time=2 +tries=1 @192.168.1.1 one.one.one.one | grep -q . \

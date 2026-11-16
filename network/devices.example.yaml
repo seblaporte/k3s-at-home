@@ -1,0 +1,150 @@
+---
+# Modèle de network/devices.sops.yaml (adresses MAC fictives).
+#
+#   cp network/devices.example.yaml network/devices.sops.yaml
+#   # remplacer les MAC (baux DHCP du routeur, clients du contrôleur UniFi), puis :
+#   sops -e -i network/devices.sops.yaml
+#
+# Tout ce qui est sous "data" est chiffré (.sops.yaml). Noms neutres uniquement : ils
+# deviennent des noms DNS (dnsmasq) et des commentaires FreeRADIUS.
+#
+# Champs :
+#   name    nom DNS neutre, unique ([a-z0-9-])
+#   mac     adresse MAC, minuscules, séparateur ":"
+#   vlan    VLAN cible
+#   ip      réservation DHCP dans le VLAN cible (absent : DHCP dynamique)
+#   ip_lan  réservation transitoire dans le VLAN 1, tant que l'appareil y est encore
+#           (ESPHome sans manual_ip)
+#   radius  true : FreeRADIUS impose le VLAN cible à la connexion Wi-Fi (appareil
+#           déplacé). false : pas encore déplacé, ou VLAN par défaut du SSID, ou filaire
+#   wired   true : appareil filaire, déplacé par le port du switch (jamais radius)
+data:
+  devices:
+    # VLAN 3 home
+    - name: apple-tv
+      mac: "02:00:00:00:03:10"
+      vlan: 3
+      ip: 192.168.3.10
+      radius: false
+
+    # VLAN 4 multimedia
+    - name: nest-audio-1
+      mac: "02:00:00:00:04:10"
+      vlan: 4
+      ip: 192.168.4.10
+      radius: false
+    - name: nest-audio-2
+      mac: "02:00:00:00:04:11"
+      vlan: 4
+      ip: 192.168.4.11
+      radius: false
+    - name: home-mini-1
+      mac: "02:00:00:00:04:12"
+      vlan: 4
+      ip: 192.168.4.12
+      radius: false
+    - name: home-mini-2
+      mac: "02:00:00:00:04:13"
+      vlan: 4
+      ip: 192.168.4.13
+      radius: false
+    - name: chromecast-audio
+      mac: "02:00:00:00:04:14"
+      vlan: 4
+      ip: 192.168.4.14
+      radius: false
+    - name: chromecast-tv
+      mac: "02:00:00:00:04:15"
+      vlan: 4
+      ip: 192.168.4.15
+      radius: false
+    - name: nest-hub
+      mac: "02:00:00:00:04:16"
+      vlan: 4
+      ip: 192.168.4.16
+      radius: false
+
+    # VLAN 5 security
+    - name: nvr
+      mac: "02:00:00:00:05:10"
+      vlan: 5
+      ip: 192.168.5.10
+      wired: true
+    - name: camera-1
+      mac: "02:00:00:00:05:20"
+      vlan: 5
+      ip: 192.168.5.20
+      radius: false
+    - name: camera-2
+      mac: "02:00:00:00:05:21"
+      vlan: 5
+      ip: 192.168.5.21
+      radius: false
+
+    # VLAN 6 iot : ESPHome (même dernier octet, réservation VLAN 1 le temps du flash)
+    - name: esp-dinos
+      mac: "02:00:00:00:06:40"
+      vlan: 6
+      ip: 192.168.6.40
+      ip_lan: 192.168.1.40
+      radius: false
+    - name: esp-ventilateur-cluster
+      mac: "02:00:00:00:06:42"
+      vlan: 6
+      ip: 192.168.6.42
+      ip_lan: 192.168.1.42
+      radius: false
+    # … une entrée par appareil ESPHome (.43, .44, .46 à .50)
+    - name: shelly
+      mac: "02:00:00:00:06:45"
+      vlan: 6
+      ip: 192.168.6.45
+      ip_lan: 192.168.1.45
+      radius: false
+    - name: tuya-cloud
+      mac: "02:00:00:00:06:60"
+      vlan: 6
+      ip: 192.168.6.60
+      radius: false
+    - name: aspirateur-1
+      mac: "02:00:00:00:06:61"
+      vlan: 6
+      ip: 192.168.6.61
+      radius: false
+    - name: octoprint
+      mac: "02:00:00:00:06:64"
+      vlan: 6
+      ip: 192.168.6.64
+      radius: false
+    - name: imprimante
+      mac: "02:00:00:00:06:65"
+      vlan: 6
+      ip: 192.168.6.65
+      radius: false
+    - name: passerelle-domotique
+      mac: "02:00:00:00:06:66"
+      vlan: 6
+      ip: 192.168.6.66
+      wired: true
+    # Objet cloud du SSID invités, sans réservation (DHCP dynamique du VLAN 6)
+    - name: objet-cloud-invites
+      mac: "02:00:00:00:06:99"
+      vlan: 6
+      radius: false
+
+    # VLAN 7 car
+    - name: vehicule
+      mac: "02:00:00:00:07:10"
+      vlan: 7
+      ip: 192.168.7.10
+      radius: false
+    - name: pi-musique-vehicule
+      mac: "02:00:00:00:07:11"
+      vlan: 7
+      ip: 192.168.7.11
+      radius: false
+    - name: airport-express
+      mac: "02:00:00:00:07:12"
+      vlan: 7
+      ip: 192.168.7.12
+      radius: false

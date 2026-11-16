@@ -1,0 +1,50 @@
+---
+version: "3"
+
+# Migration VLAN du routeur OpenWRT (network/README.md). STEP=<étape>, voir task network:steps
+
+vars:
+  VLAN: "{{.PROJECT_DIR}}/network/openwrt/vlan.sh"
+
+tasks:
+  steps:
+    desc: Liste des étapes du routeur
+    cmds:
+      - "{{.VLAN}} steps"
+    silent: true
+
+  plan:
+    desc: Modifications prévues pour STEP=…, sans rien appliquer
+    requires:
+      vars: [STEP]
+    cmds:
+      - "{{.VLAN}} plan {{.STEP}}"
+    silent: true
+
+  apply:
+    desc: Applique STEP=… (sauvegarde, confirmation, retour automatique)
+    interactive: true
+    requires:
+      vars: [STEP]
+    cmds:
+      - "{{.VLAN}} apply {{.STEP}}"
+    silent: true
+
+  dhcp:
+    desc: Réapplique les réservations DHCP de devices.sops.yaml
+    interactive: true
+    cmds:
+      - "{{.VLAN}} apply dhcp"
+    silent: true
+
+  status:
+    desc: État des sections vlan_*, de FreeRADIUS et d'Avahi sur le routeur
+    cmds:
+      - "{{.VLAN}} status"
+    silent: true
+
+  backup:
+    desc: Sauvegarde sysupgrade -b du routeur vers ~/Backups/openwrt
+    cmds:
+      - "{{.VLAN}} backup"
+    silent: true

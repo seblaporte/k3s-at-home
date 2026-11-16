@@ -1,0 +1,35 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: radius-probe
+  namespace: networking
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: radius
+      rules:
+        - alert: RadiusDown
+          expr: >-
+            time() - kube_cronjob_status_last_successful_time{namespace="networking", cronjob="radius-probe"} > 900
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "FreeRADIUS du routeur injoignable"
+            description: >-
+              La sonde radius-probe n'a pas reçu d'Access-Accept depuis plus de 15 minutes.
+              Les appareils des SSID en « RADIUS MAC Authentication » ne peuvent plus se
+              connecter. Secours : désactiver la MAC Auth sur le SSID dans UniFi
+              (network/unifi/unifi.py mac-auth <SSID> off --apply).
+        - alert: RadiusProbeNoData
+          expr: absent(kube_cronjob_status_last_successful_time{namespace="networking", cronjob="radius-probe"})
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Sonde RADIUS sans donnée"
+            description: >-
+              Aucune exécution réussie de radius-probe n'est connue : CronJob absent,
+              jamais réussi, ou kube-state-metrics indisponible.

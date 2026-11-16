@@ -1,0 +1,64 @@
+---
+# Sonde FreeRADIUS du routeur (migration VLAN, doc/vlan-migration.md).
+# Envoie une requête MAC Auth comme les bornes UniFi, pour une MAC de documentation
+# (RFC 7042) : FreeRADIUS doit répondre Access-Accept (règle DEFAULT). Un échec signifie
+# que les appareils ne peuvent plus se connecter aux SSID en « RADIUS MAC Authentication ».
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: radius-probe
+  namespace: networking
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 60
+      ttlSecondsAfterFinished: 3600
+      template:
+        spec:
+          restartPolicy: Never
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: node-role.kubernetes.io/master
+                        operator: NotIn
+                        values:
+                          - "true"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            runAsGroup: 65534
+          containers:
+            - name: radclient
+              image: freeradius/freeradius-server:3.2.8-alpine
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: RADIUS_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: radius-probe
+                      key: RADIUS_SECRET
+              command:
+                - sh
+                - -c
+                - >-
+                  echo 'User-Name = "00:00:5e:00:53:01", User-Password = "00:00:5e:00:53:01"'
+                  | /opt/bin/radclient -r 3 -t 3 192.168.1.1:1812 auth "$RADIUS_SECRET"
+                  | grep -q Access-Accept
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 16Mi
+                limits:
+                  memory: 64Mi

@@ -198,7 +198,8 @@ Risques et parades :
 
 - Une fois activé sur un SSID, **FreeRADIUS devient nécessaire pour s'y connecter**. Il
   tourne sur le routeur (si le routeur tombe, le réseau tombe de toute façon) et procd le
-  relance. À ajouter : une sonde de supervision sur le port 1812. Secours : désactiver
+  relance. Sonde de supervision : CronJob `radius-probe` (requête MAC Auth toutes les
+  5 minutes) et alerte `RadiusDown`. Secours : désactiver
   « RADIUS MAC Authentication » sur le SSID dans UniFi, tout redevient comme avant.
 - Ce n'est pas une mesure de sécurité : la clé WPA2 reste la seule barrière, une MAC se
   falsifie (mais seulement par quelqu'un qui connaît déjà la clé).
@@ -294,8 +295,23 @@ sous-réseau, son DHCP et sa zone de pare-feu. Configuration à versionner dans 
 - zone `guest` : passer l'accès au routeur (`input`) de « accepter » à « refuser », avec
   des règles DHCP et DNS (le transfert vers le VPN des invités ne change pas).
 
-Paquets : `avahi-daemon` (reflector mDNS) à installer ; FreeRADIUS déjà installé (voir
-« Mise en œuvre RADIUS »).
+Paquets : `avahi-nodbus-daemon` (reflector mDNS, sans D-Bus) à installer ; FreeRADIUS
+déjà installé (voir « Mise en œuvre RADIUS »).
+
+Précisions apportées en phase 3 (`network/plan.yaml`) :
+
+- les zones des VLAN 4 et 6 acceptent aussi le mDNS (UDP 5353) vers le routeur, sans
+  quoi Avahi ne reçoit rien de ces VLAN ;
+- le DNS AdGuard est ouvert aux VLAN 4 à 7 ; le VLAN 3 l'a déjà par son accès complet
+  au VLAN 1 ;
+- le VLAN 3 passe au pool `.150`–`.250` et distribue AdGuard puis `192.168.3.1` ;
+- `uci` : sections créées nommées `vlan_*` (réservations, zones, règles), interfaces
+  `multimedia`, `security`, `iot`, `car` ;
+- l'adresse du NVR est une variable Flux (`NVR_ADDR` dans `cluster-settings.yaml`) :
+  go2rtc bascule sur `192.168.5.10` en changeant cette seule valeur ;
+- le fichier `authorize` de FreeRADIUS laissé par le test renvoie le VLAN 2 pour toute
+  MAC (`DEFAULT … Tunnel-Private-Group-Id = "2"`) : il est remplacé à l'étape 4.5 par la
+  liste générée, dont la règle `DEFAULT` ne fixe aucun VLAN.
 
 ## Méthode de migration
 
@@ -303,10 +319,14 @@ Paquets : `avahi-daemon` (reflector mDNS) à installer ; FreeRADIUS déjà insta
    « Inventaire »).
 2. ~~**Plan définitif**~~ : fait le 2026-11-15 (adressage, matrice de pare-feu, exceptions
    par appareil, accès Internet, accès WireGuard).
-3. **Configuration versionnée** : script OpenWRT (avec retour automatique, FreeRADIUS et
-   sa liste MAC → VLAN depuis SOPS), script UniFi (réseaux, VLAN des SSID, profil RADIUS,
-   MAC Auth), checklist du switch, ESPHome sans `manual_ip`, liste des intégrations à
-   mettre à jour, sonde du port RADIUS. Rien n'est appliqué à ce stade.
+3. ~~**Configuration versionnée**~~ : préparée le 2026-11-16 dans `network/` (voir
+   `network/README.md`, qui donne la commande de chaque étape de la phase 4) : script
+   OpenWRT avec retour automatique (`network/openwrt/`), liste MAC → VLAN et
+   réservations dans `network/devices.sops.yaml` (à créer depuis le modèle), script
+   UniFi (`network/unifi/unifi.py`), checklist du switch, ESPHome sans `manual_ip`,
+   intégrations à mettre à jour (`network/integrations.md`), sonde du port RADIUS
+   (`cluster/apps/networking/radius-probe/`, branchée à l'étape 4.5). Rien n'est
+   appliqué à ce stade.
 4. **Migration par étapes**, chacune validée avant la suivante :
    1. routeur : port de secours `eth2` ;
    2. routeur : VLAN 4 à 7, zones, DHCP, réservations, zone du VLAN 3 (sans effet, aucun

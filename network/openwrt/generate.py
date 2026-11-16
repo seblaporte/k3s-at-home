@@ -207,8 +207,10 @@ def reservations(s, devices):
     s.stage.append("drop_vlan_sections dhcp")
     for d in devices:
         if d.get("ip"):
+            # Sans dns=1 : le nom n'est publié qu'avec un bail réel, pas avant que
+            # l'appareil ait rejoint son VLAN
             s.section("dhcp", f"vlan_h_{sec(d['name'])}", "host",
-                      name=d["name"], mac=d["mac"], ip=d["ip"], dns="1")
+                      name=d["name"], mac=d["mac"], ip=d["ip"])
         if d.get("ip_lan"):
             # Même MAC, autre sous-réseau : dnsmasq retient la réservation du VLAN où
             # l'appareil se trouve. Pas de nom, il est porté par la réservation cible.

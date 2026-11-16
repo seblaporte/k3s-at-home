@@ -51,6 +51,10 @@ Routeur :
 - Redirections WAN Traefik 80/443 présentes mais désactivées (tunnel Cloudflare).
 - Flash : environ 200 Mo libres. `avahi-daemon` non installé.
 
+Switch (export du 2026-11-16) : les 16 ports sont en trunk, VLAN 1 natif, VLAN 2 à
+4094 autorisés tagués ; VLAN déclarés : 1, 2 (Guest), 3 (Home). SNMP désactivé, interface
+web en HTTP.
+
 UniFi : trois SSID WPA2 (deux sur le LAN dont un pour l'IoT, un invités sur le VLAN 2),
 aucune clé PPSK. Réseaux déclarés : Default, Guest (VLAN 2), Home (VLAN 3).
 
@@ -327,7 +331,12 @@ Précisions apportées en phase 3 (`network/plan.yaml`) :
    intégrations à mettre à jour (`network/integrations.md`), sonde du port RADIUS
    (`cluster/apps/networking/radius-probe/`, branchée à l'étape 4.5). Rien n'est
    appliqué à ce stade.
-4. **Migration par étapes**, chacune validée avant la suivante :
+4. **Migration par étapes**, chacune validée avant la suivante. Avancement du
+   2026-11-16 : 4.1 à 4.5 faites (plus NVR et Shelly passés en DHCP, ESPHome reflashés
+   sans `manual_ip`, toujours en VLAN 1) ; 4.6 commencée : `home-mini-1` en VLAN 4
+   (`192.168.4.12`, Cast vu depuis le VLAN 1), **lecture Music Assistant à tester**
+   avant de déplacer les autres appareils multimédia. Sonde RADIUS : à brancher à la
+   fusion dans `main` (créer `radius-probe/secret.sops.yaml`).
    1. routeur : port de secours `eth2` ;
    2. routeur : VLAN 4 à 7, zones, DHCP, réservations, zone du VLAN 3 (sans effet, aucun
       client) ;

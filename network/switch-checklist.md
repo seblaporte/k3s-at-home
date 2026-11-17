@@ -64,7 +64,7 @@ port en mode **access** sur le nouveau VLAN.
 
 - [ ] Groupe security : port du NVR (9) → VLAN 5. Débrancher et rebrancher le câble
       (ou redémarrer le NVR) pour qu'il renouvelle son bail : `192.168.5.10`.
-- [ ] Groupe iot : ports 5 (imprimante, `192.168.6.65`), 6 (passerelle domotique,
+- [x] Groupe iot (2026-11-17) : ports 5 (imprimante, `192.168.6.65`), 6 (passerelle domotique,
       `192.168.6.66`) et 10 (Shelly, `192.168.6.45`) → VLAN 6. Vérifier avant que la
       table MAC ne montre qu'une adresse sur le port : un switch non administrable
       derrière (comme celui du cluster) passerait tout entier dans le nouveau VLAN.

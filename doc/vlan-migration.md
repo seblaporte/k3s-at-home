@@ -358,8 +358,11 @@ Précisions apportées en phase 3 (`network/plan.yaml`) :
    `6.40`–`.50`, objet cloud, aspirateurs, OctoPrint et autres objets en `6.60`–`.68`
    (`dreame_vacuum` et `tuya_local` reconfigurés, intégration `octoprint` supprimée en
    attendant la réinstallation du Pi), objet domotique en `6.67` (MQTT vers `1.21` validé),
-   robot de cuisine du SSID invités en DHCP dynamique du VLAN 6. Reste en iot : Shelly,
-   passerelle domotique et imprimante (filaires, port du switch). Procédure et
+   robot de cuisine du SSID invités en DHCP dynamique du VLAN 6, puis filaires par les
+   ports du switch (`doc/network-cabling.md`) : Shelly (port 10, `6.45`), Tydom (port 6,
+   `6.66`), imprimante (port 5, `6.65`). Groupe **iot terminé**. Prochain groupe :
+   security (NVR port 9, caméras par RADIUS), puis car (bloqué, voir « Questions
+   ouvertes »). Procédure et
    pièges : `network/README.md`. Sonde RADIUS : à brancher à la fusion dans `main`
    (créer `radius-probe/secret.sops.yaml`).
    1. routeur : port de secours `eth2` ;

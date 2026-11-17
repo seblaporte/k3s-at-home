@@ -98,9 +98,12 @@ Appareil filaire : port du switch (`switch-checklist.md`), pas de RADIUS.
   service (DNS, HTTP), pas l'ICMP.
 - Modifier un SSID dans UniFi recharge les bornes : coupure Wi-Fi de quelques secondes
   sur tous les SSID ; certains ESP8266 mettent ~2 minutes à revenir.
-- Après un déplacement, un appareil Cast peut prendre un suffixe `-1` dans son nom mDNS
-  (conflit avec son ancien nom en cache, à cause du relais Avahi) : sans conséquence
-  pour Music Assistant, qui identifie par UUID.
+- Après un déplacement, un appareil annoncé en mDNS peut changer de nom (conflit avec
+  son ancien nom en cache, à cause du relais Avahi) : suffixe `-1` pour un appareil Cast,
+  sans conséquence pour Music Assistant qui identifie par UUID ; suffixe tiré de la MAC
+  pour l'imprimante Epson, dont la file AirPrint des Mac pointe sur l'ancien nom :
+  supprimer l'imprimante et la rajouter sous son nouveau nom (si l'interface échoue :
+  `lpadmin -p <nom> -E -v ipps://<hôte>.local:631/ipp/print -m everywhere`).
 - `apply radius` ne déplace rien tout seul : un appareil garde son VLAN tant qu'il n'est
   pas reconnecté (`unifi.py kick <MAC>`, un par appareil).
 - Après un déplacement, Home Assistant et Music Assistant visent l'ancienne IP

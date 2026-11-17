@@ -4,6 +4,9 @@ Configuration versionnée de la migration décrite dans `doc/vlan-migration.md` 
 document d'abord). Rien ici n'est appliqué par Flux : routeur et UniFi sont pilotés à
 la main depuis le Mac, étape par étape.
 
+Schémas du réseau (câblage, VLAN, affectation Wi-Fi, DNS, matrice du pare-feu) :
+[`architecture.md`](architecture.md).
+
 | Fichier                                 | Rôle                                                               |
 | --------------------------------------- | ------------------------------------------------------------------ |
 | `plan.yaml`                             | VLAN, zones, transferts et règles de pare-feu (non sensible)       |

@@ -142,6 +142,11 @@ réservations.
 
 Notes :
 
+- Un appareil n'a une entrée dans `network/devices.sops.yaml` que s'il lui faut une IP
+  fixe (réservation DHCP) ou un autre VLAN que celui de son SSID (exception RADIUS, même
+  en DHCP dynamique : objet cloud du SSID invités). Les autres suivent le VLAN par
+  défaut de leur SSID à l'étape 4.7, en DHCP, sans entrée (console de jeux, objets du
+  SSID IoT…).
 - Les ESPHome gardent leur dernier octet, mais **`manual_ip` est retiré** de chaque fichier
   de `cluster/apps/esphome/devices/` au profit d'une réservation DHCP par VLAN (même MAC,
   `1.4x` puis `6.4x`). Un seul flash OTA, fait pendant qu'ils sont encore dans le VLAN 1 :
@@ -333,12 +338,20 @@ Précisions apportées en phase 3 (`network/plan.yaml`) :
    appliqué à ce stade.
 4. **Migration par étapes**, chacune validée avant la suivante. Avancement du
    2026-11-16 : 4.1 à 4.5 faites (plus NVR et Shelly passés en DHCP, ESPHome reflashés
-   sans `manual_ip`, toujours en VLAN 1) ; 4.6 commencée : `home-mini-1` en VLAN 4
-   (`192.168.4.12`, Cast vu depuis le VLAN 1), **lecture Music Assistant à tester**
-   avant de déplacer les autres appareils multimédia (Music Assistant a marqué
-   « Google Home salon+ » indisponible juste après le déplacement : vérifier si c'est
-   ce Home Mini). Procédure et pièges : `network/README.md`. Sonde RADIUS : à brancher à la
-   fusion dans `main` (créer `radius-probe/secret.sops.yaml`).
+   sans `manual_ip`, toujours en VLAN 1) ; 4.6 commencée. Avancement du 2026-11-17 :
+   groupe **multimedia terminé**, les 7 appareils en VLAN 4 (`192.168.4.10`–`.16`), Cast
+   joignable depuis Music Assistant et Home Assistant (reconnexion en ~2 minutes,
+   le temps de l'annonce mDNS), lecture testée (Home Mini, groupe Cast) ; groupe
+   **home** : Apple TV en `192.168.3.10` (seule entrée du groupe : PC, Mac et appareils
+   Apple sur MAC privée suivront à l'étape 7 avec le VLAN par défaut du SSID ; adresse
+   mise à jour seule dans Home Assistant) ; groupe **iot** commencé : 9 ESPHome en
+   `6.40`–`.50`, objet cloud, aspirateurs, OctoPrint et autres objets en `6.60`–`.68`
+   (`dreame_vacuum` et `tuya_local` reconfigurés, intégration `octoprint` supprimée en
+   attendant la réinstallation du Pi), objet domotique en `6.67` (MQTT vers `1.21` validé),
+   robot de cuisine du SSID invités en DHCP dynamique du VLAN 6. Reste en iot : Shelly,
+   passerelle domotique et imprimante (filaires, port du switch). Procédure et
+   pièges : `network/README.md`. Sonde RADIUS : à brancher à la fusion dans `main`
+   (créer `radius-probe/secret.sops.yaml`).
    1. routeur : port de secours `eth2` ;
    2. routeur : VLAN 4 à 7, zones, DHCP, réservations, zone du VLAN 3 (sans effet, aucun
       client) ;

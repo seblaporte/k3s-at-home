@@ -101,6 +101,14 @@ Appareil filaire : port du switch (`switch-checklist.md`), pas de RADIUS.
 - Après un déplacement, un appareil Cast peut prendre un suffixe `-1` dans son nom mDNS
   (conflit avec son ancien nom en cache, à cause du relais Avahi) : sans conséquence
   pour Music Assistant, qui identifie par UUID.
+- `apply radius` ne déplace rien tout seul : un appareil garde son VLAN tant qu'il n'est
+  pas reconnecté (`unifi.py kick <MAC>`, un par appareil).
+- Après un déplacement, Home Assistant et Music Assistant visent l'ancienne IP
+  (`Failed to connect` de `pychromecast`) pendant ~2 minutes, jusqu'à l'annonce mDNS.
+- ESPHome : après un `kick`, Home Assistant ne voit la nouvelle IP qu'au redémarrage de
+  l'ESP (`reboot_timeout` de `api:`, 15 min par défaut, 5 min pour les lecteurs de
+  cartes). Plus rapide : bouton « Redémarrer » de l'appareil dans Home Assistant au
+  lieu du `kick` (il se reconnecte via RADIUS et s'annonce au démarrage).
 - Les journaux de Home Assistant et de Music Assistant sont en UTC (heure locale − 1).
 - Sans `task` (`brew install go-task`) : `network/openwrt/vlan.sh <commande> <étape>`,
   et `DEVICE=… IP=… cluster/apps/esphome/scripts/esphome.sh run` pour ESPHome.

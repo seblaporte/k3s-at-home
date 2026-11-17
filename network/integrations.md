@@ -11,21 +11,21 @@ VLAN 1. Vérifier quand même que l'entité revient en ligne.
 
 ## Home Assistant
 
-| Groupe     | Intégration        | Appareil                      | IP actuelle     | IP cible     | Mise à jour                     |
-| ---------- | ------------------ | ----------------------------- | --------------- | ------------ | ------------------------------- |
-| multimedia | `androidtv_remote` | Chromecast Google TV          | `1.154`         | `4.15`       | auto (zeroconf), sinon recréer  |
-| multimedia | `cast`             | Nest, Home Mini, Chromecast   | découverte      | VLAN 4       | auto (mDNS)                     |
-| multimedia | `music_assistant`  | Music Assistant               | `1.34`, `1.105` | inchangée    | aucune ; doublon `1.105` à voir |
-| home       | `apple_tv`         | Apple TV                      | découverte      | `3.10`       | auto (mDNS)                     |
-| security   | `hikvision`        | NVR                           | `1.3`           | `5.10`       | reconfigurer l'hôte             |
-| security   | `hikvision_next`   | NVR                           | `1.3`           | `5.10`       | reconfigurer l'URL              |
-| iot        | `esphome` (×9)     | appareils ESPHome             | `1.40`–`.50`    | `6.40`–`.50` | auto (zeroconf)                 |
-| iot        | `shelly`           | Shelly Pro 1                  | `1.45`          | `6.45`       | auto (zeroconf), sinon recréer  |
-| iot        | `tuya_local`       | objet Tuya local              | `1.180`         | `6.68`       | reconfigurer l'hôte             |
-| iot        | `dreame_vacuum`    | aspirateur                    | `1.239`         | `6.61`–`.63` | reconfigurer l'hôte             |
-| iot        | `octoprint`        | OctoPrint                     | `1.214`         | `6.64`       | reconfigurer l'hôte             |
-| iot        | `ipp`              | imprimante Epson              | `1.193`         | `6.65`       | auto (zeroconf), sinon recréer  |
-| nettoyage  | `ipp`              | ancienne imprimante (absente) | `1.254`         | —            | supprimer l'intégration         |
+| Groupe     | Intégration        | Appareil                      | IP actuelle     | IP cible     | Mise à jour                                                                     |
+| ---------- | ------------------ | ----------------------------- | --------------- | ------------ | ------------------------------------------------------------------------------- |
+| multimedia | `androidtv_remote` | Chromecast Google TV          | `1.154`         | `4.15`       | auto (zeroconf), sinon recréer                                                  |
+| multimedia | `cast`             | Nest, Home Mini, Chromecast   | découverte      | VLAN 4       | auto (mDNS)                                                                     |
+| multimedia | `music_assistant`  | Music Assistant               | `1.34`, `1.105` | inchangée    | aucune ; doublon `1.105` à voir                                                 |
+| home       | `apple_tv`         | Apple TV                      | découverte      | `3.10`       | auto (mDNS)                                                                     |
+| security   | `hikvision`        | NVR                           | `1.3`           | `5.10`       | reconfigurer l'hôte                                                             |
+| security   | `hikvision_next`   | NVR                           | `1.3`           | `5.10`       | reconfigurer l'URL                                                              |
+| iot        | `esphome` (×9)     | appareils ESPHome             | `1.40`–`.50`    | `6.40`–`.50` | auto (zeroconf)                                                                 |
+| iot        | `shelly`           | Shelly Pro 1                  | `1.45`          | `6.45`       | auto (zeroconf), sinon recréer                                                  |
+| iot        | `tuya_local`       | objet Tuya local              | `1.180`         | `6.68`       | « Configurer » : hôte (fait)                                                    |
+| iot        | `dreame_vacuum`    | aspirateur                    | `1.239`         | `6.63`       | réajouter l'intégration, compte Mi : hôte mis à jour, « déjà configuré » (fait) |
+| iot        | `octoprint`        | OctoPrint                     | `1.214`         | `6.64`       | supprimée (Pi à réinstaller), recréer ensuite                                   |
+| iot        | `ipp`              | imprimante Epson              | `1.193`         | `6.65`       | auto (zeroconf), sinon recréer                                                  |
+| nettoyage  | `ipp`              | ancienne imprimante (absente) | `1.254`         | —            | supprimer l'intégration                                                         |
 
 Sans adresse IP (cloud ou découverte) : `roborock`, `google_assistant`, `homekit`,
 `homekit_controller` (Scrypted, dans le VLAN 1).

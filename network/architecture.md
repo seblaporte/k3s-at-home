@@ -297,6 +297,26 @@ Conséquences :
 - Le VPN WireGuard a les droits de `home`, sauf vers `home` lui-même. Il garde ses alias
   (DNAT `10.50.1.x` vers le NAS, le DNS du routeur et Traefik).
 
+### Pare-feu du NAS (DSM)
+
+Le NAS a son propre pare-feu (DSM, **Panneau de configuration → Sécurité → Pare-feu**),
+qui refuse par défaut ce qui ne vient pas d'un sous-réseau autorisé. Un transfert du
+routeur vers le VLAN 1 ne suffit donc pas : **tout sous-réseau qui doit joindre le NAS
+(SMB, DSM…) doit aussi être autorisé dans DSM**, par une règle placée au-dessus de la
+règle de refus. Symptôme sinon : le routeur transmet les SYN, le NAS ne répond jamais (il
+ne répond pas non plus au ping).
+
+| Source            | Règle DSM                                                   |
+| ----------------- | ----------------------------------------------------------- |
+| `192.168.1.0/24`  | autorisé (cluster, Mac mini, Traefik)                       |
+| `192.168.3.0/24`  | autorisé le 2026-11-17 (SMB et DSM coupés depuis le VLAN 3) |
+| `192.168.10.0/24` | VPN WireGuard : à vérifier si le NAS est utilisé à distance |
+
+Pour atteindre DSM quand une règle manque : tunnel SSH par un nœud k3s (VLAN 1),
+`ssh -N -L 15001:192.168.1.10:5001 k3s-node-1` puis `https://localhost:15001`, ou câble
+sur le port de secours `eth2` du routeur. Le tunnel arrive avec l'IP du nœud : modifier les
+règles sans retirer le VLAN 1.
+
 ### Accès au routeur lui-même (`input`)
 
 | Zone            | Politique | Autorisé                                        |

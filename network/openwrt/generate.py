@@ -300,7 +300,7 @@ def vlans(s, plan, devices):
                   family="ipv4", target="ACCEPT")
     for r in plan["rules"]:
         s.section("firewall", f"vlan_fw_{sec(r['name'])}", "rule",
-                  name=f"VLAN {r['name']}", src=r["src"], dest="lan",
+                  name=f"VLAN {r['name']}", src=r["src"], dest=r.get("dest", "lan"),
                   dest_ip=expand(r["dest_ip"], plan), proto=[r["proto"]],
                   dest_port=" ".join(str(p) for p in r["ports"]),
                   family="ipv4", target="ACCEPT")

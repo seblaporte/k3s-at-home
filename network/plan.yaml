@@ -70,8 +70,8 @@ forwardings:
   - [iot, wan]
   - [car, wan]
 
-# Règles ciblées vers le VLAN 1 (le DNS AdGuard est ajouté pour chaque VLAN sans accès
-# complet au VLAN 1). "k3s_nodes" est remplacé par la liste ci-dessus.
+# Règles ciblées, vers le VLAN 1 sauf « dest » contraire (le DNS AdGuard est ajouté pour
+# chaque VLAN sans accès complet au VLAN 1). "k3s_nodes" est remplacé par la liste ci-dessus.
 rules:
   - name: multimedia-music-assistant-nodes
     src: multimedia
@@ -103,3 +103,9 @@ rules:
     dest_ip: [192.168.1.33]
     proto: tcp
     ports: [4533]
+  - name: home-nvr
+    src: home
+    dest: security
+    dest_ip: [192.168.5.10]
+    proto: tcp
+    ports: [80, 443]

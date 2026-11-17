@@ -242,7 +242,7 @@ flowchart LR
 Zones de confiance (bleu) : `lan`, `home`, `vpn`. Zones restreintes (vert) : Internet
 plus quelques services du VLAN 1. Zones isolées (rouge) : Internet seulement.
 
-### Règles ciblées vers le VLAN 1
+### Règles ciblées
 
 ```mermaid
 flowchart LR
@@ -263,6 +263,12 @@ flowchart LR
     iot -- "TCP 1883, 8883" --> mqtt
     iot -- "TCP 80, 8123" --> ha
     car -- "TCP 4533" --> nd
+
+    home["3 · home"]
+    subgraph sec["VLAN 5 · security"]
+        nvr["NVR .10"]
+    end
+    home -- "TCP 80, 443" --> nvr
 ```
 
 | Règle (`plan.yaml`)                | Source     | Destination            | Ports TCP  | Usage                                   |
@@ -273,6 +279,7 @@ flowchart LR
 | `iot-mqtt`                         | iot        | `1.21`, `1.38`         | 1883, 8883 | Mosquitto (ESPHome, objets domotiques…) |
 | `iot-home-assistant`               | iot        | `1.32`, `1.100`–`.105` | 80, 8123   | Objets qui poussent vers Home Assistant |
 | `car-navidrome`                    | car        | `1.33`                 | 4533       | Musique du véhicule                     |
+| `home-nvr`                         | home       | `5.10`                 | 80, 443    | Interface web du NVR                    |
 
 ### Matrice des flux
 
@@ -281,7 +288,7 @@ Lecture : ligne = source, colonne = destination. ✅ tout, 🔸 règles ciblées
 | Source ↓ / Dest. → | lan | home | guest | multimedia | security | iot | car | Internet           |
 | ------------------ | --- | ---- | ----- | ---------- | -------- | --- | --- | ------------------ |
 | **lan (1)**        | —   | ✅   | ❌    | ✅         | ✅       | ✅  | ✅  | ✅                 |
-| **home (3)**       | ✅  | —    | ❌    | ✅         | ❌       | ✅  | ❌  | ✅                 |
+| **home (3)**       | ✅  | —    | ❌    | ✅         | 🔸       | ✅  | ❌  | ✅                 |
 | **vpn (wg0)**      | ✅  | ❌   | ❌    | ✅         | ❌       | ✅  | ❌  | ✅                 |
 | **guest (2)**      | ❌  | ❌   | —     | ❌         | ❌       | ❌  | ❌  | via VPN commercial |
 | **multimedia (4)** | 🔸  | ❌   | ❌    | —          | ❌       | ❌  | ❌  | ✅                 |
@@ -291,8 +298,9 @@ Lecture : ligne = source, colonne = destination. ✅ tout, 🔸 règles ciblées
 
 Conséquences :
 
-- Le VLAN 5 n'est joignable que depuis le VLAN 1 (Frigate sur le Mac mini, go2rtc) : ni
-  `home` ni le VPN n'atteignent le NVR ; son accès distant passe par le cloud du fabricant.
+- Le VLAN 5 n'est joignable en entier que depuis le VLAN 1 (Frigate sur le Mac mini,
+  go2rtc). `home` n'atteint que l'interface web du NVR (80, 443) ; le VPN ne l'atteint
+  pas, son accès distant passe par le cloud du fabricant.
 - `home` pilote les objets (`iot`, `multimedia`) directement ; l'inverse est refusé.
 - Le VPN WireGuard a les droits de `home`, sauf vers `home` lui-même. Il garde ses alias
   (DNAT `10.50.1.x` vers le NAS, le DNS du routeur et Traefik).

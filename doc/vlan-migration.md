@@ -243,7 +243,8 @@ Flux entre zones :
 | Source → destination            | Autorisé                                                                 |
 | ------------------------------- | ------------------------------------------------------------------------ |
 | VLAN 1 → VLAN 3, 4, 5, 6, 7     | Tout (zone serveur de confiance : cluster, Mac mini avec Frigate)        |
-| VLAN 3 → VLAN 1, 4, 6           | Tout (pas d'accès au VLAN 5)                                             |
+| VLAN 3 → VLAN 1, 4, 6           | Tout (pas d'accès complet au VLAN 5)                                     |
+| VLAN 3 → `5.10`                 | Interface web du NVR (80, 443 TCP) ; RTSP et SDK restent fermés          |
 | VPN `wg0` → VLAN 1, 4, 6        | Mêmes droits que le VLAN 3 ; alias NAS, DNS, Traefik conservés           |
 | VLAN 3 → `1.23`                 | DNS AdGuard (53 TCP/UDP), par son accès complet au VLAN 1                |
 | VLAN 4 → `1.100`–`.105`         | Music Assistant en `hostNetwork` : 8095, 8097                            |
@@ -269,6 +270,7 @@ garde `8.8.8.8` (via le VPN).
 À mettre à jour avec le NVR (`192.168.5.10`) : les flux RTSP de go2rtc et de Frigate. La
 redirection « VPN alias NVR » (`10.50.1.3`) est **supprimée** : 0 paquet en 100 jours,
 l'accès à distance passe par le cloud du fabricant, et le VPN n'a pas accès au VLAN 5.
+Depuis le VLAN 3, seule l'interface web du NVR est ouverte (règle `home-nvr`, 2026-11-17).
 
 ## Switch DGS-1100-16V2
 

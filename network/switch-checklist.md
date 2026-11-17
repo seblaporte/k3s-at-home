@@ -62,8 +62,8 @@ VLAN 1, puis **PVID** = nouveau VLAN (dans cet ordre, sinon l'interface refuse u
 dont le port n'est pas membre non tagué). Avec ce firmware (ports en trunk) : passer le
 port en mode **access** sur le nouveau VLAN.
 
-- [ ] Groupe security : port du NVR (9) → VLAN 5. Débrancher et rebrancher le câble
-      (ou redémarrer le NVR) pour qu'il renouvelle son bail : `192.168.5.10`.
+- [x] Groupe security (2026-11-17) : port du NVR (9) → VLAN 5. **Redémarrer le NVR**
+      (débrancher le câble ne suffit pas) pour qu'il renouvelle son bail : `192.168.5.10`.
 - [x] Groupe iot (2026-11-17) : ports 5 (imprimante, `192.168.6.65`), 6 (passerelle domotique,
       `192.168.6.66`) et 10 (Shelly, `192.168.6.45`) → VLAN 6. Vérifier avant que la
       table MAC ne montre qu'une adresse sur le port : un switch non administrable

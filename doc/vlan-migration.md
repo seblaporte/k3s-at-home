@@ -43,7 +43,8 @@ Routeur :
 - VLAN 3 `home` (`192.168.3.0/24`) : interface et DHCP, **aucune zone de pare-feu**, aucun
   client.
 - WireGuard `wg0` (`192.168.10.0/24`) : zone `vpn` vers `lan` et `wan`, alias
-  `10.50.1.x` → NAS, routeur, NVR (`192.168.1.3`) et Traefik. `pbr` « LAN via WAN » ne
+  `10.50.1.x` → NAS, routeur et Traefik (l'alias du NVR n'existe plus, constaté le
+  2026-11-17). `pbr` « LAN via WAN » ne
   concerne que `192.168.1.0/24`. Indépendant des VLAN 2 et 3.
 - DHCP du VLAN 1 : pool `.100` à `.249` (`start=100`, `limit=150`), qui chevauche les
   réservations des nœuds k3s. DNS distribués : AdGuard `192.168.1.23` puis `8.8.8.8`.
@@ -74,15 +75,15 @@ existent déjà et gardent leur numéro (le VPN des invités dépend de
 `192.168.2.0/24`). Les équipements réseau (switch, bornes) restent dans le VLAN 1, avec le
 contrôleur UniFi, ce qui évite l'adoption L3.
 
-| VLAN | Nom        | Sous-réseau    | Contenu                                                   |
-| ---- | ---------- | -------------- | --------------------------------------------------------- |
-| 1    | server     | 192.168.1.0/24 | Cluster, NAS, Mac mini serveur, switch, bornes, MetalLB   |
-| 2    | guest      | 192.168.2.0/24 | Invités de passage (Internet via VPN, existant)           |
-| 3    | home       | 192.168.3.0/24 | Mac, iPhone, iPad, Apple Watch, PC, Apple TV (existant)   |
-| 4    | multimedia | 192.168.4.0/24 | Nest, Nest Hub, Chromecast                                |
-| 5    | security   | 192.168.5.0/24 | NVR (`.10`), caméras                                      |
-| 6    | iot        | 192.168.6.0/24 | ESPHome, aspirateurs, OctoPrint, imprimante, objets cloud |
-| 7    | car        | 192.168.7.0/24 | Véhicule et ses accessoires (Raspberry, AirPort Express)  |
+| VLAN | Nom        | Sous-réseau    | Contenu                                                       |
+| ---- | ---------- | -------------- | ------------------------------------------------------------- |
+| 1    | server     | 192.168.1.0/24 | Cluster, NAS, Mac mini serveur, switch, bornes, MetalLB       |
+| 2    | guest      | 192.168.2.0/24 | Invités de passage (Internet via VPN, existant)               |
+| 3    | home       | 192.168.3.0/24 | Mac, iPhone, iPad, Apple Watch, PC, Apple TV (existant)       |
+| 4    | multimedia | 192.168.4.0/24 | Nest, Nest Hub, Chromecast                                    |
+| 5    | security   | 192.168.5.0/24 | NVR (`.10`) : équipements de sécurité locaux, sans cloud      |
+| 6    | iot        | 192.168.6.0/24 | ESPHome, aspirateurs, imprimante, caméras cloud, objets cloud |
+| 7    | car        | 192.168.7.0/24 | Véhicule et ses accessoires (Raspberry, AirPort Express)      |
 
 Convention commune : `.1` passerelle, `.2` à `.149` adresses fixes ou réservations DHCP,
 `.150` à `.250` pool DHCP dynamique.
@@ -123,8 +124,8 @@ réservations.
 | Chromecast Audio                            | 4    | `1.245`                 | `4.14`         |
 | Chromecast Google TV, Nest Hub              | 4    | `1.154`, `1.238`        | `4.15`, `4.16` |
 | NVR                                         | 5    | `1.3`                   | `5.10`         |
-| Caméra                                      | 5    | `1.109`                 | `5.20`         |
-| Caméra                                      | 5    | `1.113`                 | `5.21`         |
+| Caméra (cloud)                              | 6    | `1.109`                 | DHCP           |
+| Caméra (cloud)                              | 6    | `1.113`                 | DHCP           |
 | ESPHome (×9, `cluster/apps/esphome`)        | 6    | `1.40`–`.50`            | `6.40`–`.50`   |
 | Objet cloud (module Tuya)                   | 6    | `1.209`                 | `6.60`         |
 | Shelly                                      | 6    | `1.45`                  | `6.45`         |
@@ -365,9 +366,13 @@ Précisions apportées en phase 3 (`network/plan.yaml`) :
    attendant la réinstallation du Pi), objet domotique en `6.67` (MQTT vers `1.21` validé),
    robot de cuisine du SSID invités en DHCP dynamique du VLAN 6, puis filaires par les
    ports du switch (`doc/network-cabling.md`) : Shelly (port 10, `6.45`), Tydom (port 6,
-   `6.66`), imprimante (port 5, `6.65`). Groupe **iot terminé**. Prochain groupe :
-   security (NVR port 9, caméras par RADIUS), puis car (bloqué, voir « Questions
-   ouvertes »). Procédure et
+   `6.66`), imprimante (port 5, `6.65`). Groupe **iot terminé**. Groupe **security** : NVR en `5.10` (port 9,
+   redémarré pour prendre son bail ; `NVR_ADDR` sur `main` par #1078, go2rtc
+   redémarré ; intégrations Hikvision de Home Assistant supprimées, inutilisées). Les
+   caméras cloud sont passées du VLAN 5 au VLAN 6 en DHCP : le
+   VLAN 5 ne contient plus que le NVR, isolé des objets cloud. **Étape 7 faite** :
+   SSID IoT en VLAN 6 et SSID principal en VLAN 3 par défaut (entrées RADIUS gardées).
+   Reste : car (bloqué, voir « Questions ouvertes »), puis nettoyage (phase 6). Procédure et
    pièges : `network/README.md`. Sonde RADIUS : à brancher à la fusion dans `main`
    (créer `radius-probe/secret.sops.yaml`).
    1. routeur : port de secours `eth2` ;

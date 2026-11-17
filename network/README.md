@@ -107,6 +107,17 @@ Appareil filaire : port du switch (`switch-checklist.md`), pas de RADIUS.
   pour l'imprimante Epson, dont la file AirPrint des Mac pointe sur l'ancien nom :
   supprimer l'imprimante et la rajouter sous son nouveau nom (si l'interface échoue :
   `lpadmin -p <nom> -E -v ipps://<hôte>.local:631/ipp/print -m everywhere`).
+- Le NVR ne renouvelle pas son bail DHCP quand son port change de VLAN (même port
+  désactivé puis réactivé) : il garde l'ancienne IP, injoignable. Le redémarrer
+  (alimentation) après le changement de port.
+- Interface du switch « Reach max login number! » : trop de sessions web ouvertes.
+  Toujours se déconnecter (Logout) ; sinon attendre l'expiration des sessions.
+- Changer le VLAN par défaut d'un SSID (`ssid-vlan`) recharge les bornes : certains
+  objets se réassocient sans refaire de DHCP et restent muets (caméras cloud).
+  `kick`, sinon redémarrage de l'objet ; un objet en mode économie d'énergie peut
+  mettre plus de 20 minutes à revenir.
+- Le champ VLAN d'un client dans UniFi n'est pas fiable (VLAN du SSID affiché même
+  quand RADIUS en a donné un autre) : se fier au bail DHCP sur le routeur.
 - `apply radius` ne déplace rien tout seul : un appareil garde son VLAN tant qu'il n'est
   pas reconnecté (`unifi.py kick <MAC>`, un par appareil).
 - Après un déplacement, Home Assistant et Music Assistant visent l'ancienne IP

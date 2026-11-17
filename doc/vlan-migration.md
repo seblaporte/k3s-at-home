@@ -272,16 +272,26 @@ Le routeur envoie déjà les VLAN 1, 2 et 3 tagués sur `eth1` : vérifier dans 
 configuration du switch le mode VLAN actuel (« 802.1Q » attendu) et l'appartenance du
 port 1. Pour chaque port : appartenance au VLAN (untagged / tagged / non membre) et PVID.
 
-| Port      | Rôle                                      | Non tagué (PVID) | Tagués           |
-| --------- | ----------------------------------------- | ---------------- | ---------------- |
-| 1         | Trunk vers le routeur                     | à constater      | 1 à 7            |
-| 2, 3      | Bornes U6-LR / U6-Lite (injecteurs PoE)   | 1                | 2, 3, 4, 5, 6, 7 |
-| 4 à 8     | Raspberry du cluster                      | 1                | aucun            |
-| 9         | NAS Synology                              | 1                | aucun            |
-| 10        | NVR                                       | 5                | aucun            |
-| 11        | Raspberry du véhicule (si filaire)        | 7                | aucun            |
-| à repérer | Passerelle domotique, Shelly (si filaire) | 6                | aucun            |
-| 12 à 16   | Mac mini (VLAN 1), libres / à décider     | à choisir        | aucun            |
+Câblage relevé le 2026-11-17 (table MAC du switch, croisée avec les baux et UniFi) :
+
+| Port    | Branché                                                                                                                                   | VLAN cible            |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| 1       | Routeur (`eth1`), trunk                                                                                                                   | 1 natif, 2 à 7 tagués |
+| 2       | Borne U6-LR                                                                                                                               | 1 natif, 2 à 7 tagués |
+| 3       | Switch non administrable : NAS, nœuds `1.100`–`.103`, AirPort Express du véhicule et ses clients Wi-Fi (véhicule, clôture de la tondeuse) | 1 (ne pas changer)    |
+| 4       | Borne U6-Lite                                                                                                                             | 1 natif, 2 à 7 tagués |
+| 5       | Imprimante Epson                                                                                                                          | 6                     |
+| 6       | Passerelle domotique (Tydom)                                                                                                              | 6                     |
+| 7       | Nœud `1.105`                                                                                                                              | 1                     |
+| 8       | Mac mini                                                                                                                                  | 1                     |
+| 9       | NVR                                                                                                                                       | 5                     |
+| 10      | Shelly Pro 1                                                                                                                              | 6                     |
+| 11      | Nœud `1.104`                                                                                                                              | 1                     |
+| 12 à 16 | Rien vu                                                                                                                                   | —                     |
+
+Le groupe car ne peut pas être déplacé en l'état : l'AirPort Express diffuse son propre
+Wi-Fi (le véhicule et la clôture de la tondeuse n'apparaissent pas dans UniFi) et partage
+le port 3 avec le NAS et le cluster. Voir « Questions ouvertes ».
 
 À adapter au câblage réel. Le switch n'a pas d'API : configuration à la main guidée, en
 n'**enregistrant la configuration qu'après validation** (un redémarrage annule alors une
@@ -377,6 +387,11 @@ confirmation avant tout changement pouvant couper le réseau, migration à un mo
 maison n'utilise pas le réseau.
 
 ## Questions ouvertes
+
+- Groupe car : l'AirPort Express (port 3, derrière le switch du cluster) sert de point
+  d'accès au véhicule et à la clôture de la tondeuse. Lui donner son propre port du
+  switch en VLAN 7 (ses clients Wi-Fi suivent), ou faire passer ces appareils sur UniFi
+  (RADIUS) ? La tondeuse va-t-elle en VLAN 6 (iot) plutôt que 7 ?
 
 - Que fait exactement le Raspberry du véhicule (Bluetooth, Wi-Fi, serveur de musique) ?
 - Le Shelly et la passerelle domotique sont-ils filaires (port du switch à repérer) ?

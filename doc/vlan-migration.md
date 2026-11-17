@@ -234,7 +234,7 @@ Accès au routeur (zone → routeur) :
 | ---------------------------------------------- | --------- | -------------------------------------------- |
 | lan (1), home (3)                              | accepter  | Tout, dont l'administration (SSH, LuCI)      |
 | guest (2)                                      | refuser   | DHCP, DNS (aujourd'hui « accepter » : fermé) |
-| multimedia (4), security (5), iot (6), car (7) | refuser   | DHCP, DNS (secours), ICMP                    |
+| multimedia (4), security (5), iot (6), car (7) | refuser   | DHCP, DNS, ICMP                              |
 | vpn (`wg0`)                                    | accepter  | Inchangé                                     |
 
 Flux entre zones :
@@ -244,7 +244,7 @@ Flux entre zones :
 | VLAN 1 → VLAN 3, 4, 5, 6, 7     | Tout (zone serveur de confiance : cluster, Mac mini avec Frigate)        |
 | VLAN 3 → VLAN 1, 4, 6           | Tout (pas d'accès au VLAN 5)                                             |
 | VPN `wg0` → VLAN 1, 4, 6        | Mêmes droits que le VLAN 3 ; alias NAS, DNS, Traefik conservés           |
-| VLAN 3, 4, 5, 6, 7 → `1.23`     | DNS AdGuard (53 TCP/UDP)                                                 |
+| VLAN 3 → `1.23`                 | DNS AdGuard (53 TCP/UDP), par son accès complet au VLAN 1                |
 | VLAN 4 → `1.100`–`.105`         | Music Assistant en `hostNetwork` : 8095, 8097                            |
 | VLAN 4 → `1.34`, `1.29`         | Music Assistant (8095, 8097), Jellyfin (8096) pour le cast               |
 | VLAN 6 → `1.21`, `1.38`         | Mosquitto (1883, 8883)                                                   |
@@ -259,8 +259,11 @@ Assistant, iPhone), HomeKit (Apple TV, Home Assistant), imprimante. Avahi relaie
 toutes les interfaces listées, pas couple par couple : la découverte est visible entre ces
 quatre VLAN, le pare-feu filtre le trafic. Pas de relais pour les VLAN 2, 5 et 7.
 
-AdGuard est un point de défaillance : les baux DHCP des nouveaux VLAN donnent AdGuard puis
-le routeur du VLAN. Le VLAN 2 garde `8.8.8.8` (via le VPN).
+DNS : seul le VLAN 3 (home) est filtré par AdGuard ; ses baux donnent AdGuard puis le
+routeur du VLAN (AdGuard est un point de défaillance). Les VLAN 1 et 4 à 7 reçoivent le
+seul routeur du VLAN (dnsmasq, résolveurs du FAI, sans filtrage) : les objets cloud
+ne cassent pas sur un domaine bloqué ; les VLAN 4 à 7 n'ont plus accès à AdGuard. Le VLAN 2
+garde `8.8.8.8` (via le VPN).
 
 À mettre à jour avec le NVR (`192.168.5.10`) : les flux RTSP de go2rtc et de Frigate. La
 redirection « VPN alias NVR » (`10.50.1.3`) est **supprimée** : 0 paquet en 100 jours,
@@ -321,8 +324,10 @@ Précisions apportées en phase 3 (`network/plan.yaml`) :
 
 - les zones des VLAN 4 et 6 acceptent aussi le mDNS (UDP 5353) vers le routeur, sans
   quoi Avahi ne reçoit rien de ces VLAN ;
-- le DNS AdGuard est ouvert aux VLAN 4 à 7 ; le VLAN 3 l'a déjà par son accès complet
-  au VLAN 1 ;
+- le DNS AdGuard n'est distribué qu'au VLAN 3 (`adguard: true`), qui y accède par son
+  accès complet au VLAN 1 ; les VLAN 1 et 4 à 7 utilisent le DNS du routeur, décision du
+  2026-11-17 après un objet cloud qui ne téléchargeait plus son contenu en VLAN 6 (VLAN 1 :
+  `6,192.168.1.1` à la place de `6,192.168.1.23,8.8.8.8`, options PXE conservées) ;
 - le VLAN 3 passe au pool `.150`–`.250` et distribue AdGuard puis `192.168.3.1` ;
 - `uci` : sections créées nommées `vlan_*` (réservations, zones, règles), interfaces
   `multimedia`, `security`, `iot`, `car` ;

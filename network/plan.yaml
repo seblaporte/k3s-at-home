@@ -3,7 +3,9 @@
 # Aucune donnée personnelle ici : les adresses MAC sont dans devices.sops.yaml.
 # Lu par openwrt/generate.py, qui en tire les commandes uci de chaque étape.
 
-# DNS AdGuard, distribué en premier par le DHCP des nouveaux VLAN
+# DNS AdGuard, distribué en premier par le DHCP des seuls VLAN marqués « adguard: true ».
+# Les autres VLAN, VLAN 1 compris, reçoivent le routeur du VLAN (dnsmasq, résolveurs
+# du FAI, sans filtrage).
 adguard: 192.168.1.23
 
 # Nœuds k3s : IP source des services en hostNetwork (Home Assistant, Music Assistant…)
@@ -27,6 +29,7 @@ vlans:
     name: home
     existing: true
     input: ACCEPT
+    adguard: true
   - id: 4
     name: multimedia
     input: REJECT

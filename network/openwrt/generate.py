@@ -232,13 +232,23 @@ def vlans(s, plan, devices):
                   proto="static", device=f"br-lan.{vid}",
                   ipaddr=f"192.168.{vid}.1", netmask="255.255.255.0")
 
-    # --- dhcp : pool .150–.250, DNS AdGuard puis le routeur du VLAN
+    # --- dhcp : pool .150–.250 ; DNS AdGuard puis le routeur du VLAN pour les VLAN
+    # « adguard: true », le routeur seul (dnsmasq, sans filtrage) pour les autres
     for v in plan["vlans"]:
         vid, name = v["id"], v["name"]
         s.section("dhcp", name, "dhcp", interface=name, start="150", limit="101",
                   leasetime="12h")
         s.stage.append(f"uci -q delete dhcp.{name}.dhcp_option || true")
-        s.add_list(f"dhcp.{name}.dhcp_option", f"6,{adguard},192.168.{vid}.1")
+        dns = [adguard] if v.get("adguard") else []
+        s.add_list(f"dhcp.{name}.dhcp_option",
+                   ",".join(["6", *dns, f"192.168.{vid}.1"]))
+    # VLAN 1 existant : DNS du routeur seul, les autres options (PXE…) restent
+    s.stage.append(
+        'for O in $(uci -q get dhcp.lan.dhcp_option); do\n'
+        '  case "$O" in 6,*) uci del_list dhcp.lan.dhcp_option="$O" ;; esac\n'
+        "done"
+    )
+    s.add_list("dhcp.lan.dhcp_option", "6,192.168.1.1")
     reservations(s, devices)
 
     # --- firewall
@@ -279,10 +289,10 @@ def vlans(s, plan, devices):
         s.section("firewall", f"vlan_fwd_{sec(src)}_{sec(dest)}", "forwarding",
                   src=src, dest=dest)
 
-    # DNS AdGuard pour chaque VLAN sans accès complet au VLAN 1
+    # DNS AdGuard pour chaque VLAN « adguard: true » sans accès complet au VLAN 1
     full_lan = {src for src, dest in plan["forwardings"] if dest == "lan"}
     for v in plan["vlans"]:
-        if v["name"] in full_lan:
+        if not v.get("adguard") or v["name"] in full_lan:
             continue
         s.section("firewall", f"vlan_fw_{sec(v['name'])}_dns", "rule",
                   name=f"VLAN {v['name']} vers AdGuard", src=v["name"], dest="lan",

@@ -75,6 +75,36 @@ réapplique les seules réservations après une modification de `devices.sops.ya
 Retour arrière d'un appareil déplacé : `radius: false`, `apply radius`, `kick`.
 Secours si FreeRADIUS tombe : `unifi.py mac-auth "<SSID>" off --apply`.
 
+## Déplacer un appareil (étape 4.6)
+
+1. `sops network/devices.sops.yaml` : `radius: true` sur l'appareil (un ou quelques-uns
+   à la fois, groupe par groupe).
+2. `network/openwrt/vlan.sh plan radius` puis `apply radius` (terminal interactif).
+3. `network/unifi/unifi.py kick <MAC>` : l'appareil se reconnecte et passe par RADIUS.
+4. Contrôles : bail dans le nouveau sous-réseau (`ssh openwrt cat /tmp/dhcp.leases`),
+   VLAN vu par UniFi, fonction réelle (lecture, entité Home Assistant, flux caméra…),
+   intégrations à mettre à jour (`integrations.md`).
+
+Appareil filaire : port du switch (`switch-checklist.md`), pas de RADIUS.
+
+## Pièges rencontrés
+
+- `vlan.sh apply` demande deux confirmations au clavier : le lancer dans un vrai
+  terminal, pas avec le préfixe `!` de Claude Code (il refuse alors de démarrer).
+  `plan`, `status`, `show` et `unifi.py` fonctionnent avec `!`.
+- Une seule application à la fois : `vlan.sh` refuse de démarrer si un `guard.sh`
+  précédent tourne encore (`ssh openwrt cat /tmp/vlan/guard.log`).
+- Les IP MetalLB (AdGuard `.23`…) et le NAS ne répondent pas au ping : tester le
+  service (DNS, HTTP), pas l'ICMP.
+- Modifier un SSID dans UniFi recharge les bornes : coupure Wi-Fi de quelques secondes
+  sur tous les SSID ; certains ESP8266 mettent ~2 minutes à revenir.
+- Après un déplacement, un appareil Cast peut prendre un suffixe `-1` dans son nom mDNS
+  (conflit avec son ancien nom en cache, à cause du relais Avahi) : sans conséquence
+  pour Music Assistant, qui identifie par UUID.
+- Les journaux de Home Assistant et de Music Assistant sont en UTC (heure locale − 1).
+- Sans `task` (`brew install go-task`) : `network/openwrt/vlan.sh <commande> <étape>`,
+  et `DEVICE=… IP=… cluster/apps/esphome/scripts/esphome.sh run` pour ESPHome.
+
 ## Sonde RADIUS
 
 `cluster/apps/networking/radius-probe/` envoie toutes les 5 minutes une requête MAC

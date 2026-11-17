@@ -22,9 +22,9 @@ node "Patch Panel" {
   card "Salle à manger 3"
   card "Salon"
   card "Chambre parents"
-  card "Chambre Maïa"
-  card "Chambre Lisa"
-  card "Bureau Katleen"
+  card "Chambre 1"
+  card "Chambre 2"
+  card "Bureau"
   card "Chambre invités"
 
   sm1 -- PO1

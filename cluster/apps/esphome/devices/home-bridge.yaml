@@ -31,11 +31,6 @@ wifi:
   min_auth_mode: WPA2
   fast_connect: true
 
-  manual_ip:
-    static_ip: 192.168.1.47
-    gateway: 192.168.1.1
-    subnet: 255.255.255.0
-
   ap:
     ssid: "Home-Bridge Fallback Hotspot"
     password: !secret wifi_hotspot_fallback_password

@@ -1,0 +1,102 @@
+---
+# Plan réseau déclaratif (VLAN, zones, règles inter-VLAN) : voir doc/vlan-migration.md.
+# Aucune donnée personnelle ici : les adresses MAC sont dans devices.sops.yaml.
+# Lu par openwrt/generate.py, qui en tire les commandes uci de chaque étape.
+
+# DNS AdGuard, distribué en premier par le DHCP des nouveaux VLAN
+adguard: 192.168.1.23
+
+# Nœuds k3s : IP source des services en hostNetwork (Home Assistant, Music Assistant…)
+k3s_nodes:
+  - 192.168.1.100
+  - 192.168.1.101
+  - 192.168.1.102
+  - 192.168.1.103
+  - 192.168.1.104
+  - 192.168.1.105
+
+# Port du routeur en VLAN 1 non tagué (secours par câble)
+rescue_port: eth2
+trunk_port: eth1
+
+# VLAN créés par le script. Les VLAN 1 (lan) et 2 (guest) existent et ne sont pas
+# redéfinis ; le VLAN 3 (home) existe (interface, DHCP) : seuls son pool, ses DNS et
+# sa zone sont ajoutés.
+vlans:
+  - id: 3
+    name: home
+    existing: true
+    input: ACCEPT
+  - id: 4
+    name: multimedia
+    input: REJECT
+    mdns: true
+  - id: 5
+    name: security
+    input: REJECT
+  - id: 6
+    name: iot
+    input: REJECT
+    mdns: true
+  - id: 7
+    name: car
+    input: REJECT
+
+# Interfaces relayées par Avahi (VLAN 1, 3, 4, 6)
+mdns_interfaces:
+  - br-lan.1
+  - br-lan.3
+  - br-lan.4
+  - br-lan.6
+
+# Transferts complets entre zones (src → dest)
+forwardings:
+  - [lan, home]
+  - [lan, multimedia]
+  - [lan, security]
+  - [lan, iot]
+  - [lan, car]
+  - [home, lan]
+  - [home, multimedia]
+  - [home, iot]
+  - [home, wan]
+  - [vpn, multimedia]
+  - [vpn, iot]
+  - [multimedia, wan]
+  - [security, wan]
+  - [iot, wan]
+  - [car, wan]
+
+# Règles ciblées vers le VLAN 1 (le DNS AdGuard est ajouté pour chaque VLAN sans accès
+# complet au VLAN 1). "k3s_nodes" est remplacé par la liste ci-dessus.
+rules:
+  - name: multimedia-music-assistant-nodes
+    src: multimedia
+    dest_ip: [k3s_nodes]
+    proto: tcp
+    ports: [8095, 8097]
+  - name: multimedia-music-assistant
+    src: multimedia
+    dest_ip: [192.168.1.34]
+    proto: tcp
+    ports: [8095, 8097]
+  - name: multimedia-jellyfin
+    src: multimedia
+    dest_ip: [192.168.1.29]
+    proto: tcp
+    ports: [8096]
+  - name: iot-mqtt
+    src: iot
+    dest_ip: [192.168.1.21, 192.168.1.38]
+    proto: tcp
+    ports: [1883, 8883]
+  - name: iot-home-assistant
+    src: iot
+    dest_ip: [192.168.1.32, k3s_nodes]
+    proto: tcp
+    ports: [80, 8123]
+  - name: car-navidrome
+    src: car
+    dest_ip: [192.168.1.33]
+    proto: tcp
+    ports: [4533]

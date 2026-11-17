@@ -26,11 +26,6 @@ wifi:
   min_auth_mode: WPA2
   fast_connect: true
 
-  manual_ip:
-    static_ip: 192.168.1.43
-    gateway: 192.168.1.1
-    subnet: 255.255.255.0
-
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "Veilleuse-Etoile Fallback"

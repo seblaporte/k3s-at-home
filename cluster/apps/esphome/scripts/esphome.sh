@@ -46,7 +46,7 @@ need_ip() {
 secrets() {
   local tmp
   tmp=$(mktemp "$ROOT/secrets.yaml.XXXXXX")
-  # source : secret Bitwarden esphome-secrets-yaml, synchronisé par ESO dans le Secret esphome-secrets
+  # source : entrées Bitwarden esphome-<clé> / esphome-label-<clé>, assemblées par ESO dans le Secret esphome-secrets
   kubectl get secret esphome-secrets -n esphome -o jsonpath='{.data.secrets\.yaml}' | base64 -d > "$tmp"
   chmod 600 "$tmp" && mv "$tmp" "$ROOT/secrets.yaml"
   echo "secrets.yaml récupéré depuis le cluster (ignoré par Git)"

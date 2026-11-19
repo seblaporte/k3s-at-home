@@ -5,9 +5,9 @@ Configurations ESPHome de la maison, source de vérité du tableau de bord ESPHo
 
 - `devices/` : une configuration par appareil.
 - `components/` : composants ESPHome locaux.
-- `secret.sops.yaml` : le `secrets.yaml` d'ESPHome (Wi-Fi, clés API, mots de passe OTA, adresses
-  MAC) chiffré avec SOPS, mêmes clés PGP que le reste du dépôt. Les configurations ne contiennent
-  que des références `!secret <nom>`.
+- `external-secret.yaml` : le `secrets.yaml` d'ESPHome (Wi-Fi, clés API, mots de passe OTA,
+  adresses MAC) vient de Bitwarden Secrets Manager (secret `esphome-secrets-yaml`), synchronisé
+  par External Secrets. Les configurations ne contiennent que des références `!secret <nom>`.
 - `kustomization.yaml` : **généré** par `task esphome:kustomization` (kustomize ne sait pas lister
   un dossier). La CI vérifie qu'il est à jour.
 
@@ -25,7 +25,7 @@ Configurations ESPHome de la maison, source de vérité du tableau de bord ESPHo
 
 ```bash
 task --list | grep esphome
-task esphome:validate                  # tous les appareils ; DUMMY=1 sans clé PGP
+task esphome:validate                  # tous les appareils ; DUMMY=1 sans accès au cluster
 task esphome:compile DEVICE=veilleuse-etoile
 task esphome:run DEVICE=veilleuse-etoile IP=192.168.1.43   # compile + OTA
 task esphome:logs DEVICE=veilleuse-etoile IP=192.168.1.43
@@ -35,11 +35,12 @@ task esphome:dashboard                 # http://localhost:6052, lecture seule co
 
 ## Secrets
 
-- **Git** : `secret.sops.yaml` est un Secret Kubernetes dont `stringData."secrets.yaml"` est
-  chiffré. Modifier : `sops cluster/apps/esphome/secret.sops.yaml`.
-- **Mac** : `task esphome:secrets` le déchiffre en `secrets.yaml` (ignoré par Git, mode 600) avec ta
-  clé PGP ; les autres tâches le font automatiquement.
-- **Cluster** : Flux le déchiffre avec le secret `sops-gpg` et le projette dans `/config`.
+- **Bitwarden** : le secret `esphome-secrets-yaml` (projet `homelab`) contient tout le `secrets.yaml`.
+  Modifier : l'éditer dans Bitwarden ; ESO met à jour le Secret `esphome-secrets` dans l'heure
+  (ou tout de suite : `kubectl annotate externalsecret esphome-secrets -n esphome force-sync=$(date +%s) --overwrite`).
+- **Mac** : `task esphome:secrets` le récupère depuis le Secret du cluster en `secrets.yaml` (ignoré
+  par Git, mode 600) ; les autres tâches le font automatiquement.
+- **Cluster** : ESO crée le Secret `esphome-secrets`, projeté dans `/config`.
 - **CI** : aucune clé ; `scripts/dummy-secrets.py` génère des valeurs factices pour valider et
   compiler.
 

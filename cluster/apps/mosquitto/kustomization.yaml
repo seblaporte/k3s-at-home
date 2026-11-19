@@ -5,6 +5,6 @@ resources:
   - helm-release.yaml
   - configmap-secure.yaml
   - certificate.yaml
-  - secret.sops.yaml
+  - external-secret.yaml
   - helm-release-secure.yaml
   

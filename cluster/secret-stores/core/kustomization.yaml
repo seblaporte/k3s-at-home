@@ -5,3 +5,5 @@ resources:
   - monitoring-kube-prometheus-stack-external-values.yaml
   - log-management-loki-stack-external-values.yaml
   - monitoring-grafana-admin.yaml
+  - kured-kured-secret.yaml
+  - cert-manager-cloudflare-token-secret.yaml

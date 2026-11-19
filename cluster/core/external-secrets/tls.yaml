@@ -1,0 +1,62 @@
+---
+# Internal CA for the in-cluster HTTPS link between ESO and bitwarden-sdk-server.
+# Same pattern as cluster/apps/networking/crowdsec/ca.yaml: long-lived CA, stable key.
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: bitwarden-selfsigned
+  namespace: external-secrets
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: bitwarden-ca
+  namespace: external-secrets
+spec:
+  isCA: true
+  commonName: bitwarden-ca
+  secretName: bitwarden-ca
+  duration: 87600h # 10 years
+  renewBefore: 720h
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Never # renewals keep the same key: the store's caProvider stays valid
+  issuerRef:
+    name: bitwarden-selfsigned
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: bitwarden-ca-issuer
+  namespace: external-secrets
+spec:
+  ca:
+    secretName: bitwarden-ca
+---
+# Server certificate mounted by bitwarden-sdk-server (secret name hardcoded in its chart).
+# Renewals restart the server through Reloader (annotation in helm-release.yaml).
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: bitwarden-tls-certs
+  namespace: external-secrets
+spec:
+  secretName: bitwarden-tls-certs
+  commonName: bitwarden-sdk-server.external-secrets.svc.cluster.local
+  dnsNames:
+    - bitwarden-sdk-server
+    - bitwarden-sdk-server.external-secrets
+    - bitwarden-sdk-server.external-secrets.svc
+    - bitwarden-sdk-server.external-secrets.svc.cluster.local
+  duration: 8760h # 1 year
+  renewBefore: 720h
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: bitwarden-ca-issuer
+    kind: Issuer

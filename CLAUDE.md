@@ -107,7 +107,7 @@ defaultPodOptions:
 2. Add `namespace.yaml`, `helm-release.yaml`, `kustomization.yaml`
 3. Use the chart `app-template` from HelmRepository `bjw-s-helm-charts`
 3. If the app needs a LoadBalancer IP, add `SVC_APPNAME_ADDR` to `cluster/base/cluster-settings.yaml`
-4. If the app needs secrets, create `secret.sops.yaml` (encrypt with `sops -e -i`)
+4. If the app needs secrets, create an `external-secret.yaml` (see *External Secrets* below) and list the Bitwarden keys to create in the PR description. `secret.sops.yaml` is legacy: don't add new ones
 5. If the app exposes a web UI, add a `probe.yaml` next to its HelmRelease (copy one from another app: `Probe` in the app namespace, `module: http_app`, `check: web-app` label, target = the in-cluster Service URL) and list it in `kustomization.yaml`. The `WebAppDown` alert fires when it fails.
 6. Add the app kustomization to `cluster/apps/kustomization.yaml`
 7. If the app is protected by Authelia (`networking-forwardauth-authelia` middleware), add an `access_control` rule for `<app>.${SECRET_APEX_DOMAIN}` in `cluster/apps/networking/authelia/configmap.yaml` — Reloader restarts Authelia automatically. Also add `<app>.${SECRET_APEX_DOMAIN}` to the `whitelist-authelia-401.yaml` host list in `cluster/apps/networking/crowdsec/helm-release.yaml`, otherwise expired sessions on that app (401s) can get your own IP banned by CrowdSec. Authelia secrets (JWT/session/storage keys, `users_database.yml`) live in `cluster/apps/networking/authelia/secret.sops.yaml`.
@@ -124,7 +124,38 @@ Grafana (`monitoring` namespace) is stateless: datasources and dashboards come f
 - **Flux substitution pitfall**: `core` runs variable substitution on the whole rendered YAML, JSON included. A dashboard containing `${...}` with a non-identifier (e.g. `${__series.name}`) breaks the build: check with `flux build kustomization core --dry-run` before committing. For dashboards that use native Grafana variables (`${datasource}`, `${__value.text}`...) and no `DS_*` placeholder, set the annotation `kustomize.toolkit.fluxcd.io/substitute: disabled` on their ConfigMap in the `configMapGenerator` (JSON stays unmodified).
 - **Datasources**: Loki is in `cluster/core/monitoring/grafana-datasources.yaml`; Prometheus comes from kube-prometheus-stack, which also generates the Kubernetes and Node Exporter dashboards as ConfigMaps.
 
-## Secrets Management
+## External Secrets (Bitwarden Secrets Manager)
+
+New secrets are **not** stored in Git. Values live in Bitwarden Secrets Manager (cloud, EU region, one project for the homelab); External Secrets Operator syncs them into Kubernetes Secrets.
+
+- **Chain**: `ClusterSecretStore` `bitwarden` (`cluster/secret-stores/`, own Flux layer depending on `core`) → `bitwarden-sdk-server` (HTTPS, internal CA in `cluster/core/external-secrets/tls.yaml`) → Bitwarden cloud. The machine account token is the only SOPS secret of the chain (`cluster/core/external-secrets/secret.sops.yaml`).
+- **Naming**: Bitwarden secret names are `<app>-<field>` (e.g. `mosquitto-password`) and must be unique in the project (the provider errors on duplicates). Reference them by name in `remoteRef.key`.
+- **Do not use `dataFrom.find`**: the provider ignores the selector and returns every secret of the organization.
+- **Per-app pattern** (`cluster/apps/<ns>/<app>/external-secret.yaml`, listed in its `kustomization.yaml`):
+
+```yaml
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: <app>-secrets
+  namespace: <ns>
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: bitwarden
+  target:
+    name: <app>-secrets
+  data:
+    - secretKey: PASSWORD
+      remoteRef:
+        key: <app>-password
+```
+
+- **Agent workflow**: write the `ExternalSecret`, list the keys to create in Bitwarden in the PR description, let the user create the values. Check sync with `kubectl get externalsecret -A` (status only). Never read the resulting Kubernetes Secret.
+- **Migration**: existing `*.sops.yaml` stay valid; migrate an app to ESO when touching it.
+
+## Secrets Management (SOPS, legacy)
 
 ```bash
 # Encrypt a new secret file

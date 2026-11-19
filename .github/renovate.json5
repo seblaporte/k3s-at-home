@@ -51,6 +51,17 @@
       datasourceTemplate: 'helm',
     },
     {
+      // ESO CRD bundle: URL tag is v<chart version>, kept in sync with the HelmRelease
+      customType: 'regex',
+      managerFilePatterns: [
+        '/^cluster/crds/external-secrets/.+\\.yaml$/',
+      ],
+      matchStrings: [
+        'registryUrl=(?<registryUrl>.*?) chart=(?<depName>.*?)\n.*/external-secrets/v(?<currentValue>[^/]+)/deploy/',
+      ],
+      datasourceTemplate: 'helm',
+    },
+    {
       customType: 'regex',
       managerFilePatterns: [
         '/^cluster/apps/networking/traefik/helm-release\\.yaml$/',
@@ -71,6 +82,12 @@
     },
   ],
   packageRules: [
+    {
+      groupName: 'external-secrets',
+      matchPackageNames: [
+        'external-secrets',
+      ],
+    },
     {
       groupName: 'traefik',
       matchPackageNames: [

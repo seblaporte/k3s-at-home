@@ -1,0 +1,26 @@
+---
+# Bitwarden Secrets Manager (cloud, EU region). One store = one organization/project.
+# The machine account token is in cluster/core/external-secrets/secret.sops.yaml.
+apiVersion: external-secrets.io/v1
+kind: ClusterSecretStore
+metadata:
+  name: bitwarden
+spec:
+  provider:
+    bitwardensecretsmanager:
+      apiURL: https://api.bitwarden.eu
+      identityURL: https://identity.bitwarden.eu
+      bitwardenServerSDKURL: https://bitwarden-sdk-server.external-secrets.svc.cluster.local:9998
+      caProvider:
+        type: Secret
+        name: bitwarden-tls-certs
+        namespace: external-secrets
+        key: ca.crt
+      organizationID: ${BITWARDEN_ORGANIZATION_ID}
+      projectID: ${BITWARDEN_PROJECT_ID}
+      auth:
+        secretRef:
+          credentials:
+            name: bitwarden-access-token
+            namespace: external-secrets
+            key: token

@@ -48,6 +48,12 @@ notify() { # notify <id suffix> <title> <message>
     log "notification failed: $2"
 }
 
+# The Synology indexer drops @eaDir metadata folders everywhere, .git included, where git
+# reads them as broken refs/objects ("bad object refs/@eaDir/..."). They are never git data.
+shopt -s globstar nullglob
+for d in "$CONFIG"/.git/**/@eaDir; do rm -rf "$d"; done
+shopt -u globstar nullglob
+
 mkdir -p "$STATE"
 
 if [ "$(cat "$STATE/rejected" 2>/dev/null || true)" = "$TARGET" ]; then

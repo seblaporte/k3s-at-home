@@ -268,7 +268,7 @@ flowchart LR
     subgraph sec["VLAN 5 · security"]
         nvr["NVR .10"]
     end
-    home -- "TCP 80, 443" --> nvr
+    home -- "TCP 443" --> nvr
 ```
 
 | Règle (`plan.yaml`)                | Source     | Destination            | Ports TCP  | Usage                                   |
@@ -279,7 +279,7 @@ flowchart LR
 | `iot-mqtt`                         | iot        | `1.21`, `1.38`         | 1883, 8883 | Mosquitto (ESPHome, objets domotiques…) |
 | `iot-home-assistant`               | iot        | `1.32`, `1.100`–`.105` | 80, 8123   | Objets qui poussent vers Home Assistant |
 | `car-navidrome`                    | car        | `1.33`                 | 4533       | Musique du véhicule                     |
-| `home-nvr`                         | home       | `5.10`                 | 80, 443    | Interface web du NVR                    |
+| `home-nvr`                         | home       | `5.10`                 | 443        | Interface web du NVR (HTTPS)            |
 
 ### Matrice des flux
 
@@ -299,7 +299,7 @@ Lecture : ligne = source, colonne = destination. ✅ tout, 🔸 règles ciblées
 Conséquences :
 
 - Le VLAN 5 n'est joignable en entier que depuis le VLAN 1 (Frigate sur le Mac mini,
-  go2rtc). `home` n'atteint que l'interface web du NVR (80, 443) ; le VPN ne l'atteint
+  go2rtc). `home` n'atteint que l'interface web du NVR en HTTPS (443) ; le VPN ne l'atteint
   pas, son accès distant passe par le cloud du fabricant.
 - `home` pilote les objets (`iot`, `multimedia`) directement ; l'inverse est refusé.
 - Le VPN WireGuard a les droits de `home`, sauf vers `home` lui-même. Il garde ses alias

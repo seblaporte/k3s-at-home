@@ -1,12 +1,18 @@
 # Migration des secrets vers Bitwarden Secrets Manager
 
-Table de correspondance entre les clés SOPS actuelles et les secrets Bitwarden (noms uniquement, aucune valeur).
+Table de correspondance entre les clés SOPS d'origine et les secrets Bitwarden (noms uniquement, aucune valeur).
 
-1. **Copie** : les `PushSecret` de `cluster/secret-stores/migration/` envoient les Secrets déjà présents dans le cluster
-   vers Bitwarden (`updatePolicy: IfNotExists`, `deletionPolicy: None`). Le compte machine doit être en lecture/écriture
-   pendant cette étape.
-2. **Bascule** : par lots d'applications, chaque consommateur passe sur un `ExternalSecret` qui lit le nom Bitwarden ci-dessous.
-3. **Nettoyage** : suppression des `PushSecret`, compte machine repassé en lecture seule, clés migrées et clés inutilisées retirées des fichiers SOPS.
+**État : terminée (2026-11-19).**
+
+1. ✅ **Copie** : des `PushSecret` ont envoyé les Secrets du cluster vers Bitwarden (PR #1080), puis ont été supprimés
+   (`deletionPolicy: None` : les secrets restent dans Bitwarden).
+2. ✅ **Bascule** : toutes les applications lisent des `ExternalSecret` (PR #1081 à #1087), valeurs vérifiées identiques
+   (empreintes `configDigest` des HelmReleases, SHA-256 des Secrets et des variables des CronJobs).
+3. ✅ **Nettoyage** : compte machine `eso-k3s` en lecture seule ; `cluster-secrets.sops.yaml` ne garde que les 10 clés
+   « reste dans SOPS » ; les fichiers SOPS par application sont supprimés.
+
+Les valeurs `restic-os-identity-api-version` et `restic-os-tenant-name` contenaient des guillemets littéraux (astuce de
+substitution Flux) : les templates ESO les retirent (`trimAll`), que Bitwarden les contienne ou non.
 
 | Source (namespace/Secret) | Clé | Secret Bitwarden | Statut |
 |---|---|---|---|

@@ -4,4 +4,3 @@ resources:
   - bitwarden.yaml
   - smoke-test.yaml
   - core
-  - migration

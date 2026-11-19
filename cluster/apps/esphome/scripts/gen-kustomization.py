@@ -8,7 +8,7 @@ kustomize ne sait pas lister un dossier : chaque fichier doit être déclaré.
 Objets produits en plus de namespace/helm-release/probe (noms fixes, sans suffixe de hash) :
   ConfigMap esphome-devices               une clé par devices/*.yaml → /config
   ConfigMap esphome-component-<nom>       une clé par fichier de components/<nom>/ → /components/<nom>
-  Secret    esphome-secrets               secret.sops.yaml (déchiffré par Flux) → /config/secrets.yaml
+  Secret    esphome-secrets               external-secret.yaml (Bitwarden, via ESO) → /config/secrets.yaml
 
 Tous deux portent l'annotation `substitute: disabled` : le postBuild de la Kustomization `apps`
 remplacerait sinon les `${...}` d'ESPHome par du vide.
@@ -32,7 +32,7 @@ def render() -> str:
         "  - namespace.yaml",
         "  - helm-release.yaml",
         "  - probe.yaml",
-        "  - secret.sops.yaml",
+        "  - external-secret.yaml",
         "generatorOptions:",
         "  disableNameSuffixHash: true",
         "  labels:",
@@ -40,15 +40,6 @@ def render() -> str:
         "  annotations:",
         "    # Les ${...} d'ESPHome ne doivent pas être substitués par Flux (postBuild de `apps`)",
         "    kustomize.toolkit.fluxcd.io/substitute: disabled",
-        "patches:",
-        "  - patch: |-",
-        "      apiVersion: v1",
-        "      kind: Secret",
-        "      metadata:",
-        "        name: esphome-secrets",
-        "        namespace: esphome",
-        "        annotations:",
-        "          kustomize.toolkit.fluxcd.io/substitute: disabled",
         "configMapGenerator:",
         "  - name: esphome-devices",
         "    files:",

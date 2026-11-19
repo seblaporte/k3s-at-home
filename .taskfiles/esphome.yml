@@ -21,13 +21,13 @@ tasks:
     silent: true
 
   secrets:
-    desc: Déchiffre secret.sops.yaml en secrets.yaml (clé PGP requise)
+    desc: Récupère secrets.yaml depuis le Secret esphome-secrets du cluster (Bitwarden via ESO)
     cmds:
       - "{{.SCRIPT}} secrets"
     silent: true
 
   validate:
-    desc: Valide tous les appareils (ou DEVICE=…), DUMMY=1 sans clé PGP
+    desc: Valide tous les appareils (ou DEVICE=…), DUMMY=1 sans accès au cluster
     cmds:
       - "{{.SCRIPT}} validate"
     silent: true

@@ -7,7 +7,7 @@ resources:
   - namespace.yaml
   - helm-release.yaml
   - probe.yaml
-  - secret.sops.yaml
+  - external-secret.yaml
 generatorOptions:
   disableNameSuffixHash: true
   labels:
@@ -15,15 +15,6 @@ generatorOptions:
   annotations:
     # Les ${...} d'ESPHome ne doivent pas être substitués par Flux (postBuild de `apps`)
     kustomize.toolkit.fluxcd.io/substitute: disabled
-patches:
-  - patch: |-
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: esphome-secrets
-        namespace: esphome
-        annotations:
-          kustomize.toolkit.fluxcd.io/substitute: disabled
 configMapGenerator:
   - name: esphome-devices
     files:

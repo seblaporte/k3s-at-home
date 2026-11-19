@@ -4,7 +4,7 @@ namespace: kitchenvault-dev
 resources:
   - ../base
   - namespace.yaml
-  - secret.sops.yaml
+  - external-secret.yaml
   - probe.yaml
 patches:
   - path: patch-backend-ingress.yaml

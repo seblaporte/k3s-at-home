@@ -4,5 +4,5 @@ namespace: kitchenvault
 resources:
   - ../base
   - namespace.yaml
-  - secret.sops.yaml
+  - external-secret.yaml
   - probe.yaml

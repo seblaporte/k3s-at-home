@@ -46,12 +46,13 @@ need_ip() {
 secrets() {
   local tmp
   tmp=$(mktemp "$ROOT/secrets.yaml.XXXXXX")
-  sops -d --extract '["stringData"]["secrets.yaml"]' "$ROOT/secret.sops.yaml" > "$tmp"
+  # source : secret Bitwarden esphome-secrets-yaml, synchronisé par ESO dans le Secret esphome-secrets
+  kubectl get secret esphome-secrets -n esphome -o jsonpath='{.data.secrets\.yaml}' | base64 -d > "$tmp"
   chmod 600 "$tmp" && mv "$tmp" "$ROOT/secrets.yaml"
-  echo "secrets.yaml déchiffré (ignoré par Git)"
+  echo "secrets.yaml récupéré depuis le cluster (ignoré par Git)"
 }
 
-# DUMMY=1 : secrets factices (CI, ou validation sans clé PGP)
+# DUMMY=1 : secrets factices (CI, ou validation sans accès au cluster)
 stage() {
   if [ -z "$DUMMY" ]; then secrets; fi
   rm -rf "$WORK/config" && mkdir -p "$WORK/config" "$WORK/data"

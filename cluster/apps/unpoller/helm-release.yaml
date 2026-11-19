@@ -15,6 +15,12 @@ spec:
         name: bjw-s-helm-charts
         namespace: flux-system
       interval: 15m
+  valuesFrom:
+    - kind: Secret
+      name: unpoller-external-values
+      valuesKey: UP_UNIFI_DEFAULT_PASS
+      targetPath: controllers.main.containers.main.env.UP_UNIFI_DEFAULT_PASS
+      literal: true
   values:
     controllers:
       main:
@@ -28,7 +34,6 @@ spec:
               UP_UNIFI_DEFAULT_URL: https://${SVC_UNIFI_ADDR}:8443
               UP_UNIFI_DEFAULT_VERIFY_SSL: false
               UP_UNIFI_DEFAULT_USER: unpoller
-              UP_UNIFI_DEFAULT_PASS: ${SECRET_UNPOLLER_PASSWORD}
               UP_INFLUXDB_DISABLE: true
             resources:
               requests:

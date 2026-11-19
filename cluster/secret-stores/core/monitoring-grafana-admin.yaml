@@ -1,0 +1,26 @@
+---
+# Values from Bitwarden Secrets Manager (see doc/secrets-migration.md)
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: grafana-admin
+  namespace: monitoring
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: bitwarden
+  target:
+    name: grafana-admin
+    template:
+      type: Opaque
+      data:
+        admin-user: '{{ .grafana_admin_username }}'
+        admin-password: '{{ .grafana_admin_password }}'
+  data:
+    - secretKey: grafana_admin_password
+      remoteRef:
+        key: grafana-admin-password
+    - secretKey: grafana_admin_username
+      remoteRef:
+        key: grafana-admin-username

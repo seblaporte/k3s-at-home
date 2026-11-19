@@ -15,6 +15,27 @@ spec:
         name: bjw-s-helm-charts
         namespace: flux-system
       interval: 15m
+  valuesFrom:
+    - kind: Secret
+      name: navidrome-external-values
+      valuesKey: ND_LASTFM_APIKEY
+      targetPath: controllers.main.containers.main.env.ND_LASTFM_APIKEY
+      literal: true
+    - kind: Secret
+      name: navidrome-external-values
+      valuesKey: ND_LASTFM_SECRET
+      targetPath: controllers.main.containers.main.env.ND_LASTFM_SECRET
+      literal: true
+    - kind: Secret
+      name: navidrome-external-values
+      valuesKey: ND_SPOTIFY_ID
+      targetPath: controllers.main.containers.main.env.ND_SPOTIFY_ID
+      literal: true
+    - kind: Secret
+      name: navidrome-external-values
+      valuesKey: ND_SPOTIFY_SECRET
+      targetPath: controllers.main.containers.main.env.ND_SPOTIFY_SECRET
+      literal: true
   values:
     defaultPodOptions:
       priorityClassName: homelab-medium
@@ -36,11 +57,7 @@ spec:
             env:
               ND_LASTFM_ENABLED: true
               ND_SCANSCHEDULE: "0"
-              ND_LASTFM_APIKEY: ${SECRET_NAVIDROME_LASTFM_APIKEY}
-              ND_LASTFM_SECRET: ${SECRET_NAVIDROME_LASTFM_SECRET}
               ND_LASTFM_LANGUAGE: fr
-              ND_SPOTIFY_ID: ${SECRET_NAVIDROME_SPOTIFY_ID}
-              ND_SPOTIFY_SECRET: ${SECRET_NAVIDROME_SPOTIFY_SECRET}
             resources:
               requests:
                 memory: 256Mi

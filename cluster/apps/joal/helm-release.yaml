@@ -15,6 +15,12 @@ spec:
         name: bjw-s-helm-charts
         namespace: flux-system
       interval: 15m
+  valuesFrom:
+    - kind: Secret
+      name: joal-external-values
+      valuesKey: args-4
+      targetPath: controllers.main.containers.main.args[4]
+      literal: true
   values:
     defaultPodOptions:
       affinity:
@@ -42,7 +48,7 @@ spec:
                 "--spring.main.web-environment=true",
                 "--server.port=8090",
                 "--joal.ui.path.prefix=nastiness",
-                "--joal.ui.secret-token=${SECRET_JOAL_TOKEN}",
+                "set by valuesFrom joal-external-values/args-4",
               ]
             resources:
               requests:

@@ -152,6 +152,8 @@ spec:
         key: <app>-password
 ```
 
+- **Values in a HelmRelease**: never inline a secret. The `ExternalSecret` `<release>-external-values` builds each value (Go template, so a URL/DSN can embed a secret while other `${VARS}` stay Flux substitutions), and the HelmRelease reads it with `valuesFrom` (`kind: Secret`, `valuesKey`, `targetPath`, **`literal: true`** so commas or `=` in a password are not parsed by `--set`). `targetPath` overrides inline values; the target Secret carries `reconcile.fluxcd.io/watch: Enabled` so a value change triggers an upgrade.
+- **Secrets consumed by `core` components** (Grafana, Loki, cert-manager…): their `ExternalSecret` lives in `cluster/secret-stores/core/`, not in `core`, because the ESO webhook does not exist yet when `core` is first applied. `apps` depends on `secret-stores`.
 - **Agent workflow**: write the `ExternalSecret`, list the keys to create in Bitwarden in the PR description, let the user create the values. Check sync with `kubectl get externalsecret -A` (status only). Never read the resulting Kubernetes Secret.
 - **Migration**: existing `*.sops.yaml` stay valid; migrate an app to ESO when touching it.
 

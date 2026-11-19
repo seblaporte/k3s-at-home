@@ -1,0 +1,31 @@
+---
+# Metrics of the git-sync sidecar (git_sync_count_total{status=success|error|noop})
+apiVersion: v1
+kind: Service
+metadata:
+  name: home-assistant-git-sync
+  namespace: home-assistant
+  labels:
+    app.kubernetes.io/name: home-assistant-git-sync
+spec:
+  selector:
+    app.kubernetes.io/name: home-assistant
+    app.kubernetes.io/instance: home-assistant
+  ports:
+    - name: git-sync-http
+      port: 19020
+      targetPort: git-sync-http
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: home-assistant-git-sync
+  namespace: home-assistant
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: home-assistant-git-sync
+  endpoints:
+    - port: git-sync-http
+      path: /metrics
+      interval: 60s

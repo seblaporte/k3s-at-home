@@ -36,6 +36,9 @@ spec:
     controller:
       type: deployment
       strategy: Recreate
+      annotations:
+        # secrets.yaml is a subPath mount (not refreshed in place): restart HA when it changes
+        secret.reloader.stakater.com/reload: home-assistant-secrets
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -106,6 +109,32 @@ spec:
         accessMode: "ReadWriteOnce"
         mountPath: /media
         size: "10Gi"
+      # secrets.yaml comes from Bitwarden (ExternalSecret home-assistant-secrets), read-only,
+      # mounted over the file of the config PVC
+      secrets:
+        enabled: true
+        type: secret
+        name: home-assistant-secrets
+        mountPath: /config/secrets.yaml
+        subPath: secrets.yaml
+        readOnly: true
+      # git-sync sidecar volumes (mountPath "-": not mounted in the HA container)
+      git-sync-root:
+        enabled: true
+        type: emptyDir
+        mountPath: "-"
+      git-sync-hook:
+        enabled: true
+        type: configMap
+        name: home-assistant-git-sync-hook
+        defaultMode: 493 # 0755
+        mountPath: "-"
+      git-sync-creds:
+        enabled: true
+        type: secret
+        name: home-assistant-git-sync
+        defaultMode: 256 # 0400
+        mountPath: "-"
     resources:
       requests:
         memory: 1500Mi
@@ -113,3 +142,58 @@ spec:
       limits:
         memory: 2000Mi
         cpu: 1500m
+    # GitOps for /config: git-sync pulls seblaporte/home-assistant-config (read-only deploy key)
+    # and its exechook (git-sync/deploy.sh) applies each new commit to /config after check_config.
+    # Git is the only source of truth: local edits are saved as a patch, reported, then overwritten.
+    additionalContainers:
+      git-sync:
+        image: registry.k8s.io/git-sync/git-sync:v4.8.0
+        args:
+          - --repo=git@github.com:seblaporte/home-assistant-config.git
+          - --ref=main
+          - --root=/git-sync/root
+          - --link=current
+          - --period=60s
+          - --depth=0
+          - --max-failures=-1
+          - --ssh-key-file=/git-sync/creds/ssh-key
+          - --ssh-known-hosts=true
+          - --ssh-known-hosts-file=/git-sync/hook/known_hosts
+          - --exechook-command=/git-sync/hook/deploy.sh
+          - --exechook-timeout=180s
+          - --exechook-backoff=60s
+          # hostNetwork pod: this port is opened on the node
+          - --http-bind=:19020
+          - --http-metrics
+        env:
+          # /config belongs to the NFS user, the sidecar runs as root
+          - name: GIT_CONFIG_COUNT
+            value: "1"
+          - name: GIT_CONFIG_KEY_0
+            value: safe.directory
+          - name: GIT_CONFIG_VALUE_0
+            value: "*"
+          - name: HA_TOKEN_FILE
+            value: /git-sync/creds/ha-token
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+        ports:
+          - name: git-sync-http
+            containerPort: 19020
+            protocol: TCP
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 256Mi
+        volumeMounts:
+          - name: data
+            mountPath: /config
+          - name: git-sync-root
+            mountPath: /git-sync/root
+          - name: git-sync-hook
+            mountPath: /git-sync/hook
+          - name: git-sync-creds
+            mountPath: /git-sync/creds

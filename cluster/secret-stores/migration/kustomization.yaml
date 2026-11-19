@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - cert-manager-cloudflare-token-secret.yaml
+  - esphome-esphome-secrets.yaml
+  - flux-system-cluster-secrets.yaml
+  - go2rtc-go2rtc-secrets.yaml
+  - kitchenvault-dev-kitchenvault-secrets.yaml
+  - kitchenvault-kitchenvault-secrets.yaml
+  - kured-kured-secret.yaml
+  - mosquitto-mosquitto-secure-secrets.yaml
+  - networking-authelia-secrets.yaml
+  - networking-cloudflared-credentials.yaml

@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - bitwarden.yaml
   - smoke-test.yaml
+  - migration

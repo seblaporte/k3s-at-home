@@ -5,6 +5,7 @@ resources:
   - priority-classes
   - metallb-system
   - cert-manager
+  - external-secrets
   - system-upgrade
   - nfs-provisioner
   - log-management

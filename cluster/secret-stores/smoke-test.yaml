@@ -1,0 +1,19 @@
+---
+# End-to-end check of the Bitwarden chain, consumed by nothing.
+# Expected: `kubectl get externalsecret -n external-secrets` shows SecretSynced.
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: bitwarden-smoke-test
+  namespace: external-secrets
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: bitwarden
+  target:
+    name: bitwarden-smoke-test
+  data:
+    - secretKey: value
+      remoteRef:
+        key: eso-smoke-test

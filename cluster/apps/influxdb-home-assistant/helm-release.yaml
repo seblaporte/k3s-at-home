@@ -50,7 +50,8 @@ spec:
       spec:
         loadBalancerIP: "${SVC_INFLUXDB_HOME_ASSISTANT_ADDR}"
         externalTrafficPolicy: Local
-    adminUser: {} # values set by valuesFrom
+    adminUser:
+      password: "set by valuesFrom influxdb-home-assistant-external-values/password"
     initScripts:
       enabled: true
       scripts:

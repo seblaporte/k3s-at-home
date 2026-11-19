@@ -5,9 +5,10 @@ Configurations ESPHome de la maison, source de vérité du tableau de bord ESPHo
 
 - `devices/` : une configuration par appareil.
 - `components/` : composants ESPHome locaux.
-- `external-secret.yaml` : le `secrets.yaml` d'ESPHome (Wi-Fi, clés API, mots de passe OTA,
-  adresses MAC) vient de Bitwarden Secrets Manager (secret `esphome-secrets-yaml`), synchronisé
-  par External Secrets. Les configurations ne contiennent que des références `!secret <nom>`.
+- `external-secret.yaml` : le `secrets.yaml` d'ESPHome, reconstruit par External Secrets à partir
+  d'une entrée Bitwarden par valeur (`esphome-<clé>` pour les vrais secrets, `esphome-label-<clé>`
+  pour les libellés d'équipements tenus hors du dépôt public). Les configurations ne contiennent que
+  des références `!secret <nom>`.
 - `kustomization.yaml` : **généré** par `task esphome:kustomization` (kustomize ne sait pas lister
   un dossier). La CI vérifie qu'il est à jour.
 
@@ -35,9 +36,12 @@ task esphome:dashboard                 # http://localhost:6052, lecture seule co
 
 ## Secrets
 
-- **Bitwarden** : le secret `esphome-secrets-yaml` (projet `homelab`) contient tout le `secrets.yaml`.
-  Modifier : l'éditer dans Bitwarden ; ESO met à jour le Secret `esphome-secrets` dans l'heure
+- **Bitwarden** : une entrée par valeur (projet `homelab`) : `esphome-<clé>` (Wi-Fi, clés API,
+  mots de passe OTA, MAC) et `esphome-label-<clé>` (libellés des circuits, entrées et relais).
+  Modifier une valeur : l'éditer dans Bitwarden ; ESO met à jour le Secret `esphome-secrets` dans l'heure
   (ou tout de suite : `kubectl annotate externalsecret esphome-secrets -n esphome force-sync=$(date +%s) --overwrite`).
+  Ajouter une clé : créer l'entrée dans Bitwarden, puis l'ajouter au bloc `data` et au template de
+  `external-secret.yaml` (le nom de clé `<clé>` devient `esphome-<clé>` avec `_` remplacé par `-`).
 - **Mac** : `task esphome:secrets` le récupère depuis le Secret du cluster en `secrets.yaml` (ignoré
   par Git, mode 600) ; les autres tâches le font automatiquement.
 - **Cluster** : ESO crée le Secret `esphome-secrets`, projeté dans `/config`.

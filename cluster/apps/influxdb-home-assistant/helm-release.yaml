@@ -16,6 +16,12 @@ spec:
         name: influxdata-charts
         namespace: flux-system
       interval: 5m
+  valuesFrom:
+    - kind: Secret
+      name: influxdb-home-assistant-external-values
+      valuesKey: password
+      targetPath: adminUser.password
+      literal: true
   values:
     priorityClassName: homelab-medium
     persistence:
@@ -44,8 +50,7 @@ spec:
       spec:
         loadBalancerIP: "${SVC_INFLUXDB_HOME_ASSISTANT_ADDR}"
         externalTrafficPolicy: Local
-    adminUser:
-      password: ${SECRET_DEFAULT_USER_INFLUX_DB_PASSWORD}
+    adminUser: {} # values set by valuesFrom
     initScripts:
       enabled: true
       scripts:

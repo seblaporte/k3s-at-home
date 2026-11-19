@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - crowdsec/ca.yaml
   - crowdsec/helm-release.yaml
+  - crowdsec/external-secret.yaml
   - traefik
   - authelia
   - cloudflared

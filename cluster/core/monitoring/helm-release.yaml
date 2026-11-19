@@ -24,6 +24,20 @@ spec:
     - kind: ConfigMap
       name: kube-state-metrics-flux-values
       valuesKey: values.yaml
+    - kind: Secret
+      name: kube-prometheus-stack-external-values
+      valuesKey: bot_token
+      targetPath: alertmanager.config.receivers[1].telegram_configs[0].bot_token
+      literal: true
+    - kind: Secret
+      name: kube-prometheus-stack-external-values
+      valuesKey: chat_id
+      targetPath: alertmanager.config.receivers[1].telegram_configs[0].chat_id
+    - kind: Secret
+      name: kube-prometheus-stack-external-values
+      valuesKey: url
+      targetPath: alertmanager.config.receivers[2].webhook_configs[0].url
+      literal: true
   values:
     alertmanager:
       enabled: true
@@ -94,13 +108,10 @@ spec:
           - name: "null"
           - name: telegram
             telegram_configs:
-              - bot_token: ${SECRET_ALERTMANAGER_TELEGRAM_BOT_TOKEN:=unset}
-                chat_id: ${SECRET_ALERTMANAGER_TELEGRAM_CHAT_ID:=1}
-                send_resolved: true
+              - send_resolved: true
           - name: healthchecks
             webhook_configs:
-              - url: https://hc-ping.com/${SECRET_WATCHDOG_HEALTH_CHECK_UUID:=unset}
-                send_resolved: false
+              - send_resolved: false
     kubeEtcd:
       enabled: false
     kubeControllerManager:

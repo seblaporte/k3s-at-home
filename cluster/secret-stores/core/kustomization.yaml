@@ -2,4 +2,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+  - monitoring-kube-prometheus-stack-external-values.yaml
+  - log-management-loki-stack-external-values.yaml
   - monitoring-grafana-admin.yaml

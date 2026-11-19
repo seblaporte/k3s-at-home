@@ -41,9 +41,15 @@ spec:
                 - name: VPN_SERVICE_PROVIDER
                   value: "cyberghost"
                 - name: OPENVPN_USER
-                  value: "${SECRET_VPN_USERNAME}"
+                  valueFrom:
+                    secretKeyRef:
+                      name: spotdl-external-env
+                      key: OPENVPN_USER
                 - name: OPENVPN_PASSWORD
-                  value: "${SECRET_VPN_PASSWORD}"
+                  valueFrom:
+                    secretKeyRef:
+                      name: spotdl-external-env
+                      key: OPENVPN_PASSWORD
                 - name: UPDATER_PERIOD
                   value: "24h"
                 - name: SERVER_COUNTRIES

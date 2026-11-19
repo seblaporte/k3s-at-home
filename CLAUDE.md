@@ -194,13 +194,24 @@ sops -d cluster/base/cluster-secrets.sops.yaml | grep SECRET_APEX_DOMAIN
 
 ## ESPHome
 
-Device configs live in `cluster/apps/esphome/` (`devices/`, `components/`) next to the HelmRelease, and are the source of truth: the dashboard is read-only. Flux deploys them as ConfigMaps `esphome-devices` / `esphome-component-<name>` and the SOPS Secret `esphome-secrets` (an ESPHome `secrets.yaml`), projected into `/config` of the pod.
+Device configs live in `cluster/apps/esphome/` (`devices/`, `components/`) next to the HelmRelease, and are the source of truth: the dashboard is read-only. Flux deploys them as ConfigMaps `esphome-devices` / `esphome-component-<name>` and the Secret `esphome-secrets` (an ESPHome `secrets.yaml`, from the Bitwarden secret `esphome-secrets-yaml` via ESO), projected into `/config` of the pod.
 
 - **Tooling**: `task esphome:validate|compile|run|logs|dashboard|secrets|kustomization` (see `cluster/apps/esphome/README.md`). It runs the same `esphome/esphome` tag as the HelmRelease in Docker.
 - **`kustomization.yaml` is generated** (`task esphome:kustomization`) — re-run it after adding/removing a device or component; CI fails if it is stale.
-- **No secret in device files**: use `!secret <name>` and add the value with `sops cluster/apps/esphome/secret.sops.yaml`. No personal names or identifiers (MAC, serial numbers) in this public repo: use neutral device names. Labels that reveal household equipment (gates, spa, alarm, energy circuits…) also go in the secret, through `substitutions` (`cir_1: !secret emporia_circuit_1`), with neutral `id`s and comments.
-- **Flux substitution**: the generated ConfigMaps/Secret carry `kustomize.toolkit.fluxcd.io/substitute: disabled`, because ESPHome's own `${...}` would otherwise be emptied by the `apps` postBuild.
+- **No secret in device files**: use `!secret <name>` and add the value to the Bitwarden secret `esphome-secrets-yaml`. No personal names or identifiers (MAC, serial numbers) in this public repo: use neutral device names. Labels that reveal household equipment (gates, spa, alarm, energy circuits…) also go in the secret, through `substitutions` (`cir_1: !secret emporia_circuit_1`), with neutral `id`s and comments.
+- **Flux substitution**: the generated ConfigMaps carry `kustomize.toolkit.fluxcd.io/substitute: disabled`, because ESPHome's own `${...}` would otherwise be emptied by the `apps` postBuild (the Secret is written by ESO, Flux never sees its values).
 - Flux never flashes devices; installing firmware is a manual step (`task esphome:run`).
+
+## Home Assistant (GitOps of /config)
+
+The HA configuration lives in the private repo `seblaporte/home-assistant-config`; `/config` (PVC `home-assistant-data`) is a working copy of it, never edited by hand.
+
+- **Deployment**: merge on `main` → the `git-sync` sidecar (`registry.k8s.io/git-sync/git-sync`, read-only deploy key) fetches it within 60 s → its exechook `cluster/apps/home-assistant/git-sync/deploy.sh` runs `git reset --hard` in `/config`, validates with the HA API `check_config` (invalid → rollback + HA notification, commit never retried), then calls `homeassistant.reload_all`. A change to `configuration.yaml` or `packages/` only raises a « Redémarrage requis » notification: restart HA yourself.
+- **Git strict**: Git is the only source of truth. Edits made in the HA UI are saved to `/config/.git/git-sync/local-<date>.patch`, reported by a notification, then overwritten at the next deployment.
+- **`secrets.yaml`**: one Bitwarden secret per value (`home-assistant-<key>`, e.g. `home-assistant-nvr-password`); the ExternalSecret `home-assistant-secrets` rebuilds the file (template, values escaped with `toJson`), mounted read-only over `/config/secrets.yaml`; Reloader restarts HA when it changes. Add a secret: create `home-assistant-<key>` in Bitwarden, add it to `data` and to the template of `cluster/apps/home-assistant/external-secret.yaml`, then reference it with `!secret <key>` in the HA YAML.
+- **Sidecar credentials**: ExternalSecret `home-assistant-git-sync` (`home-assistant-git-deploy-key`, `home-assistant-sync-token`, HA admin user `git-sync`).
+- **Monitoring**: `git_sync_count_total` (ServiceMonitor `home-assistant-git-sync`), alerts `HomeAssistantGitSyncFailing` / `HomeAssistantGitSyncNoData`. Logs: `kubectl logs -n home-assistant deploy/home-assistant -c git-sync`.
+- **Hook tests**: the hook reads `CONFIG`, `HA_URL` and `HA_TOKEN_FILE` from the environment, so it can be run against a scratch repo and a fake API before changing it.
 
 ## Dependency Updates
 

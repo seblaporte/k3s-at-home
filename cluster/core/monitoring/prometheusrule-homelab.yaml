@@ -72,3 +72,26 @@ spec:
               Les requests mémoire représentent {{ $value | humanizePercentage }} de la capacité tolérant la perte
               d'un nœud. KubeMemoryOvercommit se déclenche à 100 % : redimensionner les requests surdimensionnées
               (dashboard Grafana « Mémoire : requests vs usage »).
+    - name: homelab-home-assistant
+      rules:
+        - alert: HomeAssistantGitSyncFailing
+          expr: increase(git_sync_count_total{namespace="home-assistant", status="error"}[30m]) > 5
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Home Assistant : git-sync n'arrive plus à récupérer le dépôt"
+            description: >-
+              Le sidecar git-sync du pod Home Assistant échoue à synchroniser seblaporte/home-assistant-config
+              (clé de déploiement, réseau, GitHub). /config reste sur la dernière version déployée.
+              Voir : kubectl logs -n home-assistant deploy/home-assistant -c git-sync
+        - alert: HomeAssistantGitSyncNoData
+          expr: absent(git_sync_count_total{namespace="home-assistant"})
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Home Assistant : aucune métrique git-sync"
+            description: >-
+              Le sidecar git-sync ne remonte plus de métriques : la configuration de Home Assistant n'est plus synchronisée
+              depuis Git (ou le ServiceMonitor home-assistant-git-sync ne fonctionne plus).

@@ -4,5 +4,18 @@ resources:
   - namespace.yaml
   - external-secret.yaml
   - helm-release.yaml
+  - git-sync-metrics.yaml
   - probe.yaml
-  
+configMapGenerator:
+  # exechook of the git-sync sidecar, mounted at /git-sync/hook (read at each run: no restart needed)
+  - name: home-assistant-git-sync-hook
+    namespace: home-assistant
+    files:
+      - git-sync/deploy.sh
+      - git-sync/known_hosts
+generatorOptions:
+  # the name is referenced from HelmRelease values, which kustomize cannot rewrite
+  disableNameSuffixHash: true
+  annotations:
+    # the script uses ${...}: no Flux postBuild substitution
+    kustomize.toolkit.fluxcd.io/substitute: disabled

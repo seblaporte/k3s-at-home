@@ -128,7 +128,7 @@ Grafana (`monitoring` namespace) is stateless: datasources and dashboards come f
 
 New secrets are **not** stored in Git. Values live in Bitwarden Secrets Manager (cloud, EU region, one project for the homelab); External Secrets Operator syncs them into Kubernetes Secrets.
 
-- **Chain**: `ClusterSecretStore` `bitwarden` (`cluster/secret-stores/`, own Flux layer depending on `core`) → `bitwarden-sdk-server` (HTTPS, internal CA in `cluster/core/external-secrets/tls.yaml`) → Bitwarden cloud. The machine account token is the only SOPS secret of the chain (`cluster/core/external-secrets/secret.sops.yaml`).
+- **Chain**: `ClusterSecretStore` `bitwarden` (`cluster/secret-stores/`, own Flux layer depending on `core`) → `bitwarden-sdk-server` (HTTPS, internal CA in `cluster/core/external-secrets/tls.yaml`) → Bitwarden cloud. **Bootstrap rule: everything needed to reach Bitwarden stays in SOPS, never in Bitwarden** — machine account token (`cluster/core/external-secrets/secret.sops.yaml`) and `SECRET_BITWARDEN_ORGANIZATION_ID` / `SECRET_BITWARDEN_PROJECT_ID` (`cluster/base/cluster-secrets.sops.yaml`). The only manual bootstrap step remains the `sops-gpg` key.
 - **Naming**: Bitwarden secret names are `<app>-<field>` (e.g. `mosquitto-password`) and must be unique in the project (the provider errors on duplicates). Reference them by name in `remoteRef.key`.
 - **Do not use `dataFrom.find`**: the provider ignores the selector and returns every secret of the organization.
 - **Per-app pattern** (`cluster/apps/<ns>/<app>/external-secret.yaml`, listed in its `kustomization.yaml`):

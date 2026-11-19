@@ -27,6 +27,3 @@ data:
   SVC_SLSKD_ADDR: 192.168.1.36
   SVC_GO2RTC_ADDR: 192.168.1.37
   SVC_MOSQUITTO_SECURE_ADDR: 192.168.1.38
-  # Bitwarden Secrets Manager (identifiers, not credentials): see cluster/secret-stores/bitwarden.yaml
-  BITWARDEN_ORGANIZATION_ID: REPLACE_WITH_ORGANIZATION_ID
-  BITWARDEN_PROJECT_ID: REPLACE_WITH_PROJECT_ID

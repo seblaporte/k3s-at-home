@@ -22,6 +22,12 @@ spec:
   dependsOn:
     - name: cert-manager
       namespace: cert-manager
+  valuesFrom:
+    - kind: Secret
+      name: crowdsec-external-values
+      valuesKey: value
+      targetPath: lapi.env[0].value
+      literal: true
   values:
     image:
       repository: crowdsecurity/crowdsec
@@ -131,7 +137,6 @@ spec:
           size: 100Mi
       env:
         - name: ENROLL_KEY
-          value: ${SECRET_CROWDSEC_ENROLL_KEY}
         - name: ENROLL_INSTANCE_NAME
           value: "k3s_cluster"
         - name: ENROLL_TAGS

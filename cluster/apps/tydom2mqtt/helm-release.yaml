@@ -15,6 +15,12 @@ spec:
         name: bjw-s-helm-charts
         namespace: flux-system
       interval: 15m
+  valuesFrom:
+    - kind: Secret
+      name: tydom2mqtt-external-values
+      valuesKey: TYDOM_PASSWORD
+      targetPath: controllers.main.containers.main.env.TYDOM_PASSWORD
+      literal: true
   values:
     defaultPodOptions:
       priorityClassName: homelab-high
@@ -38,7 +44,6 @@ spec:
             env:
               TZ: Europe/Paris
               TYDOM_MAC: ${SECRET_TYDOM_MAC}
-              TYDOM_PASSWORD: ${SECRET_TYDOM_PASSWORD}
               TYDOM_IP: ${SECRET_TYDOM_IP}
               MQTT_HOST: ${SVC_MOSQUITTO_ADDR}
               MQTT_PORT: "1883"

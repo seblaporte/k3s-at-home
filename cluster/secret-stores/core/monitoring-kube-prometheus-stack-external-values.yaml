@@ -1,0 +1,32 @@
+---
+# Values from Bitwarden Secrets Manager (see doc/secrets-migration.md)
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: kube-prometheus-stack-external-values
+  namespace: monitoring
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: bitwarden
+  target:
+    name: kube-prometheus-stack-external-values
+    template:
+      metadata:
+        labels:
+          reconcile.fluxcd.io/watch: Enabled
+      data:
+        bot_token: '{{ .alertmanager_telegram_bot_token }}'
+        chat_id: '{{ .alertmanager_telegram_chat_id }}'
+        url: 'https://hc-ping.com/{{ .watchdog_health_check_uuid }}'
+  data:
+    - secretKey: alertmanager_telegram_bot_token
+      remoteRef:
+        key: alertmanager-telegram-bot-token
+    - secretKey: alertmanager_telegram_chat_id
+      remoteRef:
+        key: alertmanager-telegram-chat-id
+    - secretKey: watchdog_health_check_uuid
+      remoteRef:
+        key: watchdog-health-check-uuid

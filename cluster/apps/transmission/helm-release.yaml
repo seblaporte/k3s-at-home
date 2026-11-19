@@ -15,6 +15,17 @@ spec:
         name: bjw-s-helm-charts
         namespace: flux-system
       interval: 15m
+  valuesFrom:
+    - kind: Secret
+      name: transmission-external-values
+      valuesKey: OPENVPN_USER
+      targetPath: controllers.main.containers.gluetun.env.OPENVPN_USER
+      literal: true
+    - kind: Secret
+      name: transmission-external-values
+      valuesKey: OPENVPN_PASSWORD
+      targetPath: controllers.main.containers.gluetun.env.OPENVPN_PASSWORD
+      literal: true
   values:
     defaultPodOptions:
       affinity:
@@ -54,8 +65,6 @@ spec:
               TZ: Europe/Paris
               VPN_TYPE: openvpn
               VPN_SERVICE_PROVIDER: cyberghost
-              OPENVPN_USER: ${SECRET_VPN_USERNAME}
-              OPENVPN_PASSWORD: ${SECRET_VPN_PASSWORD}
               UPDATER_PERIOD: 24h
               SERVER_COUNTRIES: "Algeria,Andorra"
             probes:

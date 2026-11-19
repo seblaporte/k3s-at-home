@@ -15,6 +15,17 @@ spec:
         name: bjw-s-helm-charts
         namespace: flux-system
       interval: 15m
+  valuesFrom:
+    - kind: Secret
+      name: minio-external-values
+      valuesKey: MINIO_ROOT_USER
+      targetPath: controllers.main.containers.main.env.MINIO_ROOT_USER
+      literal: true
+    - kind: Secret
+      name: minio-external-values
+      valuesKey: MINIO_ROOT_PASSWORD
+      targetPath: controllers.main.containers.main.env.MINIO_ROOT_PASSWORD
+      literal: true
   values:
     defaultPodOptions:
       hostNetwork: true
@@ -43,8 +54,6 @@ spec:
             env:
               TZ: Europe/Paris
               MINIO_VOLUMES: /data
-              MINIO_ROOT_USER: ${SECRET_MINIO_ROOT_USER}
-              MINIO_ROOT_PASSWORD: ${SECRET_MINIO_ROOT_PASSWORD}
             resources:
               requests:
                 memory: 256Mi

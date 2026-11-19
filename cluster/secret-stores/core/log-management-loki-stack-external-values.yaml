@@ -1,0 +1,27 @@
+---
+# Values from Bitwarden Secrets Manager (see doc/secrets-migration.md)
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: loki-stack-external-values
+  namespace: log-management
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: bitwarden
+  target:
+    name: loki-stack-external-values
+    template:
+      metadata:
+        labels:
+          reconcile.fluxcd.io/watch: Enabled
+      data:
+        s3: 's3://{{ .loki_s3_access_key }}:{{ .loki_s3_secret_key }}@minio.minio.svc.cluster.local:9000/loki'
+  data:
+    - secretKey: loki_s3_access_key
+      remoteRef:
+        key: loki-s3-access-key
+    - secretKey: loki_s3_secret_key
+      remoteRef:
+        key: loki-s3-secret-key

@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - helm-release.yaml
   - helm-release-grafana.yaml
-  - grafana-admin-secret.yaml
   - grafana-datasources.yaml
   - podmonitor-flux.yaml
   - helm-release-blackbox-exporter.yaml

@@ -8,6 +8,8 @@ spec:
   interval: 10m0s
   dependsOn:
     - name: core
+    # ExternalSecrets need the ESO webhook and the bitwarden store
+    - name: secret-stores
   path: ./cluster/apps
   prune: true
   sourceRef:

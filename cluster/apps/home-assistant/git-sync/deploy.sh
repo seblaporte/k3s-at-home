@@ -17,7 +17,7 @@ set -euo pipefail
 CONFIG=${CONFIG:-/config}
 HA_URL=${HA_URL:-http://127.0.0.1:8123}
 STATE=$CONFIG/.git/git-sync # inside .git: never tracked, survives pod restarts
-TOKEN=$(cat "${HA_TOKEN_FILE:-/git-sync-creds/ha-token}")
+TOKEN=$(cat "${HA_TOKEN_FILE:-/etc/git-secret/ha-token}")
 TARGET=${GITSYNC_HASH:?GITSYNC_HASH not set}
 SHORT=${TARGET:0:7}
 

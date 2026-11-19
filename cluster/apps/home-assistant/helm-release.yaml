@@ -151,15 +151,15 @@ spec:
         args:
           - --repo=git@github.com:seblaporte/home-assistant-config.git
           - --ref=main
-          - --root=/git-sync/root
+          - --root=/repo
           - --link=current
           - --period=60s
           - --depth=0
           - --max-failures=-1
-          - --ssh-key-file=/git-sync/creds/ssh-key
+          - --ssh-key-file=/etc/git-secret/ssh-key
           - --ssh-known-hosts=true
-          - --ssh-known-hosts-file=/git-sync/hook/known_hosts
-          - --exechook-command=/git-sync/hook/deploy.sh
+          - --ssh-known-hosts-file=/etc/git-sync-hook/known_hosts
+          - --exechook-command=/etc/git-sync-hook/deploy.sh
           - --exechook-timeout=180s
           - --exechook-backoff=60s
           # hostNetwork pod: this port is opened on the node
@@ -174,7 +174,7 @@ spec:
           - name: GIT_CONFIG_VALUE_0
             value: "*"
           - name: HA_TOKEN_FILE
-            value: /git-sync/creds/ha-token
+            value: /etc/git-secret/ha-token
         securityContext:
           runAsUser: 0
           runAsGroup: 0
@@ -192,8 +192,8 @@ spec:
           - name: data
             mountPath: /config
           - name: git-sync-root
-            mountPath: /git-sync/root
+            mountPath: /repo
           - name: git-sync-hook
-            mountPath: /git-sync/hook
+            mountPath: /etc/git-sync-hook
           - name: git-sync-creds
-            mountPath: /git-sync/creds
+            mountPath: /etc/git-secret

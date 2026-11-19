@@ -7,7 +7,7 @@ resources:
   - git-sync-metrics.yaml
   - probe.yaml
 configMapGenerator:
-  # exechook of the git-sync sidecar, mounted at /git-sync/hook (read at each run: no restart needed)
+  # exechook of the git-sync sidecar, mounted at /etc/git-sync-hook (read at each run: no restart needed)
   - name: home-assistant-git-sync-hook
     namespace: home-assistant
     files:

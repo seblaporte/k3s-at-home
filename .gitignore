@@ -8,3 +8,6 @@ kubeconfig
 # vscode-sops
 .decrypted~*.yaml
 .env
+# Claude Code (local)
+.claude/worktrees/
+.claude/settings.local.json

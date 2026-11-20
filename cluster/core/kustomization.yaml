@@ -13,6 +13,7 @@ resources:
   - kured
   - coredns
   - reloader
+  - claude-agent
   - trivy-operator
   - snapshot-controller
   - synology-csi

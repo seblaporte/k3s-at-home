@@ -1,0 +1,38 @@
+---
+# A patch right on a workload or a HelmRelease would let claude-agent mount a Secret and
+# print it in logs. Its updates are limited to annotations: Flux reconcile requests,
+# ExternalSecret force-sync, and the pod template restartedAt of "kubectl rollout restart".
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: claude-agent-annotations-only
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        operations: [UPDATE]
+        resources: ["*"]
+  matchConditions:
+    - name: claude-agent
+      expression: request.userInfo.username == "system:serviceaccount:kube-system:claude-agent"
+  validations:
+    - expression: >-
+        request.resource.group == "apps"
+        ? object.spec.template.spec == oldObject.spec.template.spec
+          && object.spec.?replicas == oldObject.spec.?replicas
+          && object.spec.selector == oldObject.spec.selector
+          && object.spec.template.metadata.?labels == oldObject.spec.template.metadata.?labels
+        : object.spec == oldObject.spec
+      message: claude-agent may only change annotations (reconcile, force-sync, rollout restart)
+    - expression: object.metadata.?labels == oldObject.metadata.?labels
+      message: claude-agent may not change labels
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: claude-agent-annotations-only
+spec:
+  policyName: claude-agent-annotations-only
+  validationActions: [Deny]

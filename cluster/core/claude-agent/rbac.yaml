@@ -79,3 +79,31 @@ subjects:
   - kind: ServiceAccount
     name: claude-agent
     namespace: kube-system
+---
+# Read active alerts and query Prometheus through the API server service proxy
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: claude-agent-monitoring
+  namespace: monitoring
+rules:
+  - apiGroups: [""]
+    resources: [services/proxy]
+    resourceNames:
+      - kube-prometheus-stack-alertmanager:9093
+      - kube-prometheus-stack-prometheus:9090
+    verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: claude-agent-monitoring
+  namespace: monitoring
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: claude-agent-monitoring
+subjects:
+  - kind: ServiceAccount
+    name: claude-agent
+    namespace: kube-system

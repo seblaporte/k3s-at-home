@@ -33,7 +33,7 @@ spec:
           main:
             image:
               repository: louislam/uptime-kuma
-              tag: "2.5.5"
+              tag: "2.5.12"
               pullPolicy: IfNotPresent
             env: {} # values set by valuesFrom (uptime-kuma-external-values)
             resources:

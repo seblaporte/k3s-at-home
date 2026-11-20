@@ -159,38 +159,17 @@ spec:
 
 ## Secrets Management (SOPS, legacy)
 
-```bash
-# Encrypt a new secret file
-sops -e -i cluster/apps/<ns>/<app>/secret.sops.yaml
+Only two SOPS files remain: `cluster/base/cluster-secrets.sops.yaml` (Flux substitution
+variables) and `cluster/core/external-secrets/secret.sops.yaml` (the ESO machine account
+token). They are encrypted with the GnuPG keys of `.sops.yaml` (primary + backup).
 
-# Edit an existing encrypted secret
-sops cluster/apps/<ns>/<app>/secret.sops.yaml
+**Claude never runs `sops`** (the `guard-secrets` hook of the hub repo `seblaporte/homelab`
+blocks it): editing these files, or reading a value from them, is done by the user. When a
+change needs a new substitution variable, say which key to add and let the user run
+`sops cluster/base/cluster-secrets.sops.yaml`. New secrets go to Bitwarden (section above).
 
-# Decrypt (for inspection only, never commit decrypted)
-sops -d cluster/apps/<ns>/<app>/secret.sops.yaml
-```
-
-SOPS uses the GnuPG keys defined in `.sops.yaml`. Two key fingerprints are configured (primary + backup).
-
-**⚠️ Never let a full decrypted secrets file reach your output.** When you only need one value
-(e.g. `SECRET_APEX_DOMAIN`), pipe directly and only that one way:
-
-```bash
-sops -d cluster/base/cluster-secrets.sops.yaml | grep SECRET_APEX_DOMAIN
-```
-
-- Never add `2>&1`, `1>/dev/null`, or any other stream redirection/swap to a `sops -d` command to
-  "debug" why the pipe returned nothing — that class of redirection can route the full decrypted
-  YAML to a visible channel instead of suppressing it, dumping every secret in the file into your
-  output/context. This has happened before.
-- Never redirect `sops -d` output to a file (including scratch/temp paths) — that materializes
-  plaintext secrets on disk.
-- If `sops -d ... | grep <KEY>` returns nothing (e.g. because the GPG passphrase prompt can't be
-  answered non-interactively), do **not** retry with a different redirection to see what went
-  wrong. Stop and ask the user to paste the specific value directly instead.
-- If a full decrypted file ever does end up in your output despite these rules, stop immediately,
-  tell the user exactly which keys were exposed (not their values, to avoid repeating them), and
-  recommend rotating every exposed credential.
+If a decrypted value ever reaches your output, stop immediately, tell the user exactly which
+keys were exposed (not their values) and recommend rotating them.
 
 ## ESPHome
 

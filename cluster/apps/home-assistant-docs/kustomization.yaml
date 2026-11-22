@@ -1,0 +1,20 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - external-secret.yaml
+  - helm-release.yaml
+  - probe.yaml
+configMapGenerator:
+  - name: home-assistant-docs-config
+    namespace: home-assistant-docs
+    files:
+      - nginx.conf
+      - known_hosts
+generatorOptions:
+  # the name is referenced from HelmRelease values, which kustomize cannot rewrite
+  disableNameSuffixHash: true
+  annotations:
+    # nginx uses $variables: no Flux postBuild substitution
+    kustomize.toolkit.fluxcd.io/substitute: disabled

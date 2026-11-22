@@ -86,6 +86,16 @@ data:
           policy: 'two_factor'
           subject:
             - 'group:admins'
+        # Home Assistant documentation: full site (specs) for admins, household guide for the household
+        - domain: 'docs-ha.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+          subject:
+            - 'group:admins'
+        - domain: 'docs-maison.${SECRET_APEX_DOMAIN}'
+          policy: 'two_factor'
+          subject:
+            - 'group:admins'
+            - 'group:foyer'
         - domain: 'grafana.${SECRET_APEX_DOMAIN}'
           policy: 'two_factor'
           subject:

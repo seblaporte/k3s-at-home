@@ -192,6 +192,7 @@ The HA configuration lives in the private repo `seblaporte/home-assistant-config
 - **Sidecar credentials**: ExternalSecret `home-assistant-git-sync` (`home-assistant-git-deploy-key`, `home-assistant-sync-token`, HA admin user `git-sync`).
 - **Monitoring**: `git_sync_count_total` (ServiceMonitor `home-assistant-git-sync`), alerts `HomeAssistantGitSyncFailing` / `HomeAssistantGitSyncNoData`. Logs: `kubectl logs -n home-assistant deploy/home-assistant -c git-sync`.
 - **Hook tests**: the hook reads `CONFIG`, `HA_URL` and `HA_TOKEN_FILE` from the environment, so it can be run against a scratch repo and a fake API before changing it.
+- **Documentation site** (`cluster/apps/home-assistant-docs`): the CI of home-assistant-config builds `docs/` twice and force-pushes it to the `site` branch (`admin/`, `guide/`). A git-sync sidecar (same read-only deploy key, copied by the ExternalSecret `home-assistant-docs-git-sync`) pulls that branch; nginx serves `admin/` on port 8080 (`docs-ha.*`, Authelia `group:admins`) and `guide/` on 8081 (`docs-maison.*`, `group:admins` for now; add a household group to open the guide). Nothing to deploy here when the docs change: a merge on home-assistant-config is enough.
 
 ## Dependency Updates
 

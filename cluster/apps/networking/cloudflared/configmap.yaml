@@ -134,4 +134,12 @@ data:
         originRequest:
           matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
+      - hostname: "docs-ha.${SECRET_APEX_DOMAIN}"
+        originRequest:
+          matchSNItoHost: true
+        service: https://traefik.networking.svc.cluster.local:443
+      - hostname: "docs-maison.${SECRET_APEX_DOMAIN}"
+        originRequest:
+          matchSNItoHost: true
+        service: https://traefik.networking.svc.cluster.local:443
       - service: http_status:404

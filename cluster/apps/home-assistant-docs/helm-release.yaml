@@ -2,7 +2,7 @@
 # Documentation of Home Assistant (docs/ of seblaporte/home-assistant-config), built by its CI and
 # published on its `site` branch. git-sync pulls that branch, nginx serves the two builds:
 #   docs-ha     → admin/ (specs, admins only)
-#   docs-maison → guide/ (household guide)
+#   docs-maison → guide/ (household guide, admins only for now)
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:

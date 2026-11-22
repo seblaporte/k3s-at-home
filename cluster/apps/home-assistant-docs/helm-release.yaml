@@ -78,6 +78,11 @@ spec:
               - --ssh-key-file=/etc/git-secret/ssh-key
               - --ssh-known-hosts=true
               - --ssh-known-hosts-file=/etc/git-config/known_hosts
+            env:
+              # /git is an emptyDir owned by root, git-sync runs as 65533: git refuses it as "dubious ownership"
+              GIT_CONFIG_COUNT: "1"
+              GIT_CONFIG_KEY_0: safe.directory
+              GIT_CONFIG_VALUE_0: "*"
             resources:
               requests:
                 cpu: 10m

@@ -134,12 +134,14 @@ data:
         originRequest:
           matchSNItoHost: true
         service: https://traefik.networking.svc.cluster.local:443
+      # Bootstrap (user-approved, same as orion in 1cbc0c0): no certificate yet for these hosts, so the
+      # HTTP-01 challenge cannot pass a strict TLS check. Back to matchSNItoHost once the certs are issued.
       - hostname: "docs-ha.${SECRET_APEX_DOMAIN}"
         originRequest:
-          matchSNItoHost: true
+          noTLSVerify: true
         service: https://traefik.networking.svc.cluster.local:443
       - hostname: "docs-maison.${SECRET_APEX_DOMAIN}"
         originRequest:
-          matchSNItoHost: true
+          noTLSVerify: true
         service: https://traefik.networking.svc.cluster.local:443
       - service: http_status:404

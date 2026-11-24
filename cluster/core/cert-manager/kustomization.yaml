@@ -3,5 +3,4 @@ kind: Kustomization
 resources:
   - helm-release.yaml
   - letsencrypt-production.yaml
-  - letsencrypt-production-dns01.yaml
   - letsencrypt-staging.yaml

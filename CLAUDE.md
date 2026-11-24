@@ -79,7 +79,7 @@ annotations:
   cert-manager.io/cluster-issuer: "letsencrypt-production"  # or letsencrypt-staging for testing
 ```
 
-**Certificates (DNS-01 by default)**: the ClusterIssuer `letsencrypt-production` solves ACME challenges with Cloudflare DNS-01 (token from the `cloudflare-token-secret` ExternalSecret), so renewals do not depend on port 80, the Cloudflare proxy or the router (HTTP-01 failed through the public IP: the router rejects the hairpin NAT with a 403). Keep `cert-manager.io/cluster-issuer: letsencrypt-production` on Ingresses. `letsencrypt-production-dns01` is an unused identical alias kept in `cluster/core/cert-manager/`; delete it by hand (`kubectl delete clusterissuer letsencrypt-production-dns01`, `core` does not prune), then remove its file. `letsencrypt-staging` stays on HTTP-01. The `CertificateExpiringSoon` and `CertificateNotReady` alerts watch all cert-manager certificates; the Cloudflare token is a single point of failure for renewals.
+**Certificates (DNS-01 by default)**: the ClusterIssuer `letsencrypt-production` solves ACME challenges with Cloudflare DNS-01 (token from the `cloudflare-token-secret` ExternalSecret), so renewals do not depend on port 80, the Cloudflare proxy or the router (HTTP-01 failed through the public IP: the router rejects the hairpin NAT with a 403). Keep `cert-manager.io/cluster-issuer: letsencrypt-production` on Ingresses. `letsencrypt-staging` stays on HTTP-01. The `CertificateExpiringSoon` and `CertificateNotReady` alerts watch all cert-manager certificates; the Cloudflare token is a single point of failure for renewals.
 
 **Storage classes**:
 

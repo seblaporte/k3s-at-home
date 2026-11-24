@@ -8,6 +8,6 @@ spec:
   secretName: mosquitto-secure-tls
   issuerRef:
     kind: ClusterIssuer
-    name: letsencrypt-production-dns01
+    name: letsencrypt-production
   dnsNames:
-    - "mqtt-secure.${SECRET_DOMAIN}"
+    - "mqtt-secure.${SECRET_APEX_DOMAIN}"

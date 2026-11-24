@@ -6,9 +6,9 @@ metadata:
   namespace: kube-system
 data:
   mqtt-secure.server: |
-    mqtt-secure.${SECRET_DOMAIN}:53 {
+    mqtt-secure.${SECRET_APEX_DOMAIN}:53 {
         hosts {
-            192.168.1.38 mqtt-secure.${SECRET_DOMAIN}
+            192.168.1.38 mqtt-secure.${SECRET_APEX_DOMAIN}
         }
         cache 30
     }

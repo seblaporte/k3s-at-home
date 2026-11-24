@@ -6,7 +6,9 @@ metadata:
   namespace: networking
 spec:
   headers:
-    # HSTS kept short (1 day) until validated, then raise to 31536000
-    stsSeconds: 86400
+    stsSeconds: 31536000
+    stsIncludeSubdomains: true
     contentTypeNosniff: true
+    # Anti-clickjacking: pages can only be framed by the same origin
+    customFrameOptionsValue: "SAMEORIGIN"
     referrerPolicy: "strict-origin-when-cross-origin"

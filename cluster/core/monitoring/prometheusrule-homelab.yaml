@@ -95,3 +95,25 @@ spec:
             description: >-
               Le sidecar git-sync ne remonte plus de métriques : la configuration de Home Assistant n'est plus synchronisée
               depuis Git (ou le ServiceMonitor home-assistant-git-sync ne fonctionne plus).
+    - name: homelab-certificates
+      rules:
+        - alert: CertificateExpiringSoon
+          expr: certmanager_certificate_expiration_timestamp_seconds - time() < 14 * 24 * 3600
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: "Certificat proche de l'expiration : {{ $labels.exported_namespace }}/{{ $labels.name }}"
+            description: >-
+              Le certificat {{ $labels.exported_namespace }}/{{ $labels.name }} expire dans moins de 14 jours
+              alors que cert-manager aurait dû le renouveler. Voir : kubectl describe certificate,order,challenge
+              -n {{ $labels.exported_namespace }}
+        - alert: CertificateNotReady
+          expr: certmanager_certificate_ready_status{condition="False"} == 1
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: "Certificat non prêt : {{ $labels.exported_namespace }}/{{ $labels.name }}"
+            description: >-
+              Le certificat {{ $labels.exported_namespace }}/{{ $labels.name }} n'est pas Ready depuis plus d'une heure.

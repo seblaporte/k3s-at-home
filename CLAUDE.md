@@ -79,7 +79,7 @@ annotations:
   cert-manager.io/cluster-issuer: "letsencrypt-production"  # or letsencrypt-staging for testing
 ```
 
-**Certificates (HTTP-01 vs DNS-01)**: cert-manager resolves names through public DNS (`dnsPolicy: None`, 1.1.1.1), so its HTTP-01 self-check goes through the public IP and the router rejects the hairpin NAT with a 403. For certificates not served via Ingress (e.g. Mosquitto TLS), or whenever HTTP-01 stalls, use `cert-manager.io/cluster-issuer`/`issuerRef` `letsencrypt-production-dns01` (Cloudflare DNS-01, token from the `cloudflare-token-secret` ExternalSecret). The `CertificateExpiringSoon` and `CertificateNotReady` alerts watch all cert-manager certificates.
+**Certificates (DNS-01 by default)**: the ClusterIssuer `letsencrypt-production` solves ACME challenges with Cloudflare DNS-01 (token from the `cloudflare-token-secret` ExternalSecret), so renewals do not depend on port 80, the Cloudflare proxy or the router (HTTP-01 failed through the public IP: the router rejects the hairpin NAT with a 403). Keep `cert-manager.io/cluster-issuer: letsencrypt-production` on Ingresses. `letsencrypt-production-dns01` is an identical alias still used by `mosquitto-secure-tls`; remove it (manual `kubectl delete clusterissuer`, `core` does not prune) once that certificate points to `letsencrypt-production`. `letsencrypt-staging` stays on HTTP-01. The `CertificateExpiringSoon` and `CertificateNotReady` alerts watch all cert-manager certificates; the Cloudflare token is a single point of failure for renewals.
 
 **Storage classes**:
 

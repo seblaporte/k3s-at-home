@@ -11,6 +11,9 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-production
     solvers:
-      - http01:
-          ingress:
-            class: traefik
+      # DNS-01 par défaut : HTTP-01 dépendait du proxy Cloudflare (ou de l'IP publique, dont le hairpin NAT est rejeté).
+      - dns01:
+          cloudflare:
+            apiTokenSecretRef:
+              name: cloudflare-token-secret
+              key: cloudflare-token

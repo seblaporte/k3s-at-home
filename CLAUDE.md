@@ -79,6 +79,8 @@ annotations:
   cert-manager.io/cluster-issuer: "letsencrypt-production"  # or letsencrypt-staging for testing
 ```
 
+**Certificates (HTTP-01 vs DNS-01)**: cert-manager resolves names through public DNS (`dnsPolicy: None`, 1.1.1.1), so its HTTP-01 self-check goes through the public IP and the router rejects the hairpin NAT with a 403. For certificates not served via Ingress (e.g. Mosquitto TLS), or whenever HTTP-01 stalls, use `cert-manager.io/cluster-issuer`/`issuerRef` `letsencrypt-production-dns01` (Cloudflare DNS-01, token from the `cloudflare-token-secret` ExternalSecret). The `CertificateExpiringSoon` and `CertificateNotReady` alerts watch all cert-manager certificates.
+
 **Storage classes**:
 
 - `synology-iscsi-storage` — high-performance iSCSI on Synology NAS, use for databases

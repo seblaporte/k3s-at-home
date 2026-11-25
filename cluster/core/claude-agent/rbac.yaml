@@ -107,3 +107,31 @@ subjects:
   - kind: ServiceAccount
     name: claude-agent
     namespace: kube-system
+---
+# Query Loki (read only). RBAC can restrict neither paths nor log namespaces: the guard-secrets
+# hook of the hub only lets its bounded tools/loki.py through.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: claude-agent-log-management
+  namespace: log-management
+rules:
+  - apiGroups: [""]
+    resources: [services/proxy]
+    resourceNames:
+      - loki-stack:3100
+    verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: claude-agent-log-management
+  namespace: log-management
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: claude-agent-log-management
+subjects:
+  - kind: ServiceAccount
+    name: claude-agent
+    namespace: kube-system

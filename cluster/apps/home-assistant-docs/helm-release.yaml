@@ -39,7 +39,7 @@ spec:
           main:
             image:
               repository: nginxinc/nginx-unprivileged
-              tag: "1.29-alpine"
+              tag: "1.31-alpine"
               pullPolicy: IfNotPresent
             resources:
               requests:

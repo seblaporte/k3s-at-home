@@ -1,8 +1,8 @@
 {
   "name": "teleinfo2mqtt",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "private": true,
-  "description": "Publishes Linky historic teleinfo frames read from a serial port to MQTT",
+  "description": "Publishes Linky teleinfo frames (historic or standard TIC mode) read from a serial port to MQTT",
   "main": "index.js",
   "dependencies": {
     "mqtt": "5.16.0"

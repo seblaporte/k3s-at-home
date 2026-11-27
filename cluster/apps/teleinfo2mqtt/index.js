@@ -14,6 +14,8 @@ const STALE_FIELD_MS = 30000
 const number = (key, unit) => ({ key, pattern: /^[0-9]+/, unit })
 // Text values are padded with spaces by the meter.
 const text = key => ({ key, pattern: /\S(.*\S)?/ })
+// Historic text values: leading capitals only (PTEC 'HC..' -> 'HC'), the format Home Assistant expects.
+const word = key => ({ key, pattern: /^[A-Z]+/ })
 const numbered = (count, label, key) => Object.fromEntries(Array.from({ length: count }, (_, i) => {
 	const n = String(i + 1).padStart(2, '0')
 	return [`${label}${n}`, number(`${key}${n}`, 'Wh')]
@@ -25,18 +27,18 @@ const MODES = {
 		baudRate: 1200,
 		serialLabel: 'ADCO',
 		fields: {
-			OPTARIF: text('tariffOption'),
+			OPTARIF: word('tariffOption'),
 			ISOUSC: number('subscribedIntensity', 'A'),
 			BASE: number('indexBase', 'Wh'),
 			HCHC: number('indexHC', 'Wh'),
 			HCHP: number('indexHP', 'Wh'),
-			PTEC: text('currentPeriodTariff'),
+			PTEC: word('currentPeriodTariff'),
 			IINST: number('instantaneousIntensity', 'A'),
 			IMAX: number('maximumIntensity', 'A'),
 			PMAX: number('maximumPower', 'W'),
 			PAPP: number('apparentPower', 'VA'),
-			HHPHC: text('timeGroup'),
-			MOTDETAT: text('check')
+			HHPHC: word('timeGroup'),
+			MOTDETAT: number('check')
 		}
 	},
 	standard: {
